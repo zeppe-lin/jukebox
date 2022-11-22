@@ -1,0 +1,53 @@
+In the following, $LANGUAGE stands for :
+	an ISO 639 two-letter language code, example : fr
+ or	an ISO 639 two-letter language code + an ISO 3166 two-letter country code, example : pt_BR
+
+msginit, msgmerge and msgfmt can be found in the package gettext
+
+
+
+* check for latest translations first in the git repository :
+	http://gmusicbrowser.git.sourceforge.net/git/gitweb.cgi?p=gmusicbrowser/gmusicbrowser;a=tree;f=po
+ or	http://github.com/squentin/gmusicbrowser/tree/master/po/
+
+ The git repository contains the latest translations, but they should NOT be edited
+ directly, because the strings they contain are not necessary up to date.
+ So either update them like described below, or use files from http://gmusicbrowser.org/po/
+ that should contain the .po updated with the strings from the latest git, ready to be edited.
+
+
+* to edit existing translations :
+  - create the gmusicbrowser.pot file :
+	./create_pot.pl
+  - merge with existing translations :
+	msgmerge -s -U $LANGUAGE.po gmusicbrowser.pot
+    where $LANGUAGE is your language code
+    add the -N option to prevent guesses (marked as fuzzy)
+  - edit $LANGUAGE.po
+
+
+* to create a translation for a new language :
+  - create the gmusicbrowser.pot file :
+	./create_pot.pl
+  - rename gmusicbrowser.pot to $LANGUAGE.po
+  - edit the headers of $LANGUAGE.po
+  - msginit can be used in place of the last 2 steps :
+	msginit -i gmusicbrowser.pot -l $LANGUAGE
+    (in particular msginit will take care of setting up plurals for your language)
+
+
+* to test your translations :
+  - generate the .mo file :
+	msgfmt -c -o gmusicbrowser.mo $LANGUAGE.po
+  - put gmusicbrowser.mo either in /usr/share/locale/$LANGUAGE/LC_MESSAGES for installed version
+    or in locale/$LANGUAGE/LC_MESSAGES/ for non-installed version
+
+
+* to send me translations, mail the $LANGUAGE.po to squentin@free.fr
+  And tell me what name and (optionally) email I should credit the translation (both in git and in the about box).
+  No need to send the .mo file.
+  Don't hesitate to ask me if you have any questions.
+
+
+* translation updates will be cleaned-up by "msgattrib --no-location --translated --sort-output --no-fuzzy"
+  to minimize useless changes in the commit
