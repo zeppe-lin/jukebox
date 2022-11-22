@@ -1,10 +1,19 @@
-Name: gmusicbrowser
-Summary: Jukebox for large collections of mp3/ogg/flac/mpc files
-URL: http://gmusicbrowser.org
+ABOUT
+=====
 
-Jukebox for large collections of mp3/ogg/flac/mpc files
-Uses gstreamer, mpg123/ogg123  or mplayer for playback
-Main features :
+This directory contains jukebox, a music player for large collections
+of audio files.
+
+It is a fork of gmusicbrowser 1.1.16.  The original sources can be
+downloaded from:
+
+  1. https://gmusicbrowser.org/download/gmusicbrowser-1.1.16.tar.gz
+  2. https://github.com/squentin/gmusicbrowser
+
+The main features are almost the same:
+
+- customizable playback backend:
+  gstreamer1.x, mpg123/ogg123/..., mplayer, mpv
 - customizable window layouts
 - artist/album lock : easily restrict playlist to current artist/album
 - easy access to related songs (same artist/album/title)
@@ -13,4 +22,61 @@ Main features :
 - customizable labels can be set for each song
 - filters with unlimited nesting of conditions
 - customizable weighted random mode
+- equalizer with predefined presets
+- replaygain support
+- custom playlists
+- queue mode
 
+Plugins:
+
+- Albuminfo: retrieve album-relevant information (review etc.) from
+  allmusic
+- App indicator: display a panel indicator in some desktops
+- Autosave: save tags/settings every N minutes
+- Desktop widgets: open special layouts as desktop widgets
+- Export: add menu entries to song contextual menu
+- Gnome mmkeys: make jukebox react to Next/Previous/Play/Stop
+  multimedia keys in gnome
+- Karaoke: display synchonized lyrics of the current song
+- last.fm: submit played songs to last.fm
+- last.fm info: retrieve artist-relevant information from last.fm
+  (albums, biography, similar artists)
+- Lullaby: schedule fade-out and stop
+- Lyrics: search and display lyrics
+- MPRIS v1: control jukebox via DBus using MPRIS v1.0 standard
+- MPRIS v2: control jukebox via DBus using MPRIS v2.0 standard
+- Notify: notify of the playing song with the system's notification
+  popups
+- Now playing: run a command when playing a song
+- Picture finder: add a menu entry to artist/album context menu,
+  allowing to search the picture/cover in various sources and save it
+- Rip: add a button to rip a CD
+- Titlebar: display a special layout in or around the titlebar of the
+  focused window
+- Web context: provide context views using MozEmbed or WebKit
+  wikipedia, lyrics, and custom webpages
+
+
+Migration
+---------
+
+It's highly unrecommended since gmusicbrowser is fine and maintained
+program with gtk3 support (unlike jukebox).  See gmusicbroser.org and
+https://github.com/squentin/gmusicbrowser for more information.
+
+Anyway...
+
+1/2. Set library source:
+sed -i 's@/mnt/data/oldmusic@/mnt/hd/actualmusic@g' jukeboxrc
+
+2/2. Fix jukeboxrc fingerprint:
+sed -i 's@gmbrc version=1.101502@jukeboxrc version=1.101503@g' jukeboxrc
+
+
+LICENSE
+=======
+
+jukebox is licensed through the GNU General Public License v3
+<https://gnu.org/licenses/gpl.html>.
+Read the COPYING file for the complete license.
+Read the COPYRIGHT file for the copyright notices.
