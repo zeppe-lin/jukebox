@@ -3,14 +3,14 @@ Layout documentation
 
 ## Introduction
 
-Gmusicbrowser's interface is defined by layouts. Each layout define a window that contain several containers, each containing widgets.  
-Layouts are used in many places in gmusicbrowser : the main window, the "traytip" popup, the fullscreen mode, the search and browser windows, pages that can be inserted as a tab, desktop widgets (plugin), the titlebar overlays (plugin), as well as some internal windows (such as the queue, equalizer).
+jukebox' interface is defined by layouts. Each layout define a window that contain several containers, each containing widgets.  
+Layouts are used in many places in jukebox : the main window, the "traytip" popup, the fullscreen mode, the search and browser windows, pages that can be inserted as a tab, desktop widgets (plugin), the titlebar overlays (plugin), as well as some internal windows (such as the queue, equalizer).
 
 Note that this documentation is likely incomplete, and could be improved. Don't hesitate to suggest improvements, ask for clarification, or point out missing informations.
 
 ## Advice for testing layouts
-  Experimenting with layouts is highly encouraged. When doing so, it is recommended to launch gmusicbrowser from the command-line as some layout errors can be printed on the terminal. A good way to do that is launch gmusicbrowser with the `-layout` (or `-l`) followed by the layout identifier, this will directly open the desired layout.
-  You can then easily quit without saving by pressing ctrl-c in the terminal, an advantage of this exit method is that it always works (no matter what your layout contains) and that no setting for the layout will be saved, so that you can see it each time as a new user would. Note that the auto-save plugin might still save the options, the `-demo` option will prevent any writing of the gmbrc. You can also use a copy of your gmbrc file and use the `-cfg` option to tell gmb to use the copy.
+  Experimenting with layouts is highly encouraged. When doing so, it is recommended to launch jukebox from the command-line as some layout errors can be printed on the terminal. A good way to do that is launch jukebox with the `-layout` (or `-l`) followed by the layout identifier, this will directly open the desired layout.
+  You can then easily quit without saving by pressing ctrl-c in the terminal, an advantage of this exit method is that it always works (no matter what your layout contains) and that no setting for the layout will be saved, so that you can see it each time as a new user would. Note that the auto-save plugin might still save the options, the `-demo` option will prevent any writing of the jukeboxrc. You can also use a copy of your jukeboxrc file and use the `-cfg` option to tell gmb to use the copy.
 
 
 ## Layout files
@@ -18,8 +18,8 @@ Note that this documentation is likely incomplete, and could be improved. Don't 
 Layouts are defined using text files, each file can contain one or more layout.  
 Layout files use the `.layout` extension, they are found in 2 places:
 
-- the default layouts included with gmusicbrowser are in installed `/usr/share/gmusicbrowser/layouts/`
-- custom layouts can be added by putting them in `~/.config/gmusicbrowser/layouts`, which can be either a file or a folder containing multiple `.layout` files (read in alphabetical order)
+- the default layouts included with jukebox are in installed `/usr/share/jukebox/layouts/`
+- custom layouts can be added by putting them in `~/.config/jukebox/layouts`, which can be either a file or a folder containing multiple `.layout` files (read in alphabetical order)
 
 
 ## Layout syntax
@@ -65,7 +65,7 @@ Type=G (G for generic) is used to make it appear in the player layouts list in t
 This layout has 3 containers, `VBMain` being the parent widget for `MBmenu` and `HBbuttons`. The `Title` widget displays the current song's title and `Text` has an option that defines what it should display, complete with [pango markup](http://developer.gnome.org/pango/stable/PangoMarkupFormat.html) and [$-words](#songvar). This layout will show, vertically : a menu, buttons, title, and the text widget showing artist and album.
 
 
-Look in the layouts files (installed in `/usr/share/gmusicbrowser/layouts/`) for more examples.
+Look in the layouts files (installed in `/usr/share/jukebox/layouts/`) for more examples.
 
 
 ## Normal containers
@@ -213,7 +213,7 @@ All containers accept the option `border` to specify the amount of padding aroun
 #### Title
   Set a title for the window. If not set, the window title defaults to _Song Title by Artist_ (`%S by %a`) (see [%-letters and $-words](#songvar))  
 
-    Title = gmusicbrowser playing %S by %a from %l  
+    Title = jukebox playing %S by %a from %l  
 
 #### Type
   A String of letters (most of the time only one letter) defining the type(s) of a layout, possible types :
@@ -260,7 +260,7 @@ Example :
   Key names are as shown in the key binding tab in the settings dialog.  
   Modifiers are one lower case letter : c for ctrl, s for shift, a for alt and w for win/super.  
   The modifier(s) and key name can be preceded by a '+' to make the shortcut a higher priority than the normal shorcuts for the focused widget (example: "+c-f" for a control-f that overrides the default ctrl-f action of some widgets). Warning: It may breaks some features or the keyboard navigation.  
-  Commands can be found by running gmusicbrowser with command-line option `-listcmd`.
+  Commands can be found by running jukebox with command-line option `-listcmd`.
 
 #### DefaultFocus  
   Set which widget gets the initial focus in the window.
@@ -325,7 +325,7 @@ Widget options are specified in the layout definition, in parentheses, after the
 
 There are 2 kind of widget options. The first one (let's call them **layout-set** options) are the options that can only be set in the layout definition, most of the options described in this document are of this kind. The second kind (let's call them **user-set** options) are the options that the user can change in the GUI and are saved when the window is closed. The layout definition can change the default value of the user-set options, but if the user has already used the layout once, the user-set options will use their last recorded value and ignore the value set in the layout definition. As mentioned earlier, you can use the `-demo` command-line option to prevent the user-set options from having a recorded value and be able to test the value set in the layout definition.
 
-Most of these user-set options are not documented here. To discover them you just need to use the widget in a layout and then look at the file containing the saved options (~/.config/gmusicbrowser/gmbrc) for the line containing the layout id, then for the line containing the widget name, the following lines contain the saved widget options. Some of these options may contain sub-options (for example a FilterPane has a set of sub-options for each of its page), a default for these sub-options can be set in the layout by using a slash (`/`) to separate option and sub-option. Example : `FilterPane(page_album/mode=mosaic)`
+Most of these user-set options are not documented here. To discover them you just need to use the widget in a layout and then look at the file containing the saved options (~/.config/jukebox/jukeboxrc) for the line containing the layout id, then for the line containing the widget name, the following lines contain the saved widget options. Some of these options may contain sub-options (for example a FilterPane has a set of sub-options for each of its page), a default for these sub-options can be set in the layout by using a slash (`/`) to separate option and sub-option. Example : `FilterPane(page_album/mode=mosaic)`
 
 In the future, some of the layout-set options may become user-set options, as more options are exposed to the GUI.
 
