@@ -1,16 +1,19 @@
-ABOUT
-=====
+jukebox - music player
+======================
+jukebox is a music player for large collections of audio files.
 
-This directory contains jukebox, a music player for large collections
-of audio files.
+This jukebox distribution is a fork of squentin's gmusicbrowser as of
+version 1.1.16.  Added Papirus-Light/Trinity icons.  Removed
+Elementary icons.  Artistinfo plugin was rewritten.
 
-It is a fork of gmusicbrowser 1.1.16.  The original sources can be
-downloaded from:
+The original sources can be downloaded from:
+  1. https://github.com/squentin/gmusicbrowser
+  2. https://gmusicbrowser.org/download/gmusicbrowser-1.1.16.tar.gz
 
-  1. https://gmusicbrowser.org/download/gmusicbrowser-1.1.16.tar.gz
-  2. https://github.com/squentin/gmusicbrowser
 
-The main features are almost the same:
+Features
+--------
+The main features are almost the same as gmusicbrowser has:
 
 - customizable playback backend:
   gstreamer1.x, mpg123/ogg123/..., mplayer, mpv
@@ -57,9 +60,48 @@ Plugins:
   wikipedia, lyrics, and custom webpages
 
 
-Migration
----------
+Dependencies
+------------
 
+**To use mpg321/ogg123/flac123**
+  *  mpg321 to play mp3 files
+  *  ogg123 to play ogg and flac files (found in a package named
+     vorbis-tools
+  *  flac123 to play flac files (deprecated)
+  *  amixer to control the volume (found in a package named alsa-utils)
+
+**To use gstreamer-0.10**
+  * gstreamer perl bindings >0.06 (libgstreamer-perl or perl-GStreamer)
+  * gstreamer-plugins-ugly to play mp3 files
+  * gstreamer-plugins-bad to play mpc files
+  * gstreamer-plugins-good to play flac files
+
+  Note that some codec may be packaged by themselves in some
+  distribution, with names like gstreamer0.10-flac or
+  gstreamer0.10-musepack.
+
+  Some additional gstreamer plugins may also be required, depending on
+  which output you want to use, like oss, alsa, pulseaudio, esd.
+
+**To use mplayer or mpv**
+  * mplayer or mpv
+
+**To have tray icon**
+  * gtk2-trayicon perl bindings (libgtk2-trayicon-perl or
+    perl-Gtk2-TrayIcon)
+
+**To consult wikipedia pages and search google for lyrics, one of**
+  * gtk2-mozembed perl bindings (libgtk2-mozembed-perl or
+    perl-Gtk2-MozEmbed)
+  * gtk2-webkit perl bindings (perl-Gtk2-WebKit)
+
+**To control jukebox through DBus or use the included gnome multimedia
+keys plugin**
+  * DBus perl bindings (libnet-dbus-perl or perl-Net-DBus)
+
+
+Migration from gmusicbrowser
+----------------------------
 It's highly unrecommended since gmusicbrowser is fine and maintained
 program with gtk3 support (unlike jukebox).  See gmusicbroser.org and
 https://github.com/squentin/gmusicbrowser for more information.
@@ -67,16 +109,27 @@ https://github.com/squentin/gmusicbrowser for more information.
 Anyway...
 
 1/2. Set library source:
+```sh
 sed -i 's@/mnt/data/oldmusic@/mnt/hd/actualmusic@g' jukeboxrc
+```
 
 2/2. Fix jukeboxrc fingerprint:
+```sh
 sed -i 's@gmbrc version=1.101502@jukeboxrc version=1.101503@g' jukeboxrc
+```
+
+Install
+-------
+**TODO**
 
 
-LICENSE
-=======
-
+License and Copyright
+---------------------
 jukebox is licensed through the GNU General Public License v3
 <https://gnu.org/licenses/gpl.html>.
-Read the COPYING file for the complete license.
-Read the COPYRIGHT file for the copyright notices.
+Read the COPYING file for copying conditions.
+Read the COPYRIGHT file for copyright notices.
+
+
+<!-- vim:ft=markdown:sw=2:ts=2:sts=2:et:cc=72:tw=70
+End of file. -->
