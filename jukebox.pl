@@ -1216,6 +1216,7 @@ our %Artists_split = (
     '\s+featuring\s+' => "featuring",
     '\s+feat\.\s+'    => "feat.",
     '\s+[Vv][Ss]\s+'  => "VS",
+    '\s+[Vv][Ss]\.\s+'  => "VS.",
 );
 our %Artists_from_title = (
     '\(with\s+([^)]+)\)'      => "(with X)",
