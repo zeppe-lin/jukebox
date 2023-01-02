@@ -99,6 +99,10 @@ To control jukebox through DBus or use the included gnome
 multimedia keys plugin:
   * DBus perl bindings (libnet-dbus-perl or perl-Net-DBus)
 
+INSTALL
+-------
+**WIP**
+
 MIGRATION
 ---------
 Migration from *gmusicbrowser* is highly unrecommended since
