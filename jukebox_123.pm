@@ -13,11 +13,17 @@ use strict;
 use warnings;
 
 use IO::Handle;
-use POSIX ':sys_wait_h';    #for WNOHANG in waitpid
 
-#use IPC::Open3;		#for open3 to read STDERR from ogg123 / mpg321 in Play function
+# for WNOHANG in waitpid
+use POSIX ':sys_wait_h';
 
-#$SIG{CHLD} = 'IGNORE';  # to make sure there are no zombies #cause crash after displaying a file dialog and then runnning an external command with mandriva's gtk2
+# for open3 to read STDERR from ogg123/mpg123 in Play function
+#use IPC::Open3;
+
+# to make sure there are no zombies
+# cause crash after displaying a file dialog and then running an
+# external command with mandriva's gtk2
+#$SIG{CHLD} = 'IGNORE';
 #$SIG{CHLD} = sub { while (waitpid(-1, WNOHANG)>0) {} };
 
 my (@cmd_and_args, $file, $ChildPID, $WatchTag, $WatchTag2, $OUTPUTfh,
@@ -36,12 +42,12 @@ our %Commands = (
         type    => 'oga flac',
         devices => 'pulse alsa arts esd oss',
         cmdline => \&ogg123_cmdline,
-    },    #FIXME could check if flac codec is available
+    }, # FIXME could check if flac codec is available
     mpg123 => {
         type    => 'mp3',
         devices => sub {
             return grep $_ ne 'dummy', map m/^(\w+)\s+output*/g,
-              qx/mpg123 --list-modules/;
+              qx(mpg123 --list-modules);
         },
         remote => {
             PAUSE   => 'P',
@@ -52,7 +58,7 @@ our %Commands = (
             watcher => \&_remotemsg,
         },
         cmdline  => \&mpg123_cmdline,
-        priority => 1,                  #makes it higher priority than mpg321
+        priority => 1, # makes it higher priority than mpg321
     },
     flac123 => {
         type    => 'flac',
@@ -66,8 +72,8 @@ our %Commands = (
             watcher => \&_remotemsg,
         },
         cmdline  => \&flac123_cmdline,
-        priority => 1
-        , #makes it higher priority than ogg123 (because ogg123 can't seek in flac files)
+        priority => 1, # makes it higher priority than ogg123
+                       # (because ogg123 can't seek in flac files)
     },
 );
 our %Supported;
@@ -79,19 +85,24 @@ sub init {
     my $foundone;
     for my $cmd (
         sort {
-            ($Commands{$b}{priority} || 0) <=> ($Commands{$a}{priority} || 0)
+            ($Commands{$b}{priority} || 0)
+                        <=>
+            ($Commands{$a}{priority} || 0)
         } keys %Commands
       )
     {
-        my ($found) = grep -x, map $_ . ::SLASH . $cmd, split /:/, $ENV{PATH};
+        my ($found) =
+            grep -x, map $_ . ::SLASH . $cmd, split /:/, $ENV{PATH};
+
         while ($found && -l $found) {
             my $real = readlink $found;
-            $real = '' if $real eq $found;    #avoid endless loop
+            $real = '' if $real eq $found; # avoid endless loop
             $real =~ m#([^/]+)$#;
-            if ($cmd ne $1 && $Commands{$1}) {
-                $found = undef;
-            } #ignore symbolic links to other known commands (like a mpg123 that is really a symlinked mpg321)
-            else { $found = $real }
+
+            # ignore symbolic links to other known commands (like a
+            # mpg123 that is really a symlinked mpg321)
+            if ($cmd ne $1 && $Commands{$1}) { $found = undef }
+            else                             { $found = $real }
         }
         for my $ext (split / /, $Commands{$cmd}{type}) {
             push @{$Supported{$ext}}, $cmd if $found;
@@ -540,5 +551,5 @@ sub get_amixer_SMC_list {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
