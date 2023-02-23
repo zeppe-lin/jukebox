@@ -1,1 +1,2 @@
-* Refactor Makefile (currently it's broken)
+* Refactor Makefile (currently it's broken).
+* Make layout_doc.mkd as a man page.
