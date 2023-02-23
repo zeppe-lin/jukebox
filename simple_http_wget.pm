@@ -12,7 +12,9 @@ package Simple_http;
 use strict;
 use warnings;
 
-use POSIX ':sys_wait_h';    #for WNOHANG in waitpid
+# for WNOHANG in waitpid
+use POSIX ':sys_wait_h';
+
 use IO::Handle;
 
 my $UseCache   = *GMB::Cache::add{CODE};
@@ -20,14 +22,17 @@ my $orig_proxy = $ENV{http_proxy};
 my $gzip_ok;
 
 BEGIN {
-    eval { require IO::Uncompress::Gunzip; $gzip_ok = 1; };
+    eval {
+        require IO::Uncompress::Gunzip;
+        $gzip_ok = 1;
+    };
 }
 
 sub get_with_cb {
     my $self   = bless {};
     my %params = @_;
     $self->{params} = \%params;
-    my ($callback, $url, $post) = @params{qw/cb url post/};
+    my ($callback, $url, $post) = @params{qw(cb url post)};
     delete $params{cache} unless $UseCache;
     if (my $cached = $params{cache} && GMB::Cache::get($url)) {
         warn "cached result\n" if $::debug;
@@ -49,22 +54,23 @@ sub get_with_cb {
 
     my $proxy =
         $::Options{Simplehttp_Proxy}
-      ? $::Options{Simplehttp_ProxyHost} . ':'
-      . ($::Options{Simplehttp_ProxyPort} || 3128)
-      : $orig_proxy;
+            ? $::Options{Simplehttp_ProxyHost} . ':' .
+             ($::Options{Simplehttp_ProxyPort} || 3128)
+            : $orig_proxy;
     $ENV{http_proxy} = $proxy;
 
     my $useragent = $params{user_agent} || 'Mozilla/5.0';
     my $accept    = $params{'accept'}   || '';
     my $gzip      = $gzip_ok ? '--header=Accept-Encoding: gzip' : '';
+
     my @cmd_and_args = (
-        qw/wget --timeout=40 -S -O -/,
+        qw(wget --timeout=40 -S -O -),
         $gzip, "--header=Accept: $accept",
         "--user-agent=$useragent"
     );
     push @cmd_and_args, "--referer=$params{referer}" if $params{referer};
     push @cmd_and_args, '--post-data=' . $post
-      if $post;    #FIXME not sure if I should escape something
+        if $post; # FIXME: not sure if we shouldn't escape something
     push @cmd_and_args, '--', $url;
     pipe my ($content_fh), my $wfh;
     pipe my ($error_fh),   my $ewfh;
@@ -75,15 +81,15 @@ sub get_with_cb {
         Glib::Timeout->add(10, sub { $callback->(); 0 });
         return $self;
     }
-    elsif ($pid == 0)    #child
-    {
+    elsif ($pid == 0) {
+        # child
         close $content_fh;
         close $error_fh;
         open my ($olderr), ">&", \*STDERR;
         open \*STDOUT, '>&=' . fileno $wfh;
         open \*STDERR, '>&=' . fileno $ewfh;
         exec @cmd_and_args
-          or print $olderr "launch failed (@cmd_and_args)  : $!\n";
+            or print $olderr "launch failed (@cmd_and_args)  : $!\n";
         POSIX::_exit(1);
     }
     close $wfh;
@@ -95,10 +101,18 @@ sub get_with_cb {
     $self->{error_fh}   = $error_fh;
     $self->{pid}        = $pid;
     $self->{content}    = $self->{ebuffer} = '';
-    $self->{watch} = Glib::IO->add_watch(fileno($content_fh), [qw/hup err in/],
-        \&receiving_cb, $self);
-    $self->{ewatch} = Glib::IO->add_watch(fileno($error_fh), [qw/hup err in/],
-        \&receiving_e_cb, $self);
+    $self->{watch}      = Glib::IO->add_watch(
+                                fileno($content_fh),
+                                [qw/hup err in/],
+                                \&receiving_cb,
+                                $self
+                            );
+    $self->{ewatch}     = Glib::IO->add_watch(
+                                fileno($error_fh),
+                                [qw/hup err in/],
+                                \&receiving_e_cb,
+                                $self
+                            );
 
     return $self;
 }
@@ -109,7 +123,7 @@ sub receiving_e_cb {
       if read $self->{error_fh}, $self->{ebuffer}, 1024,
       length($self->{ebuffer});
     close $self->{error_fh};
-    while (waitpid(-1, WNOHANG) > 0) { }    #reap dead children
+    while (waitpid(-1, WNOHANG) > 0) { } # reap dead children
     return $self->{ewatch} = 0;
 }
 
@@ -138,13 +152,15 @@ sub receiving_cb {
         $filename = $2;
         my $rfc5987 = $1;
 
-#decode filename, not perfectly, but good enough (http://greenbytes.de/tech/tc2231/ is a good reference)
+        # decode filename, not perfectly, but good enough
+        # (http://greenbytes.de/tech/tc2231/ is a good reference)
         $filename =~ s#\\(.)#"\x00".ord($1)."\x00"#ge;
         my $enc = 'iso-8859-1';
+        # RFC5987
         if ($rfc5987 && $filename =~ s#^([A-Za-z0-9_-]+)'\w*'##) {
             $enc      = $1;
             $filename = ::decode_url($filename);
-        }    #RFC5987
+        }
         else {
             if ($filename =~ s/^"(.*)"$/$1/) {
                 $filename =~ s#\x00(\d+)\x00#chr($1)#ge;
@@ -227,5 +243,5 @@ sub abort {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
