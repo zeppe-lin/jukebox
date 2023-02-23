@@ -10,8 +10,8 @@
 # published by the Free Software Foundation
 
 =for gmbplugin ARTISTINFO
-name        artist info
-title       artist info plugin
+name        ArtistInfo
+title       ArtistInfo plugin
 version     0.6
 author      Simon Steinbeiß <simon.steinbeiss@shimmerproject.org>
 author      Pasi Lallinaho <pasi@shimmerproject.org>
@@ -160,7 +160,7 @@ my @similarity= (
 my $artistinfowidget = {
     class       => __PACKAGE__,
     tabicon     => 'plugin-artistinfo', # no icon by that name by default (yet)
-    tabtitle    => "Artist info",
+    tabtitle    => "ArtistInfo",
     saveoptions => 'site',
     schange      => sub { $_[0]->SongChanged; },
     group        => 'Play',
