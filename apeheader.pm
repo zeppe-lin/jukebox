@@ -54,30 +54,37 @@ sub _ReadHeader {
     return unless read($fh, $buf, 32) == 32;
     my ($sig, $v, $desc_size) = unpack 'a4vx2v', $buf;
     return unless $sig eq 'MAC ';
-    my ($compression, $blocksperframe, $finalsblocks, $nbframes, $channels,
-        $freq);
+    my ($compression, $blocksperframe, $finalsblocks, $nbframes,
+        $channels, $freq);
 
-    if ($v < 3980)    #old header
-    {
+    if ($v < 3980) {
+        # old header
         ($compression, $channels, $freq, $nbframes, $finalsblocks) =
           unpack 'x6vx2vVx8VV', $buf;
-        $blocksperframe =
-            $v >= 3950                                           ? 73728 * 4
-          : ($v >= 3900 || ($v >= 3800 && $compression == 4000)) ? 73728
-          :                                                        9216;
+
+        if ($v >= 3950) {
+            $blocksperframe = 73728 * 4;
+        }
+        elsif ($v >= 3900 || ($v >= 3800 && $compression == 4000)) {
+            $blocksperframe = 73728;
+        }
+        else {
+            $blocksperframe = 9216;
+        }
     }
     else {
         seek $fh, $desc_size - 32, 1;
         return unless read($fh, $buf, 24) == 24;
-        (   $compression, $blocksperframe, $finalsblocks, $nbframes,
-            $channels, $freq
-        ) = unpack 'vx2VVVx2vV', $buf;
+
+        ($compression, $blocksperframe, $finalsblocks, $nbframes,
+            $channels, $freq) = unpack 'vx2VVVx2vV', $buf;
     }
     my $bitrate = my $seconds = 0;
     my $blocks  = ($nbframes - 1) * $blocksperframe + $finalsblocks;
     if ($blocks & $freq) {
         $seconds = $blocks / $freq;
-        $bitrate = ($self->{endaudio} - $self->{startaudio}) * 8 / $seconds;
+        $bitrate =
+            ($self->{endaudio} - $self->{startaudio}) * 8 / $seconds;
     }
     my %info = (
         version     => $v / 1000,
@@ -95,5 +102,5 @@ sub _ReadHeader {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
