@@ -7,7 +7,7 @@
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
-#http://flac.sourceforge.net/format.html
+# http://flac.sourceforge.net/format.html
 
 package Tag::Flac;
 
@@ -17,7 +17,7 @@ use warnings;
 use Encode qw(decode encode);
 use MIME::Base64;
 
-our @ISA = ('Tag::OGG');
+our @ISA = qw(Tag::OGG);
 
 use constant {
     STREAMINFO     => 0,
@@ -40,8 +40,11 @@ sub new {
         return undef;
     }
     $self->{filename}   = $file;
-    $self->{startaudio} = 0
-      ; #start of flac stream (in case an id3v2 tag is at the beginning of the file)
+
+    # start of flac stream
+    # (in case an id3v2 tag is at the beginning of the file)
+    $self->{startaudio} = 0;
+
     my $fh = $self->_open or return undef;
 
     my $buffer;
@@ -74,7 +77,8 @@ sub new {
             $self->_close;
             return undef;
         }
-        if ($type == STREAMINFO) {
+
+        if    ($type == STREAMINFO) {
             $self->{info} = _ReadInfo(\$buffer);
         }
         elsif ($type == VORBIS_COMMENT) {
@@ -93,9 +97,12 @@ sub new {
         return undef;
     }
     $self->{info}{bitrate} =
-      $self->{info}{seconds} ? $audiosize * 8 / $self->{info}{seconds} : 0;
+        $self->{info}{seconds}
+            ? $audiosize * 8 / $self->{info}{seconds}
+            : 0;
+
     unless ($self->{comments}) {
-        $self->{vorbis_string} = 'jukebox';    #FIXME
+        $self->{vorbis_string} = 'jukebox'; # FIXME
         $self->{CommentsOrder} = [];
         $self->{comments}      = {};
     }
@@ -125,18 +132,24 @@ sub write_file {
     my $last;
     my $towrite = 'fLaC';
     my $padding = 0;
-    seek $fh, $self->{startaudio}, 0;    #skip extra tags
-    return undef unless (read($fh, $buffer, 4) == 4 && $buffer eq 'fLaC');
+    seek $fh, $self->{startaudio}, 0; # skip extra tags
+    return undef
+        unless (read($fh, $buffer, 4) == 4 && $buffer eq 'fLaC');
 
     while (!$last && read($fh, $buffer, 4) == 4) {
         $buffer = unpack 'N', $buffer;
         my $size = $buffer & 0xffffff;
         my $type = ($buffer >> 24) & 0x7f;
         $last = $buffer >> 31;
-        if ($type != VORBIS_COMMENT && $type != PADDING && $type != PICTURE) {
-            $buffer &= 0x7fffffff;       #set Last-metadata-block flag to 0
+        if (   $type != VORBIS_COMMENT
+            && $type != PADDING
+            && $type != PICTURE)
+        {
+            $buffer &= 0x7fffffff; # set Last-metadata-block flag to 0
             $towrite .= pack 'N', $buffer;
-            unless (read($fh, $towrite, $size, length($towrite)) == $size) {
+            unless (read($fh, $towrite, $size, length($towrite))
+                    == $size)
+            {
                 warn "flac: Premature end of file\n";
                 return undef;
             }
@@ -146,24 +159,32 @@ sub write_file {
             seek $fh, $size, 1;
         }
     }
-    $padding -= 4 + length($$newcom_packref) + length $pictures;
+    $padding -= 4 + length($$newcom_packref) + length($pictures);
     my $header  = VORBIS_COMMENT;
-    my $inplace = ($padding == 0 || ($padding > 3 && $padding < 8192));
+    my $inplace = (    $padding == 0
+                   || ($padding > 3 && $padding < 8192));
     if ($padding == 0) {
         $header += 0x80;
         $padding = '';
     }
     else {
         $padding = $inplace ? $padding - 4 : 256;
-        $padding = pack "Nx$padding", ((0x80 + PADDING) << 24) + $padding;
+        $padding =
+            pack "Nx$padding", ((0x80 + PADDING) << 24) + $padding;
     }
     $header = pack 'N', ($header << 24) + length $$newcom_packref;
     if ($inplace) {
         $self->_close;
         $fh = $self->_openw or return undef;
         seek $fh, $self->{startaudio}, 0;
-        print $fh $towrite . $pictures . $header . $$newcom_packref . $padding
-          or warn $!;
+        print $fh
+            $towrite
+          . $pictures
+          . $header
+          . $$newcom_packref
+          . $padding
+            or warn $!;
+
         $self->_close;
     }
     else {
@@ -173,12 +194,14 @@ sub write_file {
             read($fh, $buffer, $self->{startaudio});
             print $tmpfh $buffer or warn $!;
         }
-        print $tmpfh $towrite
+        print $tmpfh
+            $towrite
           . $pictures
           . $header
           . $$newcom_packref
           . $padding
           or warn $!;
+
         while (read($fh, $buffer, 1048576)) {
             print $tmpfh $buffer or warn $!;
         }
@@ -188,8 +211,11 @@ sub write_file {
         unlink $self->{filename} && rename $self->{filename} . '.TEMP',
           $self->{filename};
     }
-    %$self = ()
-      ; #destroy the object to make sure it is not reused as many of its data are now invalid
+
+
+    # destroy the object to make sure it is not reused as many of its
+    # data are now invalid
+    %$self = ();
     return 1;
 }
 
@@ -294,5 +320,5 @@ sub _PackComments {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
