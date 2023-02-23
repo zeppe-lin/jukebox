@@ -51,22 +51,26 @@ sub _ReadHeader {
     my $buf;
     return unless read($fh, $buf, 32) == 32;
     return unless $buf =~ m/^wvpk/;
-    my ($block_size, $ver, $total_samples, $block_index, $block_samples,
-        $flags) = unpack 'x4Vvx2VVVV', $buf;
-    $total_samples = 0 if $total_samples == 0xffff;    #unknown length
-    $ver           = sprintf '4.%x', $ver;
-    $ver =~ s/(\d)$/.$1/;
+    my ($block_size, $ver, $total_samples, $block_index,
+        $block_samples, $flags) = unpack 'x4Vvx2VVVV', $buf;
+
+    $total_samples  = 0 if $total_samples == 0xffff; # unknown length
+    $ver            = sprintf '4.%x', $ver;
+    $ver            =~ s/(\d)$/.$1/;
     $info{version}  = $ver;
     $info{channels} = ($flags >> 2) & 1 ? 1 : 2;
     $info{frames}   = $total_samples;
     $info{rate}     = $sample_rates[($flags >> 23) & 0b1111];
 
     #my $bytes_per_sample= ($flags & 0b11)+1;
-    if ($total_samples == 0) { $info{seconds} = $info{bitrate} = 0 }
+    if ($total_samples == 0) {
+        $info{seconds} = $info{bitrate} = 0
+    }
     else {
         $info{seconds} = ($total_samples / $info{rate});
         $info{bitrate} =
-          ($self->{endaudio} - $self->{startaudio}) * 8 / $info{seconds};
+            ($self->{endaudio} - $self->{startaudio}) * 8
+                / $info{seconds};
     }
 
     #warn "$_=$info{$_}\n" for keys %info;
@@ -75,5 +79,5 @@ sub _ReadHeader {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
