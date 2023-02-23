@@ -16,19 +16,19 @@ use constant {EOL => "\015\012"};
 my ($file, $sec, $title);
 my $port = 8000;
 while (my $arg = shift) {
-    if    ($arg eq '-p')     { $port = shift || 8000 }
-    elsif ($arg eq '-b')     {shift}
-    elsif ($arg eq '-K')     { $sec = '-k ' . shift }
-    elsif ($arg eq '-title') { $title = shift }
-    elsif (-f $arg)          { $file = $arg }
+    if    ($arg eq '-p')     { $port  = shift || 8000  }
+    elsif ($arg eq '-b')     { shift                   }
+    elsif ($arg eq '-K')     { $sec   = '-k ' . shift  }
+    elsif ($arg eq '-title') { $title = shift          }
+    elsif (-f $arg)          { $file  = $arg           }
 }
 
 $title ||= $file;
 my $mime = 'audio/x-unknown';    #FIXME
-if    ($file =~ m/mp3$/i)      { $mime = 'audio/mpeg'; }
-elsif ($file =~ m/ogg$|oga$/i) { $mime = 'application/ogg'; }
-elsif ($file =~ m/flac$/i)     { $mime = 'audio/x-flac'; }
-elsif ($file =~ m/mpc$/i)      { $mime = 'audio/x-musepack'; }
+if    ($file =~ m/mp3$/i)      { $mime = 'audio/mpeg'        }
+elsif ($file =~ m/ogg$|oga$/i) { $mime = 'application/ogg'   }
+elsif ($file =~ m/flac$/i)     { $mime = 'audio/x-flac'      }
+elsif ($file =~ m/mpc$/i)      { $mime = 'audio/x-musepack'  }
 
 sub logmsg { print "$0 $$: @_ at ", scalar localtime, "\n" }
 
@@ -36,7 +36,7 @@ my $proto = getprotobyname('tcp');
 ($port) = $port =~ /^(\d+)$/ or die "invalid port";
 socket(Server, PF_INET, SOCK_STREAM, $proto) || die "socket: $!";
 setsockopt(Server, SOL_SOCKET, SO_REUSEADDR, pack('l', 1))
-  || die "setsockopt: $!";
+                                             || die "setsockopt: $!";
 bind(Server, sockaddr_in($port, INADDR_ANY)) || die "bind: $!";
 listen(Server, SOMAXCONN)                    || die "listen: $!";
 logmsg "server started on port $port";
@@ -53,16 +53,11 @@ while (<Client>) {    #warn $_;
     last if $_ eq EOL;
 }
 my $answer =
-    'HTTP/1.0 200 OK'
-  . EOL
-  . 'Server: iceserver/0.2'
-  . EOL
-  . "Content-Type: $mime"
-  . EOL
-  . "x-audiocast-name: $title"
-  . EOL
-  . 'x-audiocast-public: 0'
-  . EOL;
+    'HTTP/1.0 200 OK'          . EOL
+  . 'Server: iceserver/0.2'    . EOL
+  . "Content-Type: $mime"      . EOL
+  . "x-audiocast-name: $title" . EOL
+  . 'x-audiocast-public: 0'    . EOL;
 send Client, $answer . EOL, 0;
 
 #warn $answer;
@@ -73,4 +68,5 @@ while (read FILE, $_, 16384) {
 close Client;
 exit;
 
-
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
