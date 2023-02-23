@@ -8,8 +8,8 @@
 # published by the Free Software Foundation
 
 =for gmbplugin ALBUMINFO
-name	Albuminfo
-title	Albuminfo plugin
+name	AlbumInfo
+title	AlbumInfo plugin
 version	0.2
 author  Øystein Tråsdahl (based on the Artistinfo plugin)
 desc	Retrieves album-relevant information (review etc.) from allmusic.com.
@@ -94,23 +94,25 @@ my @showfields = (
 );
 
 ::SetDefaultOptions(OPT, 'Show' . $_->{short} => $_->{defaultshow})
-  for (@showfields);
-delete $::Options{OPT . 'Column' . $_} for 0 .. 3;   #remove old column options
+    for (@showfields);
+
+# delete old column options
+delete $::Options{OPT . 'Column' . $_} for 0 .. 3;
 
 my $albuminfowidget = {
     class        => __PACKAGE__,
     tabicon      => 'plugin-albuminfo',
-    tabtitle     => "Albuminfo",
+    tabtitle     => "AlbumInfo",
     schange      => sub { $_[0]->song_changed },
     group        => 'Play',
     autoadd_type => 'context page text',
 };
 
 my %Columns = (
-    album  => {name => "Album",  storecol => 0, width => 130,},
-    artist => {name => "Artist", storecol => 1, width => 130,},
-    genre  => {name => "Genre",  storecol => 2, width => 110,},
-    year   => {name => "Year",   storecol => 3, width => 50,},
+    album  => { name => "Album",  storecol => 0, width => 130, },
+    artist => { name => "Artist", storecol => 1, width => 130, },
+    genre  => { name => "Genre",  storecol => 2, width => 110, },
+    year   => { name => "Year",   storecol => 3, width =>  50, },
 );
 
 my @towrite
@@ -1213,5 +1215,5 @@ sub cancel {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
