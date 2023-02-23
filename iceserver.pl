@@ -1,4 +1,5 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+
 # Copyright (c) Quentin Sculo  <squentin@free.fr>
 # Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
@@ -11,7 +12,7 @@ use warnings;
 
 use Socket;
 
-use constant {EOL => "\015\012"};
+use constant { EOL => "\015\012" };
 
 my ($file, $sec, $title);
 my $port = 8000;
@@ -47,9 +48,10 @@ my ($port2, $iaddr) = sockaddr_in($paddr);
 #my $name = gethostbyaddr($iaddr,AF_INET);
 logmsg 'connection from ', inet_ntoa($iaddr), " at port $port2";
 
-#shoutcast and icecast protocol :
+# shoutcast and icecast protocol:
 # http://sander.vanzoest.com/talks/2002/audio_and_apache/
-while (<Client>) {    #warn $_;
+while (<Client>) {
+    #warn $_;
     last if $_ eq EOL;
 }
 my $answer =
