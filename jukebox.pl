@@ -27,115 +27,178 @@ binmode STDOUT, ':utf8';
 package main;
 
 use Gtk2 '-init';
-use Glib qw/filename_from_unicode filename_to_unicode/;
-use Gtk2::Pango;    #for PANGO_WEIGHT_BOLD, PANGO_WEIGHT_NORMAL
-use POSIX
-  qw/setlocale LC_NUMERIC LC_MESSAGES LC_TIME strftime mktime getcwd _exit/;
-use Encode qw/_utf8_on _utf8_off/;
+
+use Glib qw(
+    filename_from_unicode
+    filename_to_unicode
+    );
+
+# for PANGO_WEIGHT_BOLD, PANGO_WEIGHT_NORMAL
+use Gtk2::Pango;
+
+use POSIX qw(
+    setlocale
+    LC_NUMERIC
+    LC_MESSAGES
+    LC_TIME
+    strftime
+    mktime
+    getcwd
+    _exit
+    );
+
+use Encode qw(
+    _utf8_on
+    _utf8_off
+    );
 
 {
-    no warnings
-      'redefine';  #some work arounds for old versions of perl-Gtk2 and/or gtk2
+    # Some work arounds for old versions of perl-Gtk2 and/or gtk2
+    no warnings 'redefine';
+
     *filename_to_utf8displayname = \&Glib::filename_display_name
-      if *Glib::filename_display_name{CODE};
+        if *Glib::filename_display_name{CODE};
+
+    # needs perl-Gtk2 version >= 1.092
     *PangoEsc = \&Glib::Markup::escape_text
-      if *Glib::Markup::escape_text{CODE};    #needs perl-Gtk2 version >=1.092
+        if *Glib::Markup::escape_text{CODE};
+
     *Gtk2::Notebook::set_tab_reorderable = sub { }
-      unless *Gtk2::Notebook::set_tab_reorderable{CODE};
+        unless *Gtk2::Notebook::set_tab_reorderable{CODE};
+
+    # for perl-Gtk2 version < 1.080~1.083
     *Gtk2::AboutDialog::set_url_hook = sub { }
-      unless *Gtk2::AboutDialog::set_url_hook{CODE}
-      ;    #for perl-Gtk2 version <1.080~1.083
+        unless *Gtk2::AboutDialog::set_url_hook{CODE};
+
+    # for perl-Gtk2 version < 1.080~1.083
     *Gtk2::Label::set_ellipsize = sub { }
+        unless *Gtk2::Label::set_ellipsize{CODE};
 
-      unless *Gtk2::Label::set_ellipsize{CODE}
-      ;    #for perl-Gtk2 version <1.080~1.083
+    # for perl-Gtk2 version < 1.180,  pango < 1.20
     *Gtk2::Pango::Layout::set_height = sub { }
-      unless *Gtk2::Pango::Layout::set_height{CODE}
-      ;    #for perl-Gtk2 version <1.180  pango <1.20
-    *Gtk2::Label::set_line_wrap_mode = sub { }
-      unless *Gtk2::Label::set_line_wrap_mode{CODE}
-      ;    #for gtk2 version <2.9 or perl-Gtk2 <1.131
-    *Gtk2::Scale::add_mark = sub { }
+        unless *Gtk2::Pango::Layout::set_height{CODE};
 
-      unless *Gtk2::Scale::add_mark{CODE}
-      ;    #for gtk2 version <2.16 or perl-Gtk2 <1.230
+    # for gtk2 version < 2.9 or perl-Gtk2 < 1.131
+    *Gtk2::Label::set_line_wrap_mode = sub { }
+        unless *Gtk2::Label::set_line_wrap_mode{CODE};
+
+    # for gtk2 version < 2.16 or perl-Gtk2 < 1.230
+    *Gtk2::Scale::add_mark = sub { }
+        unless *Gtk2::Scale::add_mark{CODE};
+
+    # for gtk2 version < 2.16 or perl-Gtk2 < 1.230
     *Gtk2::ImageMenuItem::set_always_show_image = sub { }
-      unless *Gtk2::ImageMenuItem::set_always_show_image{CODE}
-      ;    #for gtk2 version <2.16 or perl-Gtk2 <1.230
+        unless *Gtk2::ImageMenuItem::set_always_show_image{CODE}
+
+    # for gtk2 version < 2.18 or perl-Gtk2 < 1.231
     *Gtk2::Widget::set_visible = sub {
         my ($w, $v) = @_;
         if   ($v) { $w->show }
         else      { $w->hide }
-      }
-      unless *Gtk2::Widget::set_visible{CODE}
-      ;    #for gtk2 version <2.18 or perl-Gtk2 <1.231
-    unless (*Gtk2::Widget::set_tooltip_text{CODE})    #for Gtk2 version <2.12
-    {
+    } unless *Gtk2::Widget::set_visible{CODE};
+
+
+    # for gtk2 version < 2.12
+    unless (*Gtk2::Widget::set_tooltip_text{CODE}) {
         my $Tooltips = Gtk2::Tooltips->new;
+
         *Gtk2::Widget::set_tooltip_text =
-          sub { $Tooltips->set_tip($_[0], $_[1]); };
+          sub { $Tooltips->set_tip($_[0], $_[1]) };
+
+        # remove markup
         *Gtk2::Widget::set_tooltip_markup = sub {
             my $markup = $_[1];
             $markup =~ s/<[^>]*>//g;
 
             $Tooltips->set_tip($_[0], $markup);
-        };                                            #remove markup
+        };
+
         *Gtk2::ToolItem::set_tooltip_text =
           sub { $_[0]->set_tooltip($Tooltips, $_[1], ''); };
+
         *Gtk2::ToolItem::set_tooltip_markup = sub {
             my $markup = $_[1];
             $markup =~ s/<[^>]*>//g;
             $_[0]->set_tooltip($Tooltips, $markup, '');
         };
     }
+
+    # work-around $rect can't be undef in old bindings versions
     my $set_clip_rectangle_orig = \&Gtk2::Gdk::GC::set_clip_rectangle;
     *Gtk2::Gdk::GC::set_clip_rectangle =
       sub { &$set_clip_rectangle_orig if $_[1]; }
-      if $Gtk2::VERSION
-      < 1.102;    #work-around $rect can't be undef in old bindings versions
-    if (eval($POSIX::VERSION)
-        < 1.18
-      ) #previously, date strings returned by strftime needed to be decoded by the locale encoding
-    {
+        if $Gtk2::VERSION < 1.102;
+
+    # previously, date strings returned by strftime needed to be
+    # decoded by the locale encoding
+    if (eval($POSIX::VERSION) < 1.18) {
         my ($encoding) = setlocale(LC_TIME) =~ m#\.([^@]+)#;
         $encoding = 'cp' . $encoding
-          if $^O eq 'MSWin32' && $encoding =~ m/^\d+$/;
+            if $^O eq 'MSWin32' && $encoding =~ m/^\d+$/;
+
         if (!Encode::resolve_alias($encoding)) {
-            warn "Can't find dates encoding used for dates, (LC_TIME="
-              . setlocale(LC_TIME)
-              . "), dates may have wrong encoding\n";
+            warn "Can't find dates encoding used for dates, "
+               . "(LC_TIME=" . setlocale(LC_TIME) . "), "
+               . "dates may have wrong encoding\n";
+
             $encoding = undef;
         }
-        *strftime_utf8 =
-          sub { $encoding ? Encode::decode($encoding, &strftime) : &strftime; };
+        *strftime_utf8 = sub {
+            $encoding
+                ? Encode::decode($encoding, &strftime)
+                : &strftime
+            };
     }
 }
-use List::Util qw/min max sum first/;
+
+use List::Util qw(
+    min
+    max
+    sum
+    first
+    );
+
 use File::Copy;
-use Fcntl qw/O_NONBLOCK O_WRONLY O_RDWR SEEK_SET/;
-use Scalar::Util qw/blessed weaken refaddr/;
-use Unicode::Normalize
-  'NFKD';    #for accent-insensitive sort and search, only used via superlc()
+
+use Fcntl qw(
+    O_NONBLOCK
+    O_WRONLY
+    O_RDWR
+    SEEK_SET
+    );
+
+use Scalar::Util qw(
+    blessed
+    weaken
+    refaddr
+    );
+
+# for accent-insensitive sort and search, only used via superlc()
+use Unicode::Normalize 'NFKD';
+
 use Carp;
 $SIG{INT} = \&Carp::confess;
 
+# gtk file chooser use '/' in win32 and perl accepts both '/' and '\'
 #use constant SLASH => ($^O  eq 'MSWin32')? '\\' : '/';
-use constant SLASH =>
-  '/';    #gtk file chooser use '/' in win32 and perl accepts both '/' and '\'
+use constant SLASH => '/';
 
 # Find dir containing other files (*.pm & pix/) -> $DATADIR
 use FindBin;
 our $DATADIR;
 
 BEGIN {
+
+    # FIXME: remove, all perl files will be in $FindBin::RealBin,
+    # jukebox.pl symlinked to /usr/bin/jukebox
     my @dirs = (
         $FindBin::RealBin,
         join(SLASH, $FindBin::RealBin, '..', 'share', 'jukebox'
-        ) #FIXME remove, all perl files will be in $FindBin::RealBin, jukebox.pl symlinked to /usr/bin/jukebox
+        )
     );
     ($DATADIR) = grep -e $_ . SLASH . 'jukebox_layout.pm', @dirs;
     die "Can't find folder containing data files, looked in @dirs\n"
-      unless $DATADIR;
+        unless $DATADIR;
 }
 use lib $DATADIR;
 
@@ -147,21 +210,21 @@ use constant {
     PIXPATH       => $DATADIR . SLASH . 'pix' . SLASH,
     PROGRAM_NAME  => 'jukebox',
 
-    DRAG_STRING  => 0,
-    DRAG_USTRING => 1,
-    DRAG_FILE    => 2,
-    DRAG_ID      => 3,
-    DRAG_ARTIST  => 4,
-    DRAG_ALBUM   => 5,
-    DRAG_FILTER  => 6,
-    DRAG_MARKUP  => 7,
+    DRAG_STRING   => 0,
+    DRAG_USTRING  => 1,
+    DRAG_FILE     => 2,
+    DRAG_ID       => 3,
+    DRAG_ARTIST   => 4,
+    DRAG_ALBUM    => 5,
+    DRAG_FILTER   => 6,
+    DRAG_MARKUP   => 7,
 
-    PI => 4 * atan2(1, 1),    #needed for cairo rotation functions
-    KB => 1000,               #1024  # bytes in a KB
+    PI => 4 * atan2(1, 1),    # needed for cairo rotation functions
+    KB => 1000,               # 1024  # bytes in a KB
 };
 use constant MB => KB()**2;
 
-sub _ ($)   { $_[0] }         #dummy translation functions
+sub _ ($)   { $_[0] }         # dummy translation functions
 sub _p ($$) { _($_[1]) }
 sub __ { sprintf(($_[2] > 1 ? $_[1] : $_[0]), $_[2]); }
 sub __p  { shift; &__ }
@@ -169,12 +232,14 @@ sub __np { shift; &__n }
 sub __n  { replace_fnumber(($_[2] > 1 ? $_[1] : $_[0]), $_[2]); }
 sub __x  { my ($s, %h) = @_; $s =~ s/{(\w+)}/$h{$1}/g; $s; }
 
+# replace %d by the formatted number, could use sprintf($_[0], $_[1])
+# instead but would require changing %d to %s
 sub replace_fnumber {
     my $s = $_[0];
     use locale;
     $s =~ s/%d/format_number($_[1])/e;
     $s;
-} #replace %d by the formated number, could use sprintf($_[0],$_[1]) instead but would require changing %d to %s
+}
 
 BEGIN {
     no warnings 'redefine';
@@ -13658,5 +13723,5 @@ sub Abort      # GMB::DropURI object must not be used after that
     %$self = (); # content is emptied to prevent reference cycles (memory leak)
 }
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
