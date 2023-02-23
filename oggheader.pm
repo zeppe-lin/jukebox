@@ -7,8 +7,9 @@
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
-#http://xiph.org/vorbis/doc/framing.html
-#http://xiph.org/vorbis/doc/v-comment.html
+# References:
+# http://xiph.org/vorbis/doc/framing.html
+# http://xiph.org/vorbis/doc/v-comment.html
 
 package Tag::OGG;
 
@@ -41,9 +42,8 @@ INIT {
         warn "oggheader.pm : using Digest::CRC\n" if $::debug;
     };
     if ($@) {
-        warn
-          "oggheader.pm : Digest::CRC not found, using slow pure-perl replacement.\n"
-          if $::debug;
+        warn "oggheader.pm : Digest::CRC not found, using slow pure-perl replacement.\n"
+            if $::debug;
         @crc_lookup = (
             0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
             0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
@@ -623,5 +623,5 @@ sub _skip_to_last_page {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
