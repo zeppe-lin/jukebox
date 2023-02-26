@@ -431,7 +431,7 @@ sub GetMetadata_from {
     if (my $pic =
         $h{album_picture})    #FIXME use ~album.picture.uri when available
     {
-        if ($pic =~ m/$::EmbImage_ext_re(?:\w+)?$/i)    #embedded pictures
+        if ($pic =~ m/$::EmbImage_ext_re(?::\w+)?$/i)    #embedded pictures
         {
             my $ok;
             {
