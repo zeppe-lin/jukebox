@@ -291,20 +291,26 @@ BEGIN {
 }
 
 my $thousandsep;
-BEGIN { $thousandsep = POSIX::localeconv()->{thousands_sep}; }
+BEGIN { $thousandsep = POSIX::localeconv()->{thousands_sep} // ''; }
 
 sub format_number {
     my ($d, $f) = @_;
     use locale;
-    $d =
-      $f
-      ? sprintf($f, $d)
-      : ''
-      . ($d + 0)
-      ;    # ''.($d+0) to force stringification of the number with the locale
-    return $d
-      unless $d =~ s/^(-?\d{4,})//;    # $d now contains the fractional part
-    my $i = $1;                        # integer part
+    if ($f) {
+        $d = sprintf($f, $d);
+    }
+    else {
+        # '' . ($d + 0) to force stringification of the number with
+        # the locale
+        $d = '' . ($d + 0);
+    }
+
+    # $d now contains the fractional part
+    return $d unless $d =~ s/^(-?\d{4,})//;
+    return $d unless $thousandsep;
+
+    # integer part
+    my $i = $1;
     $i =~ s/(?<=\d)(?=(?:\d\d\d)+\b)/$thousandsep/g;
     return $i . $d;
 }
