@@ -22,15 +22,15 @@ our (%Def, %Types, %Categories, %FieldTemplates, @Fields, %HSort, %Aliases);
 my %FuncCache;
 
 INIT {
-    our $nan = unpack 'F',
-      pack('F', sin(9**9**9))
-      ; # sin 9**9**9 is slighly more portable than $nan="nan", use unpack pack because the nan will be stored that way
+    # sin 9**9**9 is slighly more portable than $nan="nan",
+    # use unpack pack because the nan will be stored that way
+    our $nan = unpack 'F', pack('F', sin(9**9**9));
     our %timespan_menu = (
         year  => "year",
         month => "month",
         day   => "day",
     );
-    @MissingKeyFields = qw/size title album artist track/;
+    @MissingKeyFields = qw(size title album artist track);
     %Categories       = (
         file       => ["File properties",  10],
         audio      => ["Audio properties", 30],
