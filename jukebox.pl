@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Copyright (c) Quentin Sculo  <squentin@free.fr>
 # Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
