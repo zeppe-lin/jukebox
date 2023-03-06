@@ -1,5 +1,5 @@
 # Copyright (c) Øystein Tråsdahl
-# Copyright (c) Alexandr Savca  <drop@chinarulezzz.fun>
+# Copyright (c) Alexandr Savca  <alexandr.savca89@gmail.com>
 #
 # This file is part of jukebox.
 #

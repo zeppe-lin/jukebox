@@ -1,7 +1,7 @@
 # Copyright (C) Quentin Sculo    <squentin@free.fr>
 # Copyright (C) Simon Steinbeiß  <simon.steinbeiss@shimmerproject.org>
 # Copyright (C) Pasi Lallinaho   <pasi@shimmerproject.org>
-# Copyright (C) Alexandr Savca   <drop@chinarulezzz.fun>
+# Copyright (C) Alexandr Savca   <alexandr.savca89@gmail.com>
 #
 # This file is part of jukebox.
 #
@@ -15,7 +15,7 @@ title       ArtistInfo plugin
 version     0.6
 author      Simon Steinbeiß <simon.steinbeiss@shimmerproject.org>
 author      Pasi Lallinaho <pasi@shimmerproject.org>
-author      Alexandr Savca <drop@chinarulezzz.fun>
+author      Alexandr Savca <alexandr.savca89@gmail.com>
 desc        This plugin retrieves artist-relevant information from last.fm.
 url         http://gmusicbrowser.org/dokuwiki/doku.php?id=plugins:lastfm
 =cut

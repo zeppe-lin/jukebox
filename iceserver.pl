@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # Copyright (c) Quentin Sculo  <squentin@free.fr>
-# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
+# Copyright (c) Alexandr Savca <alexandr.savca89@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
