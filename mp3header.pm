@@ -1,5 +1,4 @@
 # vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
 #
 # Copyright (c) Quentin Sculo  <squentin@free.fr>
 # Copyright (c) Alexandr Savca <alexandr.savca89@gmail.com>
