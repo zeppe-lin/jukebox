@@ -1,4 +1,4 @@
-# vim:sw=4:ts=4:sts=4:et:cc=80
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
 #
 # Copyright (c) Quentin Sculo  <squentin@free.fr>
 # Copyright (c) Alexandr Savca <alexandr.savca89@gmail.com>
@@ -9,15 +9,18 @@
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
-#Library to read/write mp3 tags (id3v1 id3v2 APE lyrics3), read mp3 header, find mp3 length by reading VBR header or counting mp3 frames
+# Library to read/write mp3 tags (id3v1 id3v2 APE lyrics3), read mp3
+# header, find mp3 length by reading VBR header or counting mp3
+# frames:
+#
 # http://www.id3.org/develop.html
 # http://www.dv.co.yu/mpgscript/mpeghdr.htm
 # http://www.multiweb.cz/twoinches/MP3inside.htm
 # http://www.thecodeproject.com/audio/MPEGAudioInfo.asp
-
-#http://www.kevesoft.com/crossref.htm
-#http://www.matroska.org/technical/specs/tagging/othertagsystems/comparetable.html
-#http://hobba.hobba.nl/audio/tag_frame_reference.html
+#
+# http://www.kevesoft.com/crossref.htm
+# http://www.matroska.org/technical/specs/tagging/othertagsystems/comparetable.html
+# http://hobba.hobba.nl/audio/tag_frame_reference.html
 
 package Tag::MP3;
 
@@ -31,33 +34,53 @@ my $MODIFIEDFILE;
 
 INIT {
     @bitrates = (
-        [    # version 1
-            [   0,   32,  64,  96,  128, 160, 192, 224,
-                256, 288, 320, 352, 384, 416, 448
-            ],    #layer I
-            [   0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320,
-                384
-            ],    #layer II
-            [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]
-            ,     #layer III
+        # Version 1
+        [
+            # Layer 1
+            [
+                0,   32,  64,  96,  128, 160, 192, 224, 256, 288, 320,
+                352, 384, 416, 448
+            ],
+            # Layer 2
+            [
+                0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224,
+                256, 320, 384
+            ],
+            # Layer 3
+            [
+                0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192,
+                224, 256, 320
+            ],
         ],
-        [         #version 2
-            [   0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224,
-                256
-            ],    #layer I
-            [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160]
-            ,     #layer II
 
-#[0, 8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112, 128, 144, 160],	#layer III
+        # Version 2
+        [
+            # Layer 1
+            [
+                0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176,
+                192, 224, 256
+            ],
+            # Layer 2
+            [
+                0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128,
+                144, 160
+            ],
+            # Layer 3
+            # [
+            #   0, 8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112,
+            #   128, 144, 160
+            # ],
         ],
     );
-    $bitrates[1][2] = $bitrates[1][1];   #v2 layer 2 & 3 have the same bitrates
+
+    # v2 layer 2 & 3 have the same bitrates
+    $bitrates[1][2] = $bitrates[1][1];
 
     @freq = (
-        [11025, 12000, 8000],            # MPEG version 2.5 (from mp3info)
-        undef,                           # invalid version
-        [22050, 24000, 16000],           # MPEG version 2
-        [44100, 48000, 32000],           # MPEG version 1
+        [ 11025, 12000, 8000  ], # MPEG version 2.5 (from mp3info)
+        undef,                   # invalid version
+        [ 22050, 24000, 16000 ], # MPEG version 2
+        [ 44100, 48000, 32000 ], # MPEG version 1
     );
     @versions = (2.5, undef, 2, 1);
     my $re8  = qr/^(.*?)(?:\x00|$)/s;
@@ -65,12 +88,34 @@ INIT {
     $regex_t   = $re8;
     @encodings = (
         ['iso-8859-1', "\x00",     $re8],
-        ['utf16',      "\x00\x00", $re16],    #with BOM
+        ['utf16',      "\x00\x00", $re16], # with BOM
         ['utf16be',    "\x00\x00", $re16],
         ['utf8',       "\x00",     $re8],
     );
 
-#@index_apic=('other','32x32 PNG file icon','other file icon','front cover','back cover','leaflet page','media','lead artist','artist','conductor','band','composer','lyricist','recording location','during recording','during performance','movie/video screen capture','a bright coloured fish','illustration','band/artist logotype','Publisher/Studio logotype');
+    #@index_apic=(
+    #   'other',
+    #   '32x32 PNG file icon',
+    #   'other file icon',
+    #   'front cover',
+    #   'back cover',
+    #   'leaflet page',
+    #   'media',
+    #   'lead artist',
+    #   'artist',
+    #   'conductor',
+    #   'band',
+    #   'composer',
+    #   'lyricist',
+    #   'recording location',
+    #   'during recording',
+    #   'during performance',
+    #   'movie/video screen capture',
+    #   'a bright coloured fish',
+    #   'illustration',
+    #   'band/artist logotype',
+    #   'Publisher/Studio logotype'
+    #   );
 
     @Genres = (
         'Blues',                  'Classic Rock',
@@ -202,12 +247,14 @@ sub _FindTags {
     $self->{startaudio}  = 0;
     my $fh = $self->{fileHandle};
 
-    #Find ID3 tag(s) at the start of the file
+    # Find ID3 tag(s) at the start of the file.
     {
         my $tag;
         seek $fh, $self->{startaudio}, 0;
         read $fh, my ($header), 8;
-        if ($header =~ m/^ID3/) { $tag = Tag::ID3v2->new_from_file($self); }
+        if ($header =~ m/^ID3/) {
+            $tag = Tag::ID3v2->new_from_file($self);
+        }
         elsif ($header =~ m/^APETAGEX/) {
             $tag = Tag::APE->new_from_file($self);
         }
@@ -215,10 +262,10 @@ sub _FindTags {
         $tag->{offset} = $self->{startaudio};
         $self->{startaudio} += $tag->{size};
         push @{$self->{tags_before}}, $tag;
-        redo if 1;    #look for another tag ?
+        redo if 1; # look for another tag ?
     }
 
-    #Check end of file for tags
+    # Check end of file for tags.
     seek $fh, 0, 2;
     $self->{endaudio} = tell $fh;
     seek $fh, -128, 2;
@@ -231,11 +278,12 @@ sub _FindTags {
         $self->{endaudio} -= 128;
     }
 
-    # search for tag signatures at the end, repeat until none is found
+    # Search for tag signatures at the end, repeat until none is
+    # found.
     {
         seek $fh, $self->{endaudio} - 32, 0;
         my $read = read $fh, my ($footer), 32;
-        last unless $read == 32;    #for bogus files <32 bytes
+        last unless $read == 32; # for bogus files <32 bytes
         my $tag;
         if ($footer =~ m/^APETAGEX/) {
             $tag = Tag::APE->new_from_file($self, 1);
@@ -259,7 +307,7 @@ sub _FindTags {
     return;
 }
 
-sub SyncID3v1    #auto sync with id3v2
+sub SyncID3v1 # auto sync with id3v2
 {
     my $self  = shift;
     my $id3v1 = $self->{ID3v1} || $self->new_ID3v1;
@@ -303,10 +351,10 @@ sub SyncID3v1    #auto sync with id3v2
     }
 }
 
-sub new_ID3v1     { Tag::ID3v1->new($_[0]); }
+sub new_ID3v1     { Tag::ID3v1->new($_[0]);     }
 sub new_Lyrics3v2 { Tag::Lyrics3v2->new($_[0]); }
-sub new_APE       { Tag::APE->new($_[0]); }
-sub new_ID3v2     { Tag::ID3v2->new($_[0]); }
+sub new_APE       { Tag::APE->new($_[0]);       }
+sub new_ID3v2     { Tag::ID3v2->new($_[0]);     }
 
 sub add {
     my $self  = shift;
@@ -351,13 +399,17 @@ sub write_file {
         my $hole = 0;
         for my $tag (reverse @{$self->{tags_before}})
         {    #warn "$tag : ".(join ' ',keys %$tag)."\n";
-            if ($tag->{deleted}) { $hole = 1; }
+            if ($tag->{deleted}) {
+                $hole = 1;
+            }
             elsif ($tag->{edited}) {
                 $hole = 1;
                 unshift @towritebefore, $tag->make;
-                $id3v2tag = $towritebefore[0] if ref $tag eq 'Tag::ID3v2';
+                $id3v2tag = $towritebefore[0]
+                    if ref $tag eq 'Tag::ID3v2';
             }
-            elsif ($hole) {    #read tag, put it in @towritebefore
+            elsif ($hole) {
+                # read tag, put it in @towritebefore
                 $fh ||= $self->_open or return undef;
                 seek $fh, $tag->{offset}, 0;
                 my $buffer;
@@ -365,29 +417,39 @@ sub write_file {
                 unshift @towritebefore, \$buffer;
             }
             else {
-                if ($blank) { $copybegin -= $blank; $blank = 0; }
+                if ($blank) {
+                    $copybegin -= $blank;
+                    $blank = 0;
+                }
                 $copybegin -= $tag->{size};
             }
         }
         $hole = 0;
         for my $tag (reverse @{$self->{tags_after}}) {
-            if ($tag->{deleted}) { $hole = 1; }
+            if ($tag->{deleted}) {
+                $hole = 1;
+            }
             elsif ($tag->{edited}) {
                 $hole = 1;
                 push @towriteafter, $tag->make;
             }
-            elsif ($hole) {    #read tag, put it in @towriteafter
+            elsif ($hole) {
+                # read tag, put it in @towriteafter
                 $fh ||= $self->_open or return undef;
                 seek $fh, $tag->{offset}, 0;
                 my $buffer;
                 read $fh, $buffer, $tag->{size};
                 push @towriteafter, \$buffer;
             }
-            else { $copyend += $tag->{size}; }
+            else {
+                $copyend += $tag->{size};
+            }
         }
         $self->_close if $fh;
     }
-    push @towriteafter, $self->{ID3v1}->make if $self->{ID3v1};
+    push @towriteafter, $self->{ID3v1}->make
+        if $self->{ID3v1};
+
     warn "startaudio="
       . $self->{startaudio}
       . " copybegin=$copybegin length(towritebefore)="
@@ -403,11 +465,11 @@ sub write_file {
         my $padding = $copybegin;
         $padding -= length($$_) for @towritebefore;
         if   ($padding < 0 || $padding > 2048) { $padding  = 256 }
-        else                                   { $in_place = 1 }
+        else                                   { $in_place = 1   }
         Tag::ID3v2::_SetPadding($id3v2tag, $padding);
     }
-    if ($in_place) {    # in place editing
-        warn "in place editing.\n";    #DEBUG
+    if ($in_place) { # in place editing
+        warn "in place editing.\n"; # DEBUG
         my $fh = $self->_openw or return undef;
         return undef unless defined $fh;
         print $fh $$_ or warn $! for @towritebefore;
