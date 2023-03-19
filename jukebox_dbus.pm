@@ -54,7 +54,9 @@ sub CurrentSong {
     #warn "$_:$h{$_}\n" for sort keys %h;
     return \%h;
 }
-dbus_method('CurrentSongFields', [['array', 'string']], [['array', 'string']]);
+dbus_method('CurrentSongFields',
+    [['array', 'string']], [['array', 'string']]
+);
 
 sub CurrentSongFields {
     my ($self, $fields) = @_;
@@ -80,7 +82,7 @@ dbus_method('Set', [['struct', 'string', 'string', 'string']], ['bool']);
 
 sub Set {
     my ($self, $array) = @_;
-    Songs::SetTagValue(@$array);    #return false on error, true if ok
+    Songs::SetTagValue(@$array); # return false on error, true if ok
 }
 dbus_method('Get', [['struct', 'string', 'string']], ['string']);
 
@@ -158,25 +160,29 @@ use Net::DBus::Service;
 my $not_glib_dbus;
 our $bus;
 eval { require Net::DBus::GLib; $bus = Net::DBus::GLib->session; };
-unless ($bus) {    #warn "Net::DBus::GLib not found (not very important)\n";
+unless ($bus) {
+    #warn "Net::DBus::GLib not found (not very important)\n";
     $not_glib_dbus = 1;
     $bus           = Net::DBus->session;
 }
 
-Glib::Idle->add(\&init);    #initialize once the main gmb init is finished
+Glib::Idle->add(\&init); # initialize once the main gmb init is finished
 
-sub init {                  #my $bus = Net::DBus->session;
-    my $service = $bus->export_service($::DBus_id)
-      ;                     # $::DBus_id is 'org.jukebox' by default
+sub init {
+    #my $bus = Net::DBus->session;
+    my $service = $bus->export_service($::DBus_id);
+    # $::DBus_id is 'org.jukebox' by default
     my $object = GMB::DBus::Object->new($service);
     DBus_mainloop_hack() if $not_glib_dbus;
-    0;                      #called in an idle, return 0 to run only once
+    0; # called in an idle, return 0 to run only once
 }
 
 use Net::DBus::Annotation qw(:call);
 
-sub simple_call #$service_path can be service_and_path separated by space, or the object
+sub simple_call
 {
+    # $service_path can be service_and_path separated by space,
+    # or the object
     my ($service_path, $method, $args, $reply) = @_;
     my $return = eval {
         my $object;
@@ -199,13 +205,16 @@ sub simple_call #$service_path can be service_and_path separated by space, or th
 }
 
 sub DBus_mainloop_hack
-{ # use Net::DBus internals to connect it to the Glib mainloop, though unlikely, it may break with future version of Net::DBus
+{
+    # use Net::DBus internals to connect it to the Glib mainloop,
+    # though unlikely, it may break with future version of Net::DBus
     use Net::DBus::Reactor;
     my $reactor = Net::DBus::Reactor->main;
 
     for my $ref (['in', 'read'], ['out', 'write'], ['err', 'exception']) {
         my ($type1, $type2) = @$ref;
-        for my $fd (keys %{$reactor->{fds}{$type2}}) {    #warn "$fd $type2";
+        for my $fd (keys %{$reactor->{fds}{$type2}}) {
+            #warn "$fd $type2";
             Glib::IO->add_watch(
                 $fd, $type1,
                 sub {
@@ -216,12 +225,12 @@ sub DBus_mainloop_hack
                 }
             ) if $reactor->{fds}{$type2}{$fd}{enabled};
 
-#Glib::IO->add_watch($fd,$type1,sub { Net::DBus::Reactor->main->step;Net::DBus::Reactor->main->step;1; }) if $reactor->{fds}{$type2}{$fd}{enabled};
+            #Glib::IO->add_watch($fd,$type1,sub { Net::DBus::Reactor->main->step;Net::DBus::Reactor->main->step;1; }) if $reactor->{fds}{$type2}{$fd}{enabled};
         }
     }
 
-    # run the dbus mainloop once so that events already pending are processed
-    # needed if events already waiting when gmb is starting
+    # run the dbus mainloop once so that events already pending are
+    # processed needed if events already waiting when gmb is starting
     my $timeout =
       $reactor->add_timeout(1, Net::DBus::Callback->new(method => sub { }));
     Net::DBus::Reactor->main->step;
@@ -230,5 +239,5 @@ sub DBus_mainloop_hack
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# End of file.
