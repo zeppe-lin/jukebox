@@ -88,7 +88,7 @@ use Encode qw(
 
     # for gtk2 version < 2.16 or perl-Gtk2 < 1.230
     *Gtk2::ImageMenuItem::set_always_show_image = sub { }
-        unless *Gtk2::ImageMenuItem::set_always_show_image{CODE}
+        unless *Gtk2::ImageMenuItem::set_always_show_image{CODE};
 
     # for gtk2 version < 2.18 or perl-Gtk2 < 1.231
     *Gtk2::Widget::set_visible = sub {
@@ -96,7 +96,6 @@ use Encode qw(
         if   ($v) { $w->show }
         else      { $w->hide }
     } unless *Gtk2::Widget::set_visible{CODE};
-
 
     # for gtk2 version < 2.12
     unless (*Gtk2::Widget::set_tooltip_text{CODE}) {
