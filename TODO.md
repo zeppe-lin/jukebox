@@ -1,6 +1,6 @@
-TODO jukebox
+TODO
+====
 
-	[ ] Refactor Makefile (currently it's broken).
-	[ ] Make layout_doc.mkd as a man page.
-
-End of file.
+  - [ ] refactor Makefile (currently it's broken)
+  - [ ] make layout_doc.mkd as a manual page
+  - [ ] use system icons
