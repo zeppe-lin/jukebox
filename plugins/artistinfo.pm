@@ -67,7 +67,7 @@ my @External = (
         "Search for Artist on rutracker torrent tracker"
     ],
     [   'rarbg',
-        "http://proxyrarbg.org/torrents.php?search=%a",
+        "https://rargb.to/search/?search=%a",
         "Search for Artist on rarbg torrent tracker",
     ],
     [   'piratebay',
