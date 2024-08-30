@@ -133,10 +133,10 @@ my %queuemode = (
 =dop
 my @similarity= (
     ['super',       '0.9',  '#ff0101'],
-	['very high',   '0.7',  '#e9c102'],
-	['high',        '0.5',  '#05bd4c'],
-	['medium',      '0.3',  '#453e45'],
-	['lower',       '0.1',  '#9a9a9a'],
+    ['very high',   '0.7',  '#e9c102'],
+    ['high',        '0.5',  '#05bd4c'],
+    ['medium',      '0.3',  '#453e45'],
+    ['lower',       '0.1',  '#9a9a9a'],
 );
 
 =cut
@@ -327,14 +327,16 @@ sub new {
         $toolbar->insert($toolitem, -1);
 
 # trying to make the radiobuttons overflowable, but no shared groups for radiobuttons and radiomenuitems (group doesn't seem to work for radiomenuitem at all)
-#		my $menuitem=Gtk2::RadioMenuItem->new($menugroup,$sites{$key}[1]);
-#		$menuitem->set_active( $key eq $self->{site} );
-        #$menuitem->set_group($menugroup);
-#		$menuitem->set_draw_as_radio(1);
-#		$menuitem->{key} = $key;
-#		if ($menuitem->get_active) { warn $menuitem->{key}; }
-#		$menuitem->signal_connect('toggled' => sub { &toggled_cb($self,$menuitem,$textview); } );
-#		$toolitem->set_proxy_menu_item($key,$menuitem);
+#       my $menuitem=Gtk2::RadioMenuItem->new($menugroup,$sites{$key}[1]);
+#       $menuitem->set_active( $key eq $self->{site} );
+#       $menuitem->set_group($menugroup);
+#       $menuitem->set_draw_as_radio(1);
+#       $menuitem->{key} = $key;
+#       if ($menuitem->get_active) {
+#           warn $menuitem->{key};
+#       }
+#       $menuitem->signal_connect('toggled' => sub { &toggled_cb($self,$menuitem,$textview); } );
+#       $toolitem->set_proxy_menu_item($key,$menuitem);
     }
     for my $button (
         [   refresh => 'gtk-refresh',
