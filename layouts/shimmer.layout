@@ -1,6 +1,6 @@
 [Shimmer Desktop]
 Type=G+
-Title		= "gmusicbrowser"
+Title		= "jukebox"
 DefaultFocus	= SimpleSearch
 Default		= Window(size=1000x750)
 Window		= hidden=VPSongPlaylist|FilterPane2
@@ -51,7 +51,7 @@ KeyBindings	= c-l SetFocusOn(SimpleSearch)
 
 [Shimmer Netbook]
 Type=G+
-Title		= "gmusicbrowser"
+Title		= "jukebox"
 DefaultFocus	= SimpleSearch
 Default		= Window(size=1000x750)
 Author		= simon@shimmerproject.org
