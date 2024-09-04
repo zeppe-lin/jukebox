@@ -265,8 +265,8 @@ group
 
 [Garage6]
 Type=G+
-#Title		= "gmusicbrowser joue %t dans l'album %l (%Y) de %a"
-Title		= "gmusicbrowser is playing %t from %l (%Y) by %a"
+#Title		= "jukebox joue %t dans l'album %l (%Y) de %a"
+Title		= "jukebox is playing %t from %l (%Y) by %a"
 Category 	= "Garage"
 DefaultFocus	= SimpleSearch1
 VolumeScroll 	= HBVolume
@@ -498,8 +498,8 @@ VPMainCenter =  _HBAlbums VBSongtree
 
 [EeePC2]
 Type=G+
-#Title		= "gmusicbrowser joue %t dans l'album %l (%Y) de %a"
-Title		= _"gmusicbrowser is playing %t from %l (%Y) by %a"
+#Title		= "jukebox joue %t dans l'album %l (%Y) de %a"
+Title		= _"jukebox is playing %t from %l (%Y) by %a"
 Category 	= "Garage"
 DefaultFocus	= SimpleSearch1
 VolumeScroll 	= HBVolume
@@ -638,7 +638,7 @@ VolumeScroll	= VBmain
 
 [Parking5]
 Type=G+
-Title		= "gmusicbrowser"
+Title		= "jukebox"
 Category 	= "Garage"
 DefaultFocus	= SimpleSearch1
 VolumeScroll 	= VBVolume HBVolume
