@@ -283,7 +283,7 @@ HBTop		= HBButtons VSeparator1 HBVolume VSeparator2 _15VBPlayer VSeparator3 -HBS
 
 HBButtons	= Prev Play Stop Next(click2=NextAlbum)
 
-HBVolume	= (yalign=0,yscale=0.0) VolumeIcon(button=1,click2=mute,tip=_"Left-clic or scrollwheel to change, right-click to mute")
+HBVolume	= (yalign=0,yscale=0.0) VolumeIcon(button=1,click2=mute,tip=_"Left-click or scrollwheel to change, right-click to mute")
 
 VBPlayer	= 1Filler0 HBTitle HBTimeSlider
 HBTitle		= \
@@ -568,7 +568,7 @@ HBQueueActions = -Total3(size="small",group=3)
 VBButtons	= VBPlayingControls _VBVolume VBPanelsControls
 
 VBPlayingControls	= Prev(size=button) Play(size=button) Next(click2=NextAlbum,size=button)
-VBVolume 	= VolumeIcon(button=1,click2=mute,tip=_"Left-clic or scrollwheel to change, right-click to mute") _VolumeSlider
+VBVolume 	= VolumeIcon(button=1,click2=mute,tip=_"Left-click or scrollwheel to change, right-click to mute") _VolumeSlider
 VBPanelsControls = \
 	ToggleButton31(icon=gtk-about,relief=none,size=menu,widget=Context,tip=_"Context") \
 	-Quit2(size=button,minwidth=34,maxwidth=34,tip=_"Quit") \
