@@ -8501,6 +8501,7 @@ sub AboutDialog {
         "svg icon : zeltak",
         "tango icon theme : Jean-Philippe Guillemin",
         "elementary icon theme : Simon Steinbeiß",
+        "trinity icon theme : Alexandr Savca",
     );
     $dialog->signal_connect(
         response => sub { $_[0]->destroy if $_[1] eq 'cancel'; })
