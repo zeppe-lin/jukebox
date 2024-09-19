@@ -8494,7 +8494,7 @@ sub AboutDialog {
     $dialog->set_license(
         "Released under the GNU General Public Licence version 3\n(http://www.gnu.org/copyleft/gpl.html)"
     );
-    $dialog->set_website('http://jukebox.org');
+    $dialog->set_website('https://github.com/zeppe-lin/jukebox/');
     $dialog->set_authors('Quentin Sculo <squentin@free.fr>');
     $dialog->set_artists(
         join "\n",
