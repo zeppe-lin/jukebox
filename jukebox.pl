@@ -8502,31 +8502,6 @@ sub AboutDialog {
         "tango icon theme : Jean-Philippe Guillemin",
         "elementary icon theme : Simon Steinbeiß",
     );
-    $dialog->set_translator_credits(
-        join "\n",
-        sort
-          'French : Quentin Sculo, Jonathan Fretin, Frédéric Urbain, Brice Boucard, Hornblende & mgrubert',
-        'Hungarian : Zsombor',
-        'Spanish : Martintxo, Juanjo, Elega, Juan Montoya, Genesis Bustamante',
-        'German : vlad, staubi, Tino',
-        'Polish : Robert Wojewódzki, tizzilzol team',
-        'Swedish : Olle Sandgren',
-        'Chinese : jk',
-        'Czech : Vašek Kovářík',
-        'Portuguese : Sérgio Marques',
-        'Portuguese (Brazillian) : Gleriston Sampaio',
-        'Korean : bluealbum',
-        'Russian : tin',
-        'Italian : Michele Giampaolo',
-        'Dutch : Gijs Timmers',
-        'Japanese : Sunatomo',
-        'Serbian : Саша Петровић',
-        'Finnish : Jiri Grönroos',
-        'Chinese(Taiwan) : Hiunn-hué',
-        'Greek : Elias',
-        'Malay (Malaysia) : abuyop',
-        'Lithuanian : Moo',
-    );
     $dialog->signal_connect(
         response => sub { $_[0]->destroy if $_[1] eq 'cancel'; })
       ; #used to worked without this, see http://mail.gnome.org/archives/gtk-perl-list/2006-November/msg00035.html
