@@ -131,9 +131,15 @@ sub Read {
                     else       { $value = $v[0]; last; }
                 }
                 next unless defined $value;
-                if (defined $joinwith) { $value = join $joinwith, @$value; }
+
+                if (defined $joinwith) {
+                    $value = join $joinwith, @$value;
+                }
                 elsif (defined $split) {
-                    $value = [map split($split, $_), @$value];
+                    $value = [
+                        # ::uniq - ignore repeated values for multi-value fields
+                        ::uniq(map split($split, $_), @$value)
+                        ];
                 }
             }
             elsif (my $sub =
