@@ -158,8 +158,7 @@ sub launch_mpv {
     for (0 .. 200) {
         $sockfh = IO::Socket::UNIX->new(Peer => $SOCK, Type => SOCK_STREAM);
         last if $sockfh || (waitpid($ChildPID, WNOHANG) != 0);
-        warn "jukebox_mpv: could not connect to socket; retrying\n"
-          if $::debug;
+        warn "jukebox_mpv: could not connect to socket; retrying\n" if $::debug;
         sleep 0.01;
     }
     unless ($sockfh) {
@@ -187,8 +186,7 @@ sub Play {
     warn "playing $file (pid=$ChildPID)\n" if $::Verbose;
 
     # gapless - check for non-user-initiated EOF
-    return
-      if ($Called_from_eof && $preparednext && $preparednext eq $gmb_file);
+    return if ($Called_from_eof && $preparednext && $preparednext eq $gmb_file);
     $mpv_file = "";
     $initseek = $sec;
     cmd_push('loadfile', $file);
@@ -326,9 +324,7 @@ sub _Kill_timeout    #make sure old children are dead
     @pidToKill = grep kill(0, $_),
       @pidToKill;    #checks to see which ones are still there
     if (@pidToKill) {
-        warn "Sending "
-          . ($Kill9 ? 'KILL' : 'INT')
-          . " signal to @pidToKill\n"
+        warn "Sending " . ($Kill9 ? 'KILL' : 'INT') . " signal to @pidToKill\n"
           if $::debug;
         if   ($Kill9) { kill KILL => @pidToKill; }
         else          { kill INT  => @pidToKill; }
@@ -352,11 +348,11 @@ sub GetMute   {$::Mute}
 sub SetVolume {
     shift;
     my $set = shift;
-    if    ($set eq 'mute')   { $::Mute   = $::Volume; $::Volume = 0; }
-    elsif ($set eq 'unmute') { $::Volume = $::Mute;   $::Mute   = 0; }
-    elsif ($set =~ m/^\+(\d+)$/) { $::Volume += $1; }
-    elsif ($set =~ m/^-(\d+)$/)  { $::Volume -= $1; }
-    elsif ($set =~ m/(\d+)/)     { $::Volume = $1; }
+    if    ($set eq 'mute')       { $::Mute    = $::Volume; $::Volume = 0; }
+    elsif ($set eq 'unmute')     { $::Volume  = $::Mute;   $::Mute   = 0; }
+    elsif ($set =~ m/^\+(\d+)$/) { $::Volume += $1;                       }
+    elsif ($set =~ m/^-(\d+)$/)  { $::Volume -= $1;                       }
+    elsif ($set =~ m/(\d+)/)     { $::Volume  = $1;                       }
     $::Volume = 0   if $::Volume < 0;
     $::Volume = 100 if $::Volume > 100;
     my $vol = convertvolume($::Volume);
@@ -369,8 +365,9 @@ sub SetVolume {
 sub convertvolume {
     my $vol = $_[0];
 
-#$vol= 100*($vol/100)**3;	#convert a linear volume to cubic volume scale #doesn't seem to be needed in mpv
-# will be sent to mpv as string, make sure it use a dot as decimal separator
+    #$vol= 100*($vol/100)**3; #convert a linear volume to cubic volume scale
+    ##doesn't seem to be needed in mpv will be sent to mpv as string, make sure
+    #it use a dot as decimal separator
     ::setlocale(::LC_NUMERIC, 'C');
     $vol = "$vol";
     ::setlocale(::LC_NUMERIC, '');
@@ -401,10 +398,12 @@ sub EQ_Get_Range {
 sub EQ_Get_Hz {
     my $i = $_[1];
 
-# mplayer and GST equalizers use the same bands, but they are indicated differently
-# mplayer docs list band center frequences, GST reports band start freqs. Using GST values here for consistency
-    my @bands =
-      (qw/29Hz 59Hz 119Hz 237Hz 474Hz 947Hz 1.9kHz 3.8kHz 7.5kHz 15.0kHz/);
+    # mplayer and GST equalizers use the same bands, but they are indicated
+    # differently: mplayer docs list band center frequences, GST reports band
+    # start freqs.  Using GST values here for consistency.
+    my @bands = (
+        qw(29Hz 59Hz 119Hz 237Hz 474Hz 947Hz 1.9kHz 3.8kHz 7.5kHz 15.0kHz)
+    );
     return $bands[$i];
 }
 
@@ -413,7 +412,7 @@ sub get_RG_preamp {
 
     #FIXME: enforce limits in interface
     $preamp = -15 if $::Options{rg_preamp} < -15;
-    $preamp = 15  if $::Options{rg_preamp} > 15;
+    $preamp =  15 if $::Options{rg_preamp} >  15;
     return $preamp;
 }
 
@@ -434,3 +433,6 @@ sub RG_set_options {
 }
 
 1;
+
+# vim: sw=4 ts=4 sts=4 et
+# End of file.
