@@ -519,7 +519,7 @@ sub prefbox {
     $titlebox->pack_start($artistinfo,  0, 0, 5);
     my $frame_bio = Gtk2::Frame->new("Biography");
     $frame_bio->add(::Vpack($entry, $preview, $autosave));
-    my $frame_albums = Gtk2::Frame->new("Albums");
+    #my $frame_albums = Gtk2::Frame->new("Albums");
 
     #$frame_albums->add(::Hpack('_', $albumsformat, $albumsformat_reset));
     my $frame_similar = Gtk2::Frame->new("Similar Artists");
@@ -530,7 +530,7 @@ sub prefbox {
         )
     );
     $vbox->pack_start($_, ::FALSE, ::FALSE, 5)
-      for $titlebox, $frame_bio, $frame_albums, $frame_similar;
+      for $titlebox, $frame_bio, $frame_similar; #$frame_albums
     return $vbox;
 }
 
