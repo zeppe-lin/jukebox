@@ -8,9 +8,9 @@
 # published by the Free Software Foundation
 
 =for gmbplugin AUDIOSCROBBLER
-name	last.fm
-title	last.fm plugin
-desc	Submit played songs to last.fm
+name	Last.fm
+title	Last.fm plugin
+desc	Submit played songs to Last.fm
 =cut
 
 package GMB::Plugin::AUDIOSCROBBLER;
