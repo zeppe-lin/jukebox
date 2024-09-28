@@ -21,8 +21,8 @@ use warnings;
 use constant {
     CLIENTID => 'gmb',
     VERSION  => '0.1',
-    OPT => 'PLUGIN_AUDIOSCROBBLER_',    #used to identify the plugin's options
-    SAVEFILE => 'audioscrobbler.queue', #file used to save unsent data
+    OPT      => 'PLUGIN_AUDIOSCROBBLER_', # used to identify the plugin's options
+    SAVEFILE => 'audioscrobbler.queue',   # file used to save unsent data
 };
 
 use Digest::MD5 'md5_hex';
@@ -393,5 +393,5 @@ sub Save    #save unsent data to a file
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
+# vim: sw=4 ts=4 sts=4 et
 # End of file
