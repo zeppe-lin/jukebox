@@ -61,7 +61,8 @@ sub prefbox {
     my $sg2         = Gtk2::SizeGroup->new('horizontal');
     my $replacetext = ::MakeReplaceText('talydngLfS');
     my $summary     = ::NewPrefEntry(
-        OPT . 'title', "Summary :",
+        OPT . 'title',
+        "Summary :",
         sizeg1 => $sg1,
         sizeg2 => $sg2,
         tip    => $replacetext
@@ -96,7 +97,7 @@ sub prefbox {
     );
     my $actions = ::NewPrefCheckButton(
         OPT . 'actions',
-        "Display stop/next actions",
+        "Display prev/stop/next actions",
         cb => \&set_actions
     );
     $actions->set_sensitive($can_actions);
@@ -148,6 +149,7 @@ sub set_actions {
     return unless $can_actions;
     $notify->clear_actions;
     if ($::Options{OPT . 'actions'}) {
+        $notify->add_action('media-prev', "Previous", \&::PrevSong);
         $notify->add_action('media-stop', "Stop", \&::Stop);
         $notify->add_action('media-next', "Next", \&::NextSong);
     }
