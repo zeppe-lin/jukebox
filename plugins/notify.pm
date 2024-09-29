@@ -95,16 +95,24 @@ sub prefbox {
         sizeg1 => $sg1,
         digits => 1
     );
-    my $actions = ::NewPrefCheckButton(
-        OPT . 'actions',
+    my $custom_actions = ::NewPrefCheckButton(
+        OPT . 'custom_actions',
         "Display prev/stop/next actions",
         cb => \&set_actions
     );
-    $actions->set_sensitive($can_actions);
-    $actions->set_tooltip_text(
-        "Actions are not supported by current notification daemon : "
-          . $Daemon_name)
-      unless $can_actions;
+    my $default_action = ::NewPrefCheckButton(
+        OPT . 'default_action',
+        "Show main window by clicking the notification",
+        cb => \&set_actions
+    );
+    for ($custom_actions, $default_action) {
+        $_->set_sensitive($can_actions);
+        $_->set_tooltip_text(
+            "Actions are not supported by current notification daemon : "
+              . $Daemon_name)
+          unless $can_actions;
+    }
+
     $body->set_sensitive($can_body);
     $body->set_tooltip_text(
         "Body text is not supported by current notification daemon : "
@@ -113,7 +121,7 @@ sub prefbox {
     my $whenhidden = ::NewPrefCheckButton(OPT . 'onlywhenhidden',
         "Don't notify if the main window is visible");
     $vbox->pack_start($_, ::FALSE, ::FALSE, 2)
-      for $summary, $body, $size, $timeout, $actions, $whenhidden;
+      for $summary, $body, $size, $timeout, $custom_actions, $default_action, $whenhidden;
     return $vbox;
 }
 
@@ -148,10 +156,13 @@ sub Changed {
 sub set_actions {
     return unless $can_actions;
     $notify->clear_actions;
-    if ($::Options{OPT . 'actions'}) {
+    if ($::Options{OPT . 'custom_actions'}) {
         $notify->add_action('media-prev', "Previous", \&::PrevSong);
         $notify->add_action('media-stop', "Stop", \&::Stop);
         $notify->add_action('media-next', "Next", \&::NextSong);
+    }
+    if ($::Options{OPT . 'default_action'}) {
+        $notify->add_action('default', 'Default Action', \&::ShowHide);
     }
 }
 
