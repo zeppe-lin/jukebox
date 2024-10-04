@@ -20,6 +20,19 @@ The original sources can be downloaded from:
   1. https://github.com/squentin/gmusicbrowser
   2. https://gmusicbrowser.org/download/gmusicbrowser-1.1.16.tar.gz
 
+
+CAVEATS
+-------
+*This is a deprecated software!*
+While squentin's *gmusicbrowser* is actively maintained and ported to
+GTK+3.0, and has a relatively big group of users & hackers that are
+continuing development, it's highly recommended to use *gmusicbrowser*
+instead of *jukebox*.
+
+The following feature-list is just a copy of *gmusicbrowser*'s
+features with some additions described above in the differences.
+
+
 FEATURES
 --------
 The main features are almost the same as gmusicbrowser has:
@@ -66,6 +79,7 @@ Plugins:
   * Web context: provide context views using MozEmbed or WebKit
     wikipedia, lyrics, and custom webpages
 
+
 REQUIREMENTS
 ------------
 To use mpg321/ogg123/flac123:
@@ -104,9 +118,11 @@ To control jukebox through DBus or use the included gnome
 multimedia keys plugin:
   * DBus perl bindings (libnet-dbus-perl or perl-Net-DBus)
 
+
 INSTALL
 -------
 **WIP**
+
 
 MIGRATION
 ---------
