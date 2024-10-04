@@ -1944,6 +1944,7 @@ our %Options = (
     Icecast_port               => '8000',
     UseTray                    => 1,
     CloseToTray                => 0,
+    IconifyHide                => 0,
     ShowTipOnSongChange        => 0,
     TrayTipTimeLength          => 3000,           #in ms
     TAG_use_latin1_if_possible => 1,
@@ -9354,6 +9355,12 @@ sub PrefLayouts {
     );
     my $checkT5 = NewPrefCheckButton(StartInTray => "Start in tray");
     my $checkT2 = NewPrefCheckButton(CloseToTray => "Close to tray");
+    my $checkT6 = NewPrefCheckButton(
+        IconifyHide => "Iconify (minimize) main window instead of hide",
+        tip => "Iconify (minimize) main window on click to tray icon or Hide() command." .
+               "Useful behaviour for WindowMaker and other similar window managers."
+    );
+
     my $checkT3 = NewPrefCheckButton(
         ShowTipOnSongChange => "Show tray tip on song change",
         widget              => $traytiplength
@@ -9413,8 +9420,8 @@ sub PrefLayouts {
 
     #packing
     $vbox->pack_start($_, FALSE, FALSE, 1)
-      for @layouts_combos, $reloadlayouts, $checkT1, $checkT2, $fullbutton,
-      $icotheme;
+      for @layouts_combos, $reloadlayouts, $checkT1, $checkT2, $checkT6, $fullbutton,
+        $icotheme;
     return $vbox;
 }
 
@@ -10875,7 +10882,11 @@ sub ShowHide {
             $win->{saved_position}    = join 'x', $win->get_position;
             $win->{skip_taskbar_hint} = $win->get_skip_taskbar_hint;
             $win->set_skip_taskbar_hint(TRUE);
-            $win->hide;
+            if ($::Options{IconifyHide}) {
+                $win->iconify unless $win->{iconified};
+            } else {
+                $win->hide;
+            }
         }
     }
     else {          #show
