@@ -101,6 +101,15 @@ my %Sites
             return $l && !$is_suggestion;
         }
     ],
+    lyriki => [
+        'lyriki',
+        'http://lyriki.com/index.php?title=%a:%t',
+        undef,
+        sub {
+            my $no = $_[0] =~ m/<div class="noarticletext">/s;
+            $_[0] =~ s/^.*<!--\s*start content\s*-->(.*?)<!--\s*end content\s*-->.*$/$1/s && !$no;
+        }
+    ],
     AUTO => ["Auto",],    #special mode that search multiple sources
   );
 
