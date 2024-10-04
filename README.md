@@ -10,7 +10,7 @@ of version 1.1.16 with the following little differences:
     [trinity-gtk-theme](https://github.com/zeppe-lin/trinity-gtk-theme)
   * removed Elementary icons
   * updated Artistinfo plugin to show all available albums from
-    last.fm
+    last.fm and search Artist on torrent trackers
   * updated Notify plugin: more actions
   * added new option "minimize main window instead of hide"
   * ported gmusicbrowser's little fixes and adjustments for new mpv
