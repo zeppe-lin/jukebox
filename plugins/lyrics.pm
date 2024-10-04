@@ -132,12 +132,9 @@ my %Sites
 
     lyriki => [
         'lyriki',
-        'http://lyriki.com/index.php?title=%a:%t',
+        'http://lyriki.com/index.php?title=%a:%t&action=raw',
         undef,
-        sub {
-            my $no = $_[0] =~ m/<div class="noarticletext">/s;
-            $_[0] =~ s/^.*<!--\s*start content\s*-->(.*?)<!--\s*end content\s*-->.*$/$1/s && !$no;
-        }
+        sub { $_[0] ? 1 : 0 },
     ],
     AUTO => ["Auto",],    #special mode that search multiple sources
   );
