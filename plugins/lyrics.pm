@@ -101,6 +101,35 @@ my %Sites
             return $l && !$is_suggestion;
         }
     ],
+
+    musixmatch => [
+        musixmatch => sub {
+            ::ReplaceFields($_[0], "http://www.musixmatch.com/lyrics/%a/%t",
+                sub {
+                    my $s = ::url_escapeall($_[0]);
+                    $s =~ s/%20/-/g;
+                    $s
+                }
+            )
+        },
+        undef,
+        sub {
+            $_[0] =~ s/[\r\n]/<br>/g;
+            my $l = "";
+            $l = join "<br>", ($_[0] =~ m/<span class="lyrics__content__\w+">(.+?)<\/span>/g);
+            if ($l) {
+                $_[0]=$l;
+                return 1;
+            }
+            else {
+                # FIXME try searching with "http://www.musixmatch.com/search/%a %t" and take best result ?
+                # FIXME or try searching again after cleaning title and artist for things like "(live)" ?
+                $_[0] = $notfound;
+                return 0;
+            }
+        }
+    ],
+
     lyriki => [
         'lyriki',
         'http://lyriki.com/index.php?title=%a:%t',
