@@ -1,5 +1,5 @@
-# Copyright (c) Quentin Sculo   <squentin@free.fr>
-# Copyright (c) Alexandr Savca  <alexandr.savca89@gmail.com>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <alexandr.savca89@gmail.com>
 #
 # This file is part of jukebox.
 #
