@@ -1,0 +1,267 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+jukebox - music player for large collections of music files
+
+=head1 SYNOPSIS
+
+=over
+
+=item B<jukebox> [-nocheck] [-noscan] [-demo] [-ro] [-rotags] [-play] [-nodbus] [-gst0|-nogst] [-server] [-port N] [-cfg FILE] [-fifo FIFO|-nofifo] [-debug] [-verbose] [-layout NAME] [-plugin NAME] [-searchpath FOLDER] [-use-gnome-session] [-workspace N] [-cmd CMD] [-ifnotrunning MODE] [-dbus-id KEY] FOLDER_OR_FILE ...
+
+=item B<jukebox> [-listcmd]
+
+=item B<jukebox> -tagedit FOLDER_OR_FILE ...
+
+=back
+
+=head1 DESCRIPTION
+
+This manual page explains the B<jukebox> program.
+
+B<jukebox> can play and manage your songs, currently supports mp3, ogg, flac, mpc file formats.
+
+The options are as follows:
+
+=over
+
+=item B<-c>, B<-nocheck>
+
+don't check for updated/deleted songs on startup
+
+=item B<-s>, B<-noscan>
+
+don't scan folders for songs on startup
+
+=item B<-demo>
+
+don't save settings/tags on exit
+
+=item B<-ro>
+
+prevent modifying/renaming/deleting song files
+
+=item B<-rotags>
+
+prevent modifying tags of music files
+
+=item B<-play>
+
+start playing on startup
+
+=item B<-nogst>
+
+do not load any gstreamer librairies
+
+=item B<-gst0>
+
+prefer gstreamer-0.10 over gstreamer-1.x if both are available
+
+=item B<-nodbus>
+
+do not use DBus
+
+=item B<-server>
+
+send playing song to connected icecast client
+
+=item B<-port> I<N>
+
+listen for connection on port N in icecast server mode
+
+=item B<-C> I<FILE>, B<-cfg> I<FILE>
+
+use FILE as configuration file (instead of F<jukeboxrc> in default folder), if
+FILE is a folder (or ends with C</>), it will be  used  as  base  folder
+instead  of F<~/.config/jukebox/>
+
+=item B<-F> I<FIFO>, B<-fifo> I<FIFO>
+
+use FIFO as named pipe to receive commands (instead of F<jukebox.fifo> in default folder)
+
+=item B<-nofifo>
+
+do not use/create named pipe
+
+=item B<-dbus-id> I<KEY>
+
+append .KEY to the DBus service id used by jukebox (org.jukebox)
+
+=item B<-verbose>
+
+print some info, like the file being played
+
+=item B<-debug>
+
+print lots of useless information, implies B<-verbose>
+
+=item B<-backtrace>
+
+print a backtrace for every warning
+
+=item B<-l> I<NAME>, B<-layout> I<NAME>
+
+use layout NAME for player window
+
+=item B<-plugin> I<NAME>
+
+deactivate plugin identified by NAME
+
+=item B<+plugin> I<NAME>
+
+activate plugin identified by NAME
+
+=item B<-noplugins>
+
+deactivate all plugins
+
+=item B<-searchpath> I<FOLDER>
+
+add FOLDER to the list of folders searched for plugins and layouts
+
+=item B<-use-gnome-session>
+
+Use gnome libraries to save tags/settings on session logout (needs the Gnome2 perl module).
+
+=item B<-workspace> I<N>
+
+Move initial window to workspace N (needs the Gnome2::Wnck perl module).
+
+=item B<-cmd> I<CMD>
+
+add  CMD  to the list of commands to execute. If a running instance of jukebox
+is found, these commands will be sent via the fifo file or via DBus. If there
+is no running instance of jukebox, the behavior depends on option B<-ifnotrunning>
+
+=item B<-ifnotrunning> I<MODE>
+
+change behavior when no running jukebox instance is found, MODE can be one of:
+
+=over
+
+=item normal (default)
+
+launch a new instance and execute commands
+
+=item nocmd
+
+launch a new instance but discard commands
+
+=item abort
+
+do nothing
+
+=back
+
+Running instances of jukebox are detected via the fifo or via DBus.  To run more than one instance, use a unique fifo and a unique DBus-id, or deactivate them.
+
+=item B<-listcmd>
+
+list the available commands and exit
+
+=item B<-listlayout>
+
+list the available layouts and exit
+
+=item B<-listplugin>
+
+list the available plugins and exit
+
+=item B<-tagedit> I<FOLDER_OR_FILE> ...
+
+Load songs in FOLDER_OR_FILE and display a dialog to edit their tags.
+
+=back
+
+=head1 FILES
+
+=over
+
+=item F<~/.jukebox/tags>
+
+contains songs tags and program options
+
+=item F</usr/share/jukebox/plugins/>, F<~/.jukebox/plugins/>
+
+files with extension .pm in these folders are loaded as plugins on startup
+
+=item F</usr/share/jukebox/layouts/*.layout>, F<~/.jukebox/layouts/*.layout>
+
+contains layouts definitions
+
+=item F<~/.jukebox/jukebox.fifo>
+
+can be used to send commands to a running jukebox, e.g.:
+
+  echo CMD >~/.jukebox/jukebox.fifo
+
+where CMD is (run "jukebox -listcmd" for an up-to-date list of commands):
+
+=over
+
+=item NextSong
+
+Skip current song
+
+=item PrevSong
+
+choose previously played song
+
+=item PlayPause
+
+toggle Play/Pause mode
+
+=item Stop
+
+stop playing
+
+=item Rewind SEC
+
+rewind SEC seconds
+
+=item Forward SEC
+
+forward SEC seconds
+
+=item Browser
+
+open browser window
+
+=item ShowHide
+
+hide/show jukebox windows
+
+=item Quit
+
+quit jukebox
+
+=item Save
+
+immediately save settings/song tags in F<~/.jukebox/tags>
+
+=item ChangeDisplay DISPLAY
+
+migrate the program to display DISPLAY (example : ":1")
+
+=back
+
+=back
+
+=head1 SEE ALSO
+
+L<https://github.com/zeppe-lin/jukebox>
+
+=head1 AUTHORS
+
+=over
+
+=item Copyright (C) Quentin Sculo <squentin@free.fr>
+
+=item Copyright (C) Alexandr Savca <alexandr.savca89@gmail.com>
+
+=back
+
+=cut
