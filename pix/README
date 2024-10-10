@@ -1,14 +1,14 @@
-ABOUT pix
+ABOUT
+=====
 
-	This folder contains icons for jukebox.
+This directory contains icons for jukebox.
 
-	Some of them are inherited from the gmusicbrowser project, some from
-	Papirus Icon Theme (<https://github.com/PapirusDevelopmentTeam>).
-	Papirus icon theme distributed under the terms of the GNU General
-	Public License, version 3.
+Some of them are inherited from the gmusicbrowser project, some from
+Papirus Icon Theme (<https://github.com/PapirusDevelopmentTeam>).
+Papirus Icon theme distributed under the terms of the GNU General
+Public License, version 3.
 
-LICENSE
+See LICENSE file for details.
 
-	See the LICENSE file for details.
 
 End of file.
