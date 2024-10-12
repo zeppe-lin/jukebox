@@ -7,11 +7,15 @@ No milestone
 
 {{{
 
-  - [ ] refactor Makefile (currently it's broken)
+  - [ ] Get rid of `Gettext` artefacts.
 
-  - [ ] make layout_doc.mkd as a manual page
+  - [ ] Write new Makefile (current is broken).
 
-  - [ ] use system icons?
+  - [ ] Convert `layout_doc.mkd` into manual page.
+
+  - [ ] Get more useful docs from gmusicbrowser.wiki.
+
+  - [ ] Use system icons?
     The problem is that jukebox has a large number of icons that aren't covered
     by system icons.
 
