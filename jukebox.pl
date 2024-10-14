@@ -5357,6 +5357,7 @@ sub openfolder {
 
 sub findcmd {
     for my $cmd (grep defined, @_) {
+        next unless length($cmd);
         my $exe = (split / /, $cmd)[0];
         next unless grep -x $_ . SLASH . $exe, split /:/, $ENV{PATH};
         return $cmd;
