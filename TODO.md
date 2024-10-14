@@ -7,6 +7,8 @@ No milestone
 
 {{{
 
+  - [ ] Use `gtk-leave-fullscreen` for fullscreen icon.
+
   - [ ] Get rid of `Gettext` artefacts.
 
   - [ ] Write new Makefile (current is broken).
