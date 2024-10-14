@@ -5350,7 +5350,7 @@ sub openfolder {
         return;
     }    #FIXME if $dir contains "
     $opendircmd ||= findcmd($Options{OpenFolder},
-        qw/xdg-open gnome-open nautilus konqueror thunar/);
+        qw/xdg-open gnome-open nautilus konqueror thunar spacefm/);
     unless ($opendircmd) { ErrorMessage("No file browser found."); return }
     run_system_cmd([$opendircmd, $dir], undef, 1);
 }
