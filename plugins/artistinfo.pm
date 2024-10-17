@@ -74,6 +74,10 @@ my @External = (
         "https://www.pirate-bay.net/search?q=%a",
         "Search for Artist on piratebay torrent tracker",
     ],
+    [   '1337x',
+        "https://www.1337xx.to/category-search/%a/Music/1/",
+        "Search for Artist on 1337x torrent tracker",
+    ],
     [   'lastfm',
         "http://www.last.fm/music/%a",
         "Show Artist page on last.fm"
