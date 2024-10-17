@@ -10,7 +10,11 @@ jukebox - music player for large collections of music files
 
 =over
 
-=item B<jukebox> [-nocheck] [-noscan] [-demo] [-ro] [-rotags] [-play] [-nodbus] [-gst0|-nogst] [-server] [-port N] [-cfg FILE] [-fifo FIFO|-nofifo] [-debug] [-verbose] [-layout NAME] [-plugin NAME] [-searchpath FOLDER] [-use-gnome-session] [-workspace N] [-cmd CMD] [-ifnotrunning MODE] [-dbus-id KEY] FOLDER_OR_FILE ...
+=item B<jukebox> [-nocheck] [-noscan] [-demo] [-ro] [-rotags] [-play]
+[-nodbus] [-gst0|-nogst] [-server] [-port N] [-cfg FILE]
+[-fifo FIFO|-nofifo] [-debug] [-verbose] [-layout NAME] [-plugin NAME]
+[-searchpath FOLDER] [-use-gnome-session] [-workspace N] [-cmd CMD]
+[-ifnotrunning MODE] [-dbus-id KEY] FOLDER_OR_FILE ...
 
 =item B<jukebox> [-listcmd]
 
@@ -265,3 +269,6 @@ L<https://github.com/zeppe-lin/jukebox>
 =back
 
 =cut
+
+# vim: cc=72 tw=70
+# End of file.
