@@ -143,13 +143,10 @@ sed -i 's@/mnt/data/oldmusic@/mnt/hd/actualmusic@g' jukeboxrc
 sed -i 's@gmbrc version=1.101502@jukeboxrc version=1.101503@g' jukeboxrc
 ```
 
+
 LICENSE
 -------
 *jukebox* is licensed through the GNU General Public License v3
 <https://gnu.org/licenses/gpl.html>.
 Read the *COPYING* file for copying conditions.
 Read the *COPYRIGHT* file for copyright notices.
-
-
-<!-- vim:sw=2:ts=2:sts=2:et:cc=72:tw=70
-End of file. -->
