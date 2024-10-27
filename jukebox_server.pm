@@ -18,7 +18,7 @@ $::PlayPacks{Play_Server} = 1;    #register the package
 
 sub init {
     if (-e $cmd) { return bless {}, __PACKAGE__ }
-    else         {return}
+    else         { return                       }
 }
 
 sub supported_formats {
