@@ -9,17 +9,22 @@
 
 BEGIN {
     require Glib::Object::Introspection;
+
     warn "Using Glib::Object::Introspection version "
-      . Glib::Object::Introspection->VERSION . "\n"
+        . Glib::Object::Introspection->VERSION . "\n"
       if $::debug;
+
     Glib::Object::Introspection->setup(
         basename => 'Gst',
         version  => '1.0',
         package  => 'GStreamer1'
     );
+
     $::gstreamer_version = '1.x';
+
     GStreamer1::init_check([$0, @ARGV])
       or die "Can't initialize gstreamer-1.x\n";
+
     my $reg = GStreamer1::Registry::get();
     $reg->lookup_feature('playbin')
       or die "gstreamer-1.x plugin 'playbin' not found.\n";
