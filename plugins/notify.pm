@@ -131,8 +131,8 @@ sub Changed {
     return if $::Options{OPT . 'onlywhenhidden'} && ::IsWindowVisible($::MainWindow);
 
     my $ID      = $::SongID;
-    my $title   = $::Options{OPT . 'title'};
-    my $text    = $::Options{OPT . 'text'};
+    my $title   = $::Options{OPT . 'title'  };
+    my $text    = $::Options{OPT . 'text'   };
     my $size    = $::Options{OPT . 'picsize'};
     my $timeout = $::Options{OPT . 'timeout'} * 1000;
 
@@ -168,10 +168,9 @@ sub set_actions {
 
     if ($::Options{OPT . 'custom_actions'}) {
         $notify->add_action('stock_media-prev', "Previous", \&::PrevSong);
-        $notify->add_action('stock_media-stop', "Stop", \&::Stop);
-        $notify->add_action('stock_media-next', "Next", \&::NextSong);
+        $notify->add_action('stock_media-stop', "Stop",     \&::Stop);
+        $notify->add_action('stock_media-next', "Next",     \&::NextSong);
     }
-
     if ($::Options{OPT . 'default_action'}) {
         $notify->add_action('default', 'Default Action', \&::ShowHide);
     }
