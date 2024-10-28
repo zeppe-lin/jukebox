@@ -31,19 +31,21 @@ use Gtk2::Notify -init, ::PROGRAM_NAME;
 );
 
 my $notify;
-my ($Daemon_name, $can_actions, $can_body);
+my ($Daemon_name, $can_actions, $can_action_icons, $can_body);
 
 sub Start {
     $notify = Gtk2::Notify->new('empty', 'empty');
 
     #$notify->set_urgency('low');
     #$notify->set_category('music'); #is there a standard category for that ?
-    my ($name, $vendor, $version, $spec_version) =
-      Gtk2::Notify->get_server_info;
+    my ($name, $vendor, $version, $spec_version) = Gtk2::Notify->get_server_info;
     $Daemon_name = "$name $version ($vendor)";
     my @caps = Gtk2::Notify->get_server_caps;
-    $can_body    = grep $_ eq 'body',    @caps;
-    $can_actions = grep $_ eq 'actions', @caps;
+    for (@caps) {
+        if    ($_ eq 'body')         { $can_body         = 1 }
+        elsif ($_ eq 'actions')      { $can_actions      = 1 }
+        elsif ($_ eq 'action-icons') { $can_action_icons = 1 }
+    }
     set_actions();
     ::Watch($notify, 'PlayingSong', \&Changed);
     $::Command{PopupNotify} = [\&Changed, "Popup notify window"];
@@ -155,12 +157,20 @@ sub Changed {
 
 sub set_actions {
     return unless $can_actions;
+
     $notify->clear_actions;
-    if ($::Options{OPT . 'custom_actions'}) {
-        $notify->add_action('media-prev', "Previous", \&::PrevSong);
-        $notify->add_action('media-stop', "Stop", \&::Stop);
-        $notify->add_action('media-next', "Next", \&::NextSong);
+
+    if ($can_action_icons) {
+        $notify->clear_hints;
+        $notify->set_hint('action-icons' => 1);
     }
+
+    if ($::Options{OPT . 'custom_actions'}) {
+        $notify->add_action('stock_media-prev', "Previous", \&::PrevSong);
+        $notify->add_action('stock_media-stop', "Stop", \&::Stop);
+        $notify->add_action('stock_media-next', "Next", \&::NextSong);
+    }
+
     if ($::Options{OPT . 'default_action'}) {
         $notify->add_action('default', 'Default Action', \&::ShowHide);
     }
