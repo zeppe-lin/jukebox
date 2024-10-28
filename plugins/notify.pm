@@ -1,5 +1,5 @@
-# Copyright (c) Quentin Sculo  <squentin@free.fr>
-# Copyright (c) Alexandr Savca <alexandr.savca89@gmail.com>
+# Copyright (C) Quentin Sculo  <squentin@free.fr>
+# Copyright (C) Alexandr Savca <alexandr.savca89@gmail.com>
 #
 # This file is part of jukebox.
 #
@@ -8,10 +8,10 @@
 # published by the Free Software Foundation
 
 =for gmbplugin NOTIFY
-name	Notify
-title	Notify plugin
-desc	Notify you of the playing song with the system's notification popups
-req	perl(Gtk2::Notify, libgtk2-notify-perl perl-Gtk2-Notify)
+name   Notify
+title  Notify plugin
+desc   Notify you of the playing song with the system's notification popups
+req    perl(Gtk2::Notify, libgtk2-notify-perl perl-Gtk2-Notify)
 =cut
 
 package GMB::Plugin::NOTIFY;
@@ -19,7 +19,7 @@ package GMB::Plugin::NOTIFY;
 use strict;
 use warnings;
 
-use constant {OPT => 'PLUGIN_NOTIFY_',};
+use constant { OPT => 'PLUGIN_NOTIFY_', };
 
 use Gtk2::Notify -init, ::PROGRAM_NAME;
 
@@ -128,17 +128,17 @@ sub prefbox {
 }
 
 sub Changed {
-    return
-      if $::Options{OPT . 'onlywhenhidden'}
-      && ::IsWindowVisible($::MainWindow);
+    return if $::Options{OPT . 'onlywhenhidden'} && ::IsWindowVisible($::MainWindow);
+
     my $ID      = $::SongID;
     my $title   = $::Options{OPT . 'title'};
     my $text    = $::Options{OPT . 'text'};
     my $size    = $::Options{OPT . 'picsize'};
     my $timeout = $::Options{OPT . 'timeout'} * 1000;
+
     return unless $title || $text || $size;
-    $title = ::ReplaceFields($ID, $title)
-      || " ";    #libnotify do not like null summaries
+
+    $title = ::ReplaceFields($ID, $title) || " "; # libnotify do not like null summaries
     $notify->update($title, ::ReplaceFieldsAndEsc($ID, $text));
     my $pixbuf;
 
@@ -146,9 +146,10 @@ sub Changed {
         my $album_gid = Songs::Get_gid($ID, 'album');
         $pixbuf = AAPicture::pixbuf('album', $album_gid, $size, 1);
     }
-    $pixbuf
-      ||= Gtk2::Gdk::Pixbuf->new_from_xpm_data('1 1 1 1', 'a c none', 'a')
-      ;          #1x1 transparent pixbuf to remove previous pixbuf
+
+    # 1x1 transparent pixbuf to remove previous pixbuf
+    $pixbuf ||= Gtk2::Gdk::Pixbuf->new_from_xpm_data('1 1 1 1', 'a c none', 'a');
+
     $notify->set_icon_from_pixbuf($pixbuf);
     $notify->set_timeout($timeout);
     $notify->show;
@@ -178,5 +179,5 @@ sub set_actions {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
+# vim: sw=4 ts=4 sts=4 et cc=80
 # End of file
