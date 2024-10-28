@@ -11,7 +11,7 @@
 name   Notify
 title  Notify plugin
 desc   Notify you of the playing song with the system's notification popups
-req    perl(Gtk2::Notify, libgtk2-notify-perl perl-Gtk2-Notify)
+req    perl(Gtk2::Notify, p5-gtk2-notify libgtk2-notify-perl perl-Gtk2-Notify)
 =cut
 
 package GMB::Plugin::NOTIFY;
