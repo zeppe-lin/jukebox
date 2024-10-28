@@ -1,7 +1,7 @@
 ABOUT
 -----
-This directory contains *jukebox*, a music player for large collections
-of audio files.
+This directory contains *jukebox*, a music player for large
+collections of audio files.
 
 This *jukebox* distribution is a fork of squentin's *gmusicbrowser* as
 of version 1.1.16 with the following little differences:
@@ -11,7 +11,8 @@ of version 1.1.16 with the following little differences:
   * removed Elementary icons
   * updated Artistinfo plugin to show all available albums from
     last.fm and search Artist on torrent trackers
-  * updated Notify plugin: more actions
+  * updated Notify plugin: more actions and icon buttons if
+    notification daemon supports `action-icons` capability
   * added new option "minimize main window instead of hide"
   * ported gmusicbrowser's little fixes and adjustments for new mpv
     versions
@@ -59,7 +60,7 @@ Plugins:
   * Desktop widgets: open special layouts as desktop widgets
   * Export: add menu entries to song contextual menu
   * Gnome mmkeys: make jukebox react to Next/Previous/Play/Stop
-    multimedia keys in gnome
+    multimedia keys in Gnome
   * Karaoke: display synchonized lyrics of the current song
   * last.fm: submit played songs to last.fm
   * Artistinfo: retrieve artist-relevant information from last.fm
@@ -72,7 +73,8 @@ Plugins:
     popups
   * Now playing: run a command when playing a song
   * Picture finder: add a menu entry to artist/album context menu,
-    allowing to search the picture/cover in various sources and save it
+    allowing to search the picture/cover in various sources and save
+    it
   * Rip: add a button to rip a CD
   * Titlebar: display a special layout in or around the titlebar of the
     focused window
