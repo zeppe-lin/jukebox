@@ -26,20 +26,16 @@ use utf8;
 our %FORMATS;
 
 INIT {
-    %FORMATS =  # module		format string			tags to look for (order is important)
-      ( mp3 => [
-            'Tag::MP3',
-            'mp{layer} mpeg-{versionid} l{layer}',
-            'ID3v2 APE lyrics3v2 ID3v1',
-        ],
-        oga  => ['Tag::OGG',  'vorbis v{version}', 'vorbis',],
-        flac => ['Tag::Flac', 'flac',              'vorbis',],
-        mpc => ['Tag::MPC', 'mpc v{version}', 'APE ID3v2 lyrics3v2 ID3v1',],
-        ape =>
-          ['Tag::APEfile', 'ape v{version}', 'APE ID3v2 lyrics3v2 ID3v1',],
-        wv  => ['Tag::WVfile', 'wv v{version}',  'APE ID3v1',],
-        m4a => ['Tag::M4A',    'mp4 {traktype}', 'ilst',],
-      );
+    # module    format string    tags to look for (order is important)
+    %FORMATS = (
+        mp3  => ['Tag::MP3',     'mp{layer} mpeg-{versionid} l{layer}', 'ID3v2 APE lyrics3v2 ID3v1',],
+        oga  => ['Tag::OGG',     'vorbis v{version}',                   'vorbis',                   ],
+        flac => ['Tag::Flac',    'flac',                                'vorbis',                   ],
+        mpc  => ['Tag::MPC',     'mpc v{version}',                      'APE ID3v2 lyrics3v2 ID3v1',],
+        ape  => ['Tag::APEfile', 'ape v{version}',                      'APE ID3v2 lyrics3v2 ID3v1',],
+        wv   => ['Tag::WVfile',  'wv v{version}',                       'APE ID3v1',                ],
+        m4a  => ['Tag::M4A',     'mp4 {traktype}',                      'ilst',                     ],
+    );
     $FORMATS{$_} = $FORMATS{$::Alias_ext{$_}} for keys %::Alias_ext;
 }
 
@@ -128,7 +124,7 @@ sub Read {
                         next unless @v;
                     }
                     if ($join) { push @$value, grep defined, @v; }
-                    else       { $value = $v[0]; last; }
+                    else       { $value = $v[0]; last;           }
                 }
                 next unless defined $value;
 
@@ -139,11 +135,11 @@ sub Read {
                     $value = [
                         # ::uniq - ignore repeated values for multi-value fields
                         ::uniq(map split($split, $_), @$value)
-                        ];
+                    ];
                 }
             }
-            elsif (my $sub =
-                $def->{"$id:read"})    #special cases with custom function
+            # special cases with custom function
+            elsif (my $sub = $def->{"$id:read"})
             {
                 $values{$field} = $sub->($tag);
                 last;
@@ -397,41 +393,41 @@ INIT {
         },
     );
     @FORMATS = (
-        ['%a - %l - %n - %t',   qr/(.+) - (.+) - (\d+) - (.+)$/],
-        ['%a_-_%l_-_%n_-_%t',   qr/(.+)_-_(.+)_-_(\d+)_-_(.+)$/],
-        ['%n - %a - %l - %t',   qr/(\d+) - (.+) - (.+) - (.+)$/],
+        ['%a - %l - %n - %t',   qr/(.+) - (.+) - (\d+) - (.+)$/    ],
+        ['%a_-_%l_-_%n_-_%t',   qr/(.+)_-_(.+)_-_(\d+)_-_(.+)$/    ],
+        ['%n - %a - %l - %t',   qr/(\d+) - (.+) - (.+) - (.+)$/    ],
         ['(%a) - %l - %n - %t', qr/\((.+)\) - (.+) - (\d+) - (.+)$/],
-        ['%a - %l - %n-%t',     qr/(.+) - (.+) - (\d+)-(.+)$/],
-        ['%a-%l-%n-%t',         qr/(.+)-(.+)-(\d+)-(.+)$/],
-        ['%a - %l-%n. %t',      qr/(.+) - (.+)-(\d+). (.+)$/],
-        ['%l - %n - %t',        qr/([^-]+) - (\d+) - (.+)$/],
-        ['%a - %n - %t',        qr/([^-]+) - (\d+) - (.+)$/],
-        ['%n - %l - %t',        qr/(\d+) - (.+) - (.+)$/],
-        ['%n - %a - %t',        qr/(\d+) - (.+) - (.+)$/],
-        ['(%n) %a - %t',        qr/\((\d+)\) (.+) - (.+)$/],
-        ['%n-%a-%t',            qr/(\d+)-(.+)-(.+)$/],
-        ['%n %a %t',            qr/(\d+) (.+) (.+)$/],
-        ['%a - %n %t',          qr/(.+) - (\d+) ([^-].+)$/],
-        ['%l - %n %t',          qr/(.+) - (\d+) ([^-].+)$/],
-        ['%n - %t',             qr/(\d+) - (.+)$/],
-        ['%d%n - %t',           qr/(\d)(\d\d) - (.+)$/],
-        ['%n_-_%t',             qr/(\d+)_-_(.+)$/],
-        ['(%n) %t',             qr/\((\d+)\) (.+)$/],
-        ['%n_%t',               qr/(\d+)_(.+)$/],
-        ['%n-%t',               qr/(\d+)-(.+)$/],
-        ['%d%n-%t',             qr/(\d)(\d\d)-(.+)$/],
-        ['%d-%n-%t',            qr/(\d)-(\d+)-(.+)$/],
-        ['cd%d-%n-%t',          qr/cd(\d+)-(\d+)-(.+)$/i],
-        ['Disc %d - %n - %t',   qr/Disc (\d+) - (\d+) - (.+)$/i],
-        ['%n %t - %a - %l',     qr/(\d+) (.+) - (.+) - (.+)$/],
-        ['%n %t - %l - %a',     qr/(\d+) (.+) - (.+) - (.+)$/],
-        ['%n. %a - %t',         qr/(\d+)\. (.+) - (.+)$/],
-        ['%n. %t',              qr/(\d+)\. (.+)$/],
-        ['%n %t',               qr/(\d+) ([^-].+)$/],
-        ['Track%n',             qr/[Tt]rack ?-? ?(\d+)/],
-        ['%n',                  qr/^(\d+)$/],
-        ['%a - %t',             qr/(\D.+) - (.+)$/],
-        ['%n - %a,%t',          qr/(\d+) - (.+?),(.+)$/],
+        ['%a - %l - %n-%t',     qr/(.+) - (.+) - (\d+)-(.+)$/      ],
+        ['%a-%l-%n-%t',         qr/(.+)-(.+)-(\d+)-(.+)$/          ],
+        ['%a - %l-%n. %t',      qr/(.+) - (.+)-(\d+). (.+)$/       ],
+        ['%l - %n - %t',        qr/([^-]+) - (\d+) - (.+)$/        ],
+        ['%a - %n - %t',        qr/([^-]+) - (\d+) - (.+)$/        ],
+        ['%n - %l - %t',        qr/(\d+) - (.+) - (.+)$/           ],
+        ['%n - %a - %t',        qr/(\d+) - (.+) - (.+)$/           ],
+        ['(%n) %a - %t',        qr/\((\d+)\) (.+) - (.+)$/         ],
+        ['%n-%a-%t',            qr/(\d+)-(.+)-(.+)$/               ],
+        ['%n %a %t',            qr/(\d+) (.+) (.+)$/               ],
+        ['%a - %n %t',          qr/(.+) - (\d+) ([^-].+)$/         ],
+        ['%l - %n %t',          qr/(.+) - (\d+) ([^-].+)$/         ],
+        ['%n - %t',             qr/(\d+) - (.+)$/                  ],
+        ['%d%n - %t',           qr/(\d)(\d\d) - (.+)$/             ],
+        ['%n_-_%t',             qr/(\d+)_-_(.+)$/                  ],
+        ['(%n) %t',             qr/\((\d+)\) (.+)$/                ],
+        ['%n_%t',               qr/(\d+)_(.+)$/                    ],
+        ['%n-%t',               qr/(\d+)-(.+)$/                    ],
+        ['%d%n-%t',             qr/(\d)(\d\d)-(.+)$/               ],
+        ['%d-%n-%t',            qr/(\d)-(\d+)-(.+)$/               ],
+        ['cd%d-%n-%t',          qr/cd(\d+)-(\d+)-(.+)$/i           ],
+        ['Disc %d - %n - %t',   qr/Disc (\d+) - (\d+) - (.+)$/i    ],
+        ['%n %t - %a - %l',     qr/(\d+) (.+) - (.+) - (.+)$/      ],
+        ['%n %t - %l - %a',     qr/(\d+) (.+) - (.+) - (.+)$/      ],
+        ['%n. %a - %t',         qr/(\d+)\. (.+) - (.+)$/           ],
+        ['%n. %t',              qr/(\d+)\. (.+)$/                  ],
+        ['%n %t',               qr/(\d+) ([^-].+)$/                ],
+        ['Track%n',             qr/[Tt]rack ?-? ?(\d+)/            ],
+        ['%n',                  qr/^(\d+)$/                        ],
+        ['%a - %t',             qr/(\D.+) - (.+)$/                 ],
+        ['%n - %a,%t',          qr/(\d+) - (.+?),(.+)$/            ],
 
     #['TEST : %a %n %t',qr/(.+)(?: *|_)\W(?: *|_)(\d+)(?: *|_)\W(?: *|_)(.+)/],
     #['TEST : %n %t',qr/(\d+)(?: *|_)\W(?: *|_)(.+)/],
