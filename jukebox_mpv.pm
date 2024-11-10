@@ -39,7 +39,8 @@ sub init {
     $mpv = $::Options{mpv_cmd};
     if (   $mpv
         && !-x $mpv
-        && !(::first {-x $_} map $_ . ::SLASH . $mpv, split /:/, $ENV{PATH}))
+        && !(::first {-x $_} map $_ . ::SLASH . $mpv, split /:/, $ENV{PATH})
+    )
     {
         $mpv = undef;
     }
@@ -147,8 +148,8 @@ sub launch_mpv {
         ::ErrorPlay("Fork failed : $!");
         return;
     }
-    elsif ($ChildPID == 0)    #child
-    {
+    elsif ($ChildPID == 0) {
+        # child
         exec @cmd_and_args
           or print STDERR "launch failed (@cmd_and_args)  : $!\n";
         POSIX::_exit(1);
@@ -434,5 +435,5 @@ sub RG_set_options {
 
 1;
 
-# vim: sw=4 ts=4 sts=4 et
+# vim: sw=4 ts=4 sts=4 et cc=80
 # End of file.
