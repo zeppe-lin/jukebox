@@ -8,9 +8,9 @@
 # published by the Free Software Foundation
 
 =for gmbplugin RIP
-name	Rip
-title	Rip plugin
-desc	Add a button to rip a CD
+name   Rip
+title  Rip plugin
+desc   Add a button to rip a CD
 =cut
 
 package GMB::Plugin::RIP;
@@ -24,17 +24,18 @@ use constant {
 
 ::SetDefaultOptions(OPT, program => 'soundjuicer');
 
-my %Programs =               #id => [name,cmd]
-  ( soundjuicer => ['sound-juicer', 'sound-juicer'],
+my %Programs = (
+    # id => [name,cmd]
+    soundjuicer => ['sound-juicer', 'sound-juicer'],
     grip        => ['grip',         'grip'],
     xcfa        => ['xcfa',         'xcfa'],
-    custom      => ["custom"],
-  );
+    custom      => ['custom'],
+);
 
 my %button_definition = (
     class        => 'Layout::Button',
     stock        => 'plugin-rip',
-    tip          => "Launch ripping program",
+    tip          => 'Launch ripping program',
     activate     => \&Launch,
     autoadd_type => 'button main',
 );
@@ -84,5 +85,5 @@ sub Launch {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim: sw=4 ts=4 sts=4 et cc=80
+# End of file.
