@@ -8,29 +8,27 @@
 # published by the Free Software Foundation
 
 =for gmbplugin LULLABY
-name	Lullaby
-title	Lullaby plugin
-desc	Allow for scheduling fade-out and stop
+name   Lullaby
+title  Lullaby plugin
+desc   Allow for scheduling fade-out and stop
 =cut
 
-#TODO :
-#- configure what to do at the end
-#- visual feedback
-#- way to abort
+# TODO: configure what to do at the end
+# TODO: visual feedback
+# TODO: way to abort
 
 package GMB::Plugin::LULLABY;
 
 use strict;
 use warnings;
 
-use constant {OPT => 'PLUGIN_LULLABY_',};
+use constant {
+    OPT => 'PLUGIN_LULLABY_',
+};
 
 ::SetDefaultOptions(OPT, timespan => 30);
 
-my @dayname = (
-    "Sunday",   "Monday", "Tuesday", "Wednesday",
-    "Thursday", "Friday", "Saturday"
-);
+my @dayname = (qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday));
 my $handle;
 my $alarm;
 my $StartingVolume;
@@ -109,7 +107,7 @@ sub update_alarm {
         #warn "$wd $time<$now\n";
         $time = ::mktime(0, $m, $h, $mday + 7, $mon, $year) if $time <= $now;
         if   ($next) { $next = $time if $time < $next }
-        else         { $next = $time }
+        else         { $next = $time                  }
 
         #warn "$wd $time next=$next\n";
     }
@@ -124,8 +122,9 @@ sub start_fadeout {
     my $timespan = $::Options{OPT . 'timespan'};
     $timespan       = $_[1] if $_[1] and $_[1] =~ m/^\d+$/;
     $StartingVolume = ::GetVol();
-    $handle         = Glib::Timeout->add($timespan * 1000 / 100, \&fade,
-        $StartingVolume / 100);
+    $handle         = Glib::Timeout->add($timespan * 1000 / 100,
+                                         \&fade,
+                                         $StartingVolume / 100);
 }
 
 sub fade {
@@ -140,12 +139,11 @@ sub fade {
         ::UpdateVol($StartingVolume);
 
         #::TurnOff();
-
     }
-    return $handle;    #false when finished
+    return $handle; # false when finished
 }
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
+# vim: sw=4 ts=4 sts=4 et cc=80
 # End of file
