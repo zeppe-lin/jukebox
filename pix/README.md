@@ -1,14 +1,6 @@
-ABOUT
-=====
-
 This directory contains icons for jukebox.
 
-Some of them are inherited from the gmusicbrowser project, some from
-Papirus Icon Theme (<https://github.com/PapirusDevelopmentTeam>).
-Papirus Icon theme distributed under the terms of the GNU General
-Public License, version 3.
-
-See LICENSE file for details.
-
-
-End of file.
+Some of them are inherited from the gmusicbrowser project, some from Papirus
+Icon Theme (<https://github.com/PapirusDevelopmentTeam>) which is licensed
+through the GNU General Public License v3 <https://gnu.org/licenses/gpl.html>.
+Read the LICENSE file for details.
