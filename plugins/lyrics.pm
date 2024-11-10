@@ -8,9 +8,9 @@
 # published by the Free Software Foundation
 
 =for gmbplugin LYRICS
-name	Lyrics
-title	Lyrics plugin
-desc	Search and display lyrics
+name   Lyrics
+title  Lyrics plugin
+desc   Search and display lyrics
 =cut
 
 package GMB::Plugin::LYRICS;
@@ -27,8 +27,8 @@ BEGIN { push @ISA, 'GMB::Context'; }
 use base 'Gtk2::VBox';
 
 use constant {
-    OPT => 'PLUGIN_LYRICS_'
-    ,    # MUST begin by PLUGIN_ followed by the plugin ID / package name
+    # MUST begin by PLUGIN_ followed by the plugin ID / package name
+    OPT => 'PLUGIN_LYRICS_',
 };
 
 my $notfound = "No lyrics found";
@@ -61,8 +61,9 @@ my @ContextMenuAppend = (
         submenu_reverse      => 1,
         submenu_ordered_hash => 1,
         code                 => sub {
-            $_[0]{self}{textview}
-              ->set_justification($_[0]{self}{justification} = $_[1]);
+            $_[0]{self}{textview}->set_justification(
+                $_[0]{self}{justification} = $_[1]
+            );
         },
     },
 );
@@ -154,11 +155,11 @@ if (my $site = $::Options{OPT . 'LyricSite'}) {
 
 
 my $lyricswidget = {
-    class    => __PACKAGE__,
-    tabicon  => 'gmb-lyrics',    # no icon by that name by default
-    tabtitle => "Lyrics",
-    saveoptions => 'HideToolbar font follow justification edit',
-    schange       => sub { $_[0]->SongChanged($_[1]); },    #$_[1] is new ID
+    class         => __PACKAGE__,
+    tabicon       => 'gmb-lyrics', # no icon by that name by default
+    tabtitle      => "Lyrics",
+    saveoptions   => 'HideToolbar font follow justification edit',
+    schange       => sub { $_[0]->SongChanged($_[1]); }, # $_[1] is new ID
     group         => 'Play',
     autoadd_type  => 'context page lyrics text',
     justification => 'left',
@@ -181,7 +182,8 @@ sub new {
       for qw/HideToolbar follow group font justification edit/;
 
     my $textview = Gtk2::TextView->new;
-    $self->signal_connect(map => sub { $_[0]->SongChanged(::GetSelID($_[0])); }
+    $self->signal_connect(
+        map => sub { $_[0]->SongChanged(::GetSelID($_[0])); }
     );
     $self->signal_connect_after(key_press_event => \&key_pressed_cb);
     $textview->signal_connect(button_release_event    => \&button_release_cb);
@@ -336,8 +338,8 @@ sub SetToolbarHide {
     my ($self, $hide) = @_;
     $self->{HideToolbar} = $hide;
     my $toolbar = $self->{toolbar};
-    if ($self->{HideToolbar}) { $toolbar->set_no_show_all(1); $toolbar->hide }
-    else { $toolbar->set_no_show_all(0); $toolbar->show_all }
+    if ($self->{HideToolbar}) { $toolbar->set_no_show_all(1); $toolbar->hide     }
+    else                      { $toolbar->set_no_show_all(0); $toolbar->show_all }
 }
 
 sub SetEditable {
@@ -432,10 +434,8 @@ sub SongChanged {
     $self->{ID}   = $ID;
     $self->{time} = undef;
 
-    if (!$force) {
-        ::IdleDo('8_lyrics' . $self, 1000, \&load_from_file, $self);
-    }
-    else { $self->load_from_web; }
+    if (!$force) { ::IdleDo('8_lyrics' . $self, 1000, \&load_from_file, $self); }
+    else         { $self->load_from_web; }
 }
 
 sub load_from_web {
@@ -521,8 +521,8 @@ sub html_extract {
     my $re = qr/<\Q$tag\E [^>]*id="(\w+)"[^>]*>|<(\/)?\Q$tag\E>/i;
     my ($start, $depth);
     while ($data =~ m/$re/g) {
-        if ($2)    #closing
-        {
+        if ($2) {
+            # closing
             if ($depth) {
                 $depth--;
                 return substr $data, $start, $+[0] - $start unless $depth;
@@ -768,8 +768,7 @@ sub load_pixbuf {
               ;    #load next
         }
     );
-
-#::IdleDo('8_FetchPix'.$self,100,\&load_pixbuf,$self) unless $self->{waiting};
+    #::IdleDo('8_FetchPix'.$self,100,\&load_pixbuf,$self) unless $self->{waiting};
 }
 
 #sub loaded_old #old method, more crude :)
@@ -994,5 +993,5 @@ sub Save_text {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
+# vim: sw=4 ts=4 sts=4 et cc=80
 # End of file
