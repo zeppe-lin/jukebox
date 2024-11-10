@@ -102,5 +102,5 @@ sub _ReadHeader {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# vim: sw=4 ts=4 sts=4 et cc=72 tw=70
 # End of file.
