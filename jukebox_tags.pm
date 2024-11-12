@@ -26,15 +26,39 @@ use utf8;
 our %FORMATS;
 
 INIT {
-    # module    format string    tags to look for (order is important)
+    # => [ module
+    #      format string
+    #      tags to look for (order is important)
+    # ]
     %FORMATS = (
-        mp3  => ['Tag::MP3',     'mp{layer} mpeg-{versionid} l{layer}', 'ID3v2 APE lyrics3v2 ID3v1',],
-        oga  => ['Tag::OGG',     'vorbis v{version}',                   'vorbis',                   ],
-        flac => ['Tag::Flac',    'flac',                                'vorbis',                   ],
-        mpc  => ['Tag::MPC',     'mpc v{version}',                      'APE ID3v2 lyrics3v2 ID3v1',],
-        ape  => ['Tag::APEfile', 'ape v{version}',                      'APE ID3v2 lyrics3v2 ID3v1',],
-        wv   => ['Tag::WVfile',  'wv v{version}',                       'APE ID3v1',                ],
-        m4a  => ['Tag::M4A',     'mp4 {traktype}',                      'ilst',                     ],
+        mp3  => ['Tag::MP3',
+                 'mp{layer} mpeg-{versionid} l{layer}',
+                 'ID3v2 APE lyrics3v2 ID3v1',
+             ],
+        oga  => ['Tag::OGG',
+                 'vorbis v{version}',
+                 'vorbis',
+             ],
+        flac => ['Tag::Flac',
+                 'flac',
+                 'vorbis',
+             ],
+        mpc  => ['Tag::MPC',
+                 'mpc v{version}',
+                 'APE ID3v2 lyrics3v2 ID3v1',
+             ],
+        ape  => ['Tag::APEfile',
+                 'ape v{version}',
+                 'APE ID3v2 lyrics3v2 ID3v1',
+             ],
+        wv   => ['Tag::WVfile',
+                 'wv v{version}',
+                 'APE ID3v1',
+             ],
+        m4a  => ['Tag::M4A',
+                 'mp4 {traktype}',
+                 'ilst',
+             ],
     );
     $FORMATS{$_} = $FORMATS{$::Alias_ext{$_}} for keys %::Alias_ext;
 }
