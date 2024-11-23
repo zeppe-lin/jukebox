@@ -126,9 +126,9 @@ sub launch_mpv {
            --no-input-terminal
            --really-quiet
            --gapless-audio=weak
-           --softvol-max=100
            --mute=no
            --no-sub-auto),
+        check_version(0, 39) ? '--volume-max=100' : '--softvol-max=100',
     );
     push @cmd_and_args, "--volume=" . convertvolume($::Volume);
     if ($::Options{use_replaygain}) {
