@@ -699,7 +699,7 @@ HBTop		=  HBCover VBButtons _15VBPlayer(yalign=0.5) VBSettings(yalign=0.5)
   HBCover 	= _Filler10 VBCover _Filler11
     VBCover 	= _Filler20 Cover(overlay=6x6:350x350:elementary/overlay.png,default=elementary/no-cover.svg,showcover=0) _Filler21
   VBButtons	= _Filler30 HBPlaypause HBPrevnext _Filler31
-    HBPrevnext	= _Filler40 Prev(size=menu) Next(click2=NextAlbum,size=menu,tip=_"Middle-clic for next album") _Filler41
+    HBPrevnext	= _Filler40 Prev(size=menu) Next(click2=NextAlbum,size=menu,tip=_"Middle-click for next album") _Filler41
     HBPlaypause = _Filler50 Play _Filler51
   VBPlayer 	= _Filler60 HBTitle HBAlbumAndArtist HBTimeSlider _Filler61
     HBTitle 	= _Title(expand_max=300,ellipsize=end,markup="<big><b>%t</b></big> ",click1="",tip=_"Title: %t (Track No. %n)",yalign=0.5) \
