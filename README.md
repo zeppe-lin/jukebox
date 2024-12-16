@@ -10,13 +10,13 @@ of version 1.1.16 with the following little differences:
   * added Trinity-like icons to approximate the look and feel to
     [trinity-gtk-theme](https://github.com/zeppe-lin/trinity-gtk-theme)
   * removed Elementary icons
-  * updated Artistinfo plugin to show all available albums from last.fm
+  * updated Artistinfo plugin: show all available albums from last.fm
     and search Artist on torrent trackers
   * updated Notify plugin: more actions and icon buttons if notification
     daemon supports `action-icons` capability
   * added new option "minimize main window instead of hide"
   * ported gmusicbrowser's little fixes and adjustments for new mpv
-    versions
+    versions, fixed compatibility with mpv>=0.39.0
 
 The original sources can be downloaded from:
   1. https://github.com/squentin/gmusicbrowser
@@ -89,10 +89,9 @@ REQUIREMENTS
 
 To use mpg321/ogg123/flac123:
   * mpg321 to play mp3 files
-  * ogg123 to play ogg and flac files (found in a package named
-    vorbis-tools
+  * ogg123 to play ogg and flac files (part of vorbis-tools package)
   * flac123 to play flac files (deprecated)
-  * amixer to control the volume (found in a package named alsa-utils)
+  * amixer to control the volume (part of alsa-utils package)
 
 To use gstreamer-0.10:
   * gstreamer perl bindings >0.06 (libgstreamer-perl or perl-GStreamer)
@@ -111,17 +110,15 @@ To use mplayer or mpv:
   * mplayer or mpv
 
 To have tray icon:
-  * gtk2-trayicon perl bindings (libgtk2-trayicon-perl or
-    perl-Gtk2-TrayIcon)
+  * Gtk2::TrayIcon perl bindings
 
 To consult wikipedia pages and search google for lyrics, one of:
-  * gtk2-mozembed perl bindings (libgtk2-mozembed-perl or
-    perl-Gtk2-MozEmbed)
-  * gtk2-webkit perl bindings (perl-Gtk2-WebKit)
+  * Gtk2::MozEmbed perl bindings
+  * Gtk2::WebKit perl bindings
 
 To control jukebox through DBus or use the included gnome multimedia
 keys plugin:
-  * DBus perl bindings (libnet-dbus-perl or perl-Net-DBus)
+  * Net::DBus perl bindings
 
 
 INSTALL
