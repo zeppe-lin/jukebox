@@ -152,7 +152,7 @@ sed -i 's@gmbrc version=1.101502@jukeboxrc version=1.101503@g' jukeboxrc
 LICENSE
 =======
 
-*jukebox* is licensed through the GNU General Public License v3
+jukebox is licensed through the GNU General Public License v3
 <https://gnu.org/licenses/gpl.html>.
 Read the *COPYING* file for copying conditions.
 Read the *COPYRIGHT* file for copyright notices.
