@@ -116,17 +116,17 @@ INIT {
 #hash fields :
 # filename
 # fileHandle
-# serial	serial number (binary 4 bytes)
-# seg_table	segmentation table of last read page
-# granule	granule of last read page
-# info		-> hash containing : version channels rate bitrate_upper bitrate_nominal bitrate_lower seconds
-# comments	-> hash of arrays (lowercase keys)
+# serial        serial number (binary 4 bytes)
+# seg_table     segmentation table of last read page
+# granule       granule of last read page
+# info          -> hash containing : version channels rate
+#                  bitrate_upper bitrate_nominal bitrate_lower seconds
+# comments      -> hash of arrays (lowercase keys)
 # CommentsOrder -> list of keys (mixed-case keys)
 # commentpack_size
 # vorbis_string
 # stream_vers
 # end
-
 
 sub new {
     my ($class, $file) = @_;
@@ -170,7 +170,8 @@ sub new {
 sub _open {
     my $self = shift;
     my $file = $self->{filename};
-    open my $fh, '<', $file or warn "can't open $file : $!\n" and return undef;
+    open my $fh, '<', $file
+        or warn "can't open $file : $!\n" and return undef;
     binmode $fh;
     $self->{fileHandle} = $fh;
     $self->{seg_table}  = [];
@@ -188,7 +189,7 @@ sub _openw {
         warn $err . "\n";
         return undef
           unless $self->{errorsub}
-          && $self->{errorsub}($!, 'openwrite', $file) eq 'retry';
+              && $self->{errorsub}($!, 'openwrite', $file) eq 'retry';
     }
     binmode $fh;
     unless ($tmp) {
