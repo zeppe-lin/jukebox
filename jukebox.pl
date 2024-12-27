@@ -8490,22 +8490,22 @@ sub AutoSelPicture {
 sub AboutDialog {
     my $dialog = Gtk2::AboutDialog->new;
     $dialog->set_version(VERSIONSTRING);
-    $dialog->set_copyright("Copyright © 2005-2015 Quentin Sculo");
+    $dialog->set_copyright('Copyright © 2005-2015 Quentin Sculo');
     $dialog->set_logo_icon_name('jukebox');
 
     #$dialog->set_comments();
     $dialog->set_license(
-        "Released under the GNU General Public Licence version 3\n" .
-        "<http://www.gnu.org/copyleft/gpl.html>"
+        "Released under the GNU General Public Licence v3:\n" .
+        'http://www.gnu.org/copyleft/gpl.html'
     );
     $dialog->set_website('https://github.com/zeppe-lin/jukebox/');
     $dialog->set_authors('Quentin Sculo <squentin@free.fr>');
     $dialog->set_artists(
         join "\n",
-        "svg icon : zeltak",
-        "tango icon theme : Jean-Philippe Guillemin",
-        "elementary icon theme : Simon Steinbeiß",
-        "trinity icon theme : Alexandr Savca",
+        "svg icon: zeltak",
+        "tango icon theme: Jean-Philippe Guillemin",
+        "elementary icon theme: Simon Steinbeiß",
+        "trinity icon theme: Alexandr Savca",
     );
     $dialog->signal_connect(
         response => sub { $_[0]->destroy if $_[1] eq 'cancel'; })
