@@ -26,7 +26,8 @@ jukebox - music player for large collections of music files
 
 This manual page explains the B<jukebox> program.
 
-B<jukebox> can play and manage your songs, currently supports mp3, ogg, flac, mpc file formats.
+B<jukebox> can play and manage your songs, currently supports mp3,
+ogg, flac, mpc file formats.
 
 The options are as follows:
 
@@ -78,13 +79,14 @@ listen for connection on port N in icecast server mode
 
 =item B<-C> I<FILE>, B<-cfg> I<FILE>
 
-use FILE as configuration file (instead of F<jukeboxrc> in default folder), if
-FILE is a folder (or ends with C</>), it will be  used  as  base  folder
-instead  of F<~/.config/jukebox/>
+use FILE as configuration file (instead of F<jukeboxrc> in default
+folder), if FILE is a folder (or ends with C</>), it will be  used  as
+base  folder instead  of F<~/.config/jukebox/>
 
 =item B<-F> I<FIFO>, B<-fifo> I<FIFO>
 
-use FIFO as named pipe to receive commands (instead of F<jukebox.fifo> in default folder)
+use FIFO as named pipe to receive commands (instead of F<jukebox.fifo>
+in default folder)
 
 =item B<-nofifo>
 
@@ -128,7 +130,8 @@ add FOLDER to the list of folders searched for plugins and layouts
 
 =item B<-use-gnome-session>
 
-Use gnome libraries to save tags/settings on session logout (needs the Gnome2 perl module).
+Use gnome libraries to save tags/settings on session logout (needs the
+Gnome2 perl module).
 
 =item B<-workspace> I<N>
 
@@ -136,13 +139,15 @@ Move initial window to workspace N (needs the Gnome2::Wnck perl module).
 
 =item B<-cmd> I<CMD>
 
-add  CMD  to the list of commands to execute. If a running instance of jukebox
-is found, these commands will be sent via the fifo file or via DBus. If there
-is no running instance of jukebox, the behavior depends on option B<-ifnotrunning>
+add  CMD  to the list of commands to execute. If a running instance of
+jukebox is found, these commands will be sent via the fifo file or via
+DBus. If there is no running instance of jukebox, the behavior depends
+on option B<-ifnotrunning>
 
 =item B<-ifnotrunning> I<MODE>
 
-change behavior when no running jukebox instance is found, MODE can be one of:
+change behavior when no running jukebox instance is found, MODE can be
+one of:
 
 =over
 
@@ -160,7 +165,9 @@ do nothing
 
 =back
 
-Running instances of jukebox are detected via the fifo or via DBus.  To run more than one instance, use a unique fifo and a unique DBus-id, or deactivate them.
+Running instances of jukebox are detected via the fifo or via DBus.
+To run more than one instance, use a unique fifo and a unique DBus-id,
+or deactivate them.
 
 =item B<-listcmd>
 
@@ -190,7 +197,8 @@ contains songs tags and program options
 
 =item F</usr/share/jukebox/plugins/>, F<~/.jukebox/plugins/>
 
-files with extension .pm in these folders are loaded as plugins on startup
+files with extension .pm in these folders are loaded as plugins on
+startup
 
 =item F</usr/share/jukebox/layouts/*.layout>, F<~/.jukebox/layouts/*.layout>
 
@@ -202,7 +210,8 @@ can be used to send commands to a running jukebox, e.g.:
 
   echo CMD >~/.jukebox/jukebox.fifo
 
-where CMD is (run "jukebox -listcmd" for an up-to-date list of commands):
+where CMD is (run "jukebox -listcmd" for an up-to-date list of
+commands):
 
 =over
 
