@@ -1,8 +1,8 @@
 OVERVIEW
 ========
 
-This directory contains *jukebox*, a music player for large collections
-of audio files.
+This directory contains *jukebox*, a music player for large
+collections of audio files.
 
 This *jukebox* distribution is a fork of squentin's *gmusicbrowser* as
 of version 1.1.16 with the following little differences:
@@ -12,8 +12,8 @@ of version 1.1.16 with the following little differences:
   * removed Elementary icons
   * updated Artistinfo plugin: show all available albums from last.fm
     and search Artist on torrent trackers
-  * updated Notify plugin: more actions and icon buttons if notification
-    daemon supports `action-icons` capability
+  * updated Notify plugin: more actions and icon buttons if
+    notification daemon supports `action-icons` capability
   * added new option "minimize main window instead of hide"
   * ported gmusicbrowser's little fixes and adjustments for new mpv
     versions, fixed compatibility with mpv>=0.39.0
@@ -32,8 +32,8 @@ GTK+3.0, and has a relatively big group of users & hackers that are
 continuing development, it's highly recommended to use *gmusicbrowser*
 instead of *jukebox*.
 
-The following feature-list is just a copy of *gmusicbrowser*'s features
-with some additions described above in the differences.
+The following feature-list is just a copy of *gmusicbrowser*'s
+features with some additions described above in the differences.
 
 
 FEATURES
@@ -78,8 +78,8 @@ Plugins:
     allowing to search the picture/cover in various sources and save
     it
   * Rip: add a button to rip a CD
-  * Titlebar: display a special layout in or around the titlebar of the
-    focused window
+  * Titlebar: display a special layout in or around the titlebar of
+    the focused window
   * Web context: provide context views using MozEmbed or WebKit
     wikipedia, lyrics, and custom webpages
 
@@ -94,7 +94,8 @@ To use mpg321/ogg123/flac123:
   * amixer to control the volume (part of alsa-utils package)
 
 To use gstreamer-0.10:
-  * gstreamer perl bindings >0.06 (libgstreamer-perl or perl-GStreamer)
+  * gstreamer perl bindings >0.06 (libgstreamer-perl or
+    perl-GStreamer)
   * gstreamer-plugins-ugly to play mp3 files
   * gstreamer-plugins-bad to play mpc files
   * gstreamer-plugins-good to play flac files
@@ -103,8 +104,8 @@ To use gstreamer-0.10:
   distribution, with names like gstreamer0.10-flac or
   gstreamer0.10-musepack.
 
-  Some additional gstreamer plugins may also be required, depending
-  on which output you want to use, like oss, alsa, pulseaudio, esd.
+  Some additional gstreamer plugins may also be required, depending on
+  which output you want to use, like oss, alsa, pulseaudio, esd.
 
 To use mplayer or mpv:
   * mplayer or mpv
@@ -131,8 +132,8 @@ MIGRATION
 =========
 
 Migration from *gmusicbrowser* is highly unrecommended since
-*gmusicbrowser* is fine and well maintained program with GTK-3.0 support
-(unlike jukebox).  See https://gmusicbrowser.org and
+*gmusicbrowser* is fine and well maintained program with GTK-3.0
+support (unlike jukebox).  See https://gmusicbrowser.org and
 https://github.com/squentin/gmusicbrowser for more information.
 
 Anyway...
