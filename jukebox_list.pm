@@ -12,7 +12,10 @@ package Browser;
 use strict;
 use warnings;
 
-use constant {TRUE => 1, FALSE => 0,};
+use constant {
+    TRUE  => 1,
+    FALSE => 0,
+};
 
 our @MenuPlaying = (
     {   label => "Follow playing song",
@@ -467,10 +470,10 @@ sub new {
 
     if (my $r = $opt->{relief}) {
         $self->{$_}->set_relief($r)
-          for qw/brm bclear bup bdown btop bbot bshuffle/;
+          for qw(brm bclear bup bdown btop bbot bshuffle);
     }
     $self->pack_start($self->{$_}, FALSE, FALSE, 2)
-      for qw/btop bup bdown bbot brm bclear bshuffle/;
+      for qw(btop bup bdown bbot brm bclear bshuffle);
 
     ::Watch($self, 'Selection_' . $self->{group}, \&SelectionChanged);
     ::Watch($self, SongArray => \&ListChanged);
