@@ -1,7 +1,7 @@
 OVERVIEW
 ========
 
-This directory contains *jukebox*, a music player for large
+This repository contains *jukebox*, a music player for large
 collections of audio files.
 
 This *jukebox* distribution is a fork of squentin's *gmusicbrowser* as
