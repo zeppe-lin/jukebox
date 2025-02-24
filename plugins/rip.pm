@@ -34,7 +34,7 @@ my %Programs = (
 
 my %button_definition = (
     class        => 'Layout::Button',
-    stock        => 'plugin-rip',
+    stock        => 'gtk-cdrom',
     tip          => 'Launch ripping program',
     activate     => \&Launch,
     autoadd_type => 'button main',
