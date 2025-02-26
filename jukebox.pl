@@ -9360,8 +9360,10 @@ sub PrefLayouts {
     my $checkT2 = NewPrefCheckButton(CloseToTray => "Close to tray");
     my $checkT6 = NewPrefCheckButton(
         IconifyHide => "Iconify (minimize) main window instead of hide",
-        tip => "Iconify (minimize) main window on click to tray icon or Hide() command." .
-               "Useful behaviour for WindowMaker and other similar window managers."
+        tip => "Iconify (minimize) the main window when clicked to"   .
+               " tray icon, instead of executing the Hide() command." .
+               "This behaviour is particularly useful for WindowMaker".
+               " and similar window managers."
     );
 
     my $checkT3 = NewPrefCheckButton(
