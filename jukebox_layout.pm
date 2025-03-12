@@ -3345,10 +3345,23 @@ sub Pack {
                 $self->close_tab($page, 1);
             }
         );
-        $close->add(
-            Gtk2::Image->new_from_file(::PIXPATH . 'smallclosetab.png'));
-        $close->set_size_request(Gtk2::IconSize->lookup('menu'));
-        $close->set_border_width(0);
+
+        # Use a custom tab icon if available, as the default `gtk-close` button
+        # is too large.  If a custom icon is not available, use the `gtk-close`
+        # icon without resizing it, since resized icons may appear distorted
+        # with custom themes.
+        if (-f ::PIXPATH.'smallclosetab.png')
+        {
+            $close->add(
+                Gtk2::Image->new_from_file(::PIXPATH . 'smallclosetab.png'));
+
+            $close->set_size_request(Gtk2::IconSize->lookup('menu'));
+            $close->set_border_width(0);
+        }
+        else
+        {
+            $close->add(Gtk2::Image->new_from_stock('gtk-close', 'menu'));
+        }
     }
     my $tab   = $angle % 180 ? Gtk2::VBox->new(0, 0) : Gtk2::HBox->new(0, 0);
     my @icons = $angle % 180 ? ($close, 0, $icon, 4) : ($icon, 4, $close, 0);
