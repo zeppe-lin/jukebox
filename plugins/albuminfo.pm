@@ -367,6 +367,7 @@ sub new {
 
     my $searchbutton = Gtk2::ToggleButton->new();
     $searchbutton->set_relief('none');
+    $searchbutton->set_tooltip_text("Toggle manual search");
     $searchbutton->add(Gtk2::Image->new_from_stock('gtk-find', 'menu'));
     $searchbutton->signal_connect(
         clicked => sub {
