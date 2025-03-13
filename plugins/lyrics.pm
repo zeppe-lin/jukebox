@@ -211,9 +211,9 @@ sub new {
     $toolbar->set_icon_size($options->{ToolbarSize} || 'small-toolbar');
 
     for my $aref (
-        [backb => 'gtk-go-back', \&Back_cb,   "Previous page"],
-        [saveb => 'gtk-save',    \&Save_text, "Save", "Save lyrics"],
-        [undef, 'gtk-refresh', \&Refresh_cb, "Refresh"],
+        [backb => 'gtk-go-back', \&Back_cb,     "", "Previous page"],
+        [saveb => 'gtk-save',    \&Save_text,   "", "Save lyrics"],
+        [undef => 'gtk-refresh', \&Refresh_cb,  "", "Refresh"],
       )
     {
         my ($key, $stock, $cb, $label, $tip) = @$aref;
