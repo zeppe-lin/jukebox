@@ -916,8 +916,8 @@ sub update_titlebox {
     $self->{ratingrange} = AA::Get("rating:range", 'album', $aID);
     $self->{playcount}   = AA::Get("playcount:sum", 'album', $aID);
     my $tip = join("\n",
-        "Average rating:" . ' ' . $self->{rating},
-        "Rating range:" . ' ' . $self->{ratingrange},
+        "Average rating:"  . ' ' . $self->{rating},
+        "Rating range:"    . ' ' . $self->{ratingrange},
         "Total playcount:" . ' ' . $self->{playcount});
     $self->{ratingpic}
       ->set_from_pixbuf(Songs::Stars($self->{rating}, 'rating'));
