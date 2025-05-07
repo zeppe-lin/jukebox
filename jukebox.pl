@@ -1179,8 +1179,12 @@ unshift @SongCMenu
         code  => sub { Google($_[0]{IDs}[0]); },
         mode  => 'P'
     },
-    {   label   => "Open containing folder",
-        code    => sub { openfolder(Songs::Get($_[0]{IDs}[0], 'path')); },
+    {
+        label   => "Open containing folder",
+        code    => sub {
+            openfolder(Songs::Get($_[0]{IDs}[0], 'path'));
+        },
+        stockicon => 'gtk-open',
         onlyone => 'IDs'
     },
     {label => "Queue options", submenu => \@Layout::MenuQueue, mode => 'Q',}
