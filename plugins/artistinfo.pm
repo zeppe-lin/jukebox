@@ -10,14 +10,14 @@
 # published by the Free Software Foundation
 
 =for gmbplugin ARTISTINFO
-name        ArtistInfo
-title       ArtistInfo plugin
-version     0.6
-author      Simon Steinbeiß <simon.steinbeiss@shimmerproject.org>
-author      Pasi Lallinaho <pasi@shimmerproject.org>
-author      Alexandr Savca <alexandr.savca89@gmail.com>
-desc        This plugin retrieves artist-relevant information from last.fm.
-url         http://gmusicbrowser.org/dokuwiki/doku.php?id=plugins:lastfm
+name    ArtistInfo
+title   ArtistInfo plugin
+version 0.6
+author  Simon Steinbeiß <simon.steinbeiss@shimmerproject.org>
+author  Pasi Lallinaho <pasi@shimmerproject.org>
+author  Alexandr Savca <alexandr.savca89@gmail.com>
+desc    This plugin retrieves artist-relevant information from last.fm.
+url     http://gmusicbrowser.org/dokuwiki/doku.php?id=plugins:lastfm
 =cut
 
 package GMB::Plugin::ARTISTINFO;
@@ -113,13 +113,18 @@ my @External = (
 );
 
 my %menuitem = (
-    label => "Search on the web",    #label of the menu item
+    # Label of the menu item
+    label => "Search on the web",
+
+    # When menu item is selected
     submenu => sub {
         CreateSearchMenu(Songs::Gid_to_Get('artist', $_[0]{gid}));
-    }, # when menu item selected
+    },
+
+    # The menu item is displayed if returns true
     test => sub {
         $_[0]{mainfield} eq 'artist'
-    }, # the menu item is displayed if returns true
+    },
 );
 my $nowplayingaID;
 my $queuewaiting;
@@ -134,16 +139,13 @@ my %queuemode = (
     autofill => 1,
 );
 
-=dop
-my @similarity= (
-    ['super',       '0.9',  '#ff0101'],
-    ['very high',   '0.7',  '#e9c102'],
-    ['high',        '0.5',  '#05bd4c'],
-    ['medium',      '0.3',  '#453e45'],
-    ['lower',       '0.1',  '#9a9a9a'],
-);
-
-=cut
+#my @similarity= (
+#    ['super',       '0.9',  '#ff0101'],
+#    ['very high',   '0.7',  '#e9c102'],
+#    ['high',        '0.5',  '#05bd4c'],
+#    ['medium',      '0.3',  '#453e45'],
+#    ['lower',       '0.1',  '#9a9a9a'],
+#);
 
 ::SetDefaultOptions(OPT,
     PathFile           => "~/.config/jukebox/bio/%a",
@@ -163,7 +165,10 @@ my @similarity= (
 
 my $artistinfowidget = {
     class       => __PACKAGE__,
-    tabicon     => 'plugin-artistinfo', # no icon by that name by default (yet)
+
+    # no icon by that name by default (yet)
+    tabicon     => 'plugin-artistinfo',
+
     tabtitle    => "ArtistInfo",
     saveoptions => 'site',
     schange      => sub { $_[0]->SongChanged; },
@@ -191,11 +196,14 @@ sub new {
     my ($class, $options) = @_;
     my $self = bless Gtk2::VBox->new(0, 0), $class;
     $self->{$_} = $options->{$_} for qw/site/;
+
+    # reset selected site if no longer defined
     delete $self->{site}
-      if $self->{site}
-      && !$sites{$self->{site}}[SITEURL]
-      ;    #reset selected site if no longer defined
-    $self->{site} ||= 'biography';    # biography is the default site
+        if $self->{site} && !$sites{$self->{site}}[SITEURL];
+
+    # biography is the default site
+    $self->{site} ||= 'biography';
+
     $self->{artist_esc} = "";
     my $statbox   = Gtk2::VBox->new(0, 0);
     my $artistpic = Gtk2::HBox->new(0, 0);
@@ -220,9 +228,16 @@ sub new {
             my ($stateventbox, $event) = @_;
             return 0 unless $event->button == 3;
             my $ID = ::GetSelID($stateventbox);
-            ::ArtistContextMenu(Songs::Get_gid($ID, 'artists'),
-                {ID => $ID, self => $stateventbox, mode => 'S'})
-              if defined $ID;
+
+            ::ArtistContextMenu(
+                Songs::Get_gid($ID, 'artists'),
+                {
+                    ID => $ID,
+                    self => $stateventbox,
+                    mode => 'S'
+                }
+            ) if defined $ID;
+
             return 1;
         }
     );    # FIXME: do a proper cm
@@ -238,7 +253,8 @@ sub new {
         return unless $::Options{OPT . 'ArtistPicShow'};
         my $child = Layout::NewWidget(
             "ArtistPic",
-            {   forceratio => 1,
+            {
+                forceratio => 1,
                 minsize    => $::Options{OPT . 'ArtistPicSize'},
                 click1     => \&apiczoom,
                 xalign     => 0,
@@ -249,7 +265,8 @@ sub new {
         $child->show_all;
         $box->add($child);
     };
-    ::Watch($artistpic, plugin_artistinfo_option_pic => $artistpic_create);
+    ::Watch($artistpic,
+        plugin_artistinfo_option_pic => $artistpic_create);
     $artistpic_create->($artistpic);
 
     my $textview = Gtk2::TextView->new;
@@ -260,10 +277,15 @@ sub new {
     $textview->set_editable(0);
     $textview->set_left_margin(5);
     $textview->set_has_tooltip(1);
-    $textview->signal_connect(button_release_event    => \&button_release_cb);
-    $textview->signal_connect(motion_notify_event     => \&update_cursor_cb);
-    $textview->signal_connect(visibility_notify_event => \&update_cursor_cb);
-    $textview->signal_connect(query_tooltip           => \&update_cursor_cb);
+
+    $textview->signal_connect(
+        button_release_event    => \&button_release_cb);
+    $textview->signal_connect(
+        motion_notify_event     => \&update_cursor_cb);
+    $textview->signal_connect(
+        visibility_notify_event => \&update_cursor_cb);
+    $textview->signal_connect(
+        query_tooltip           => \&update_cursor_cb);
 
     my $store = Gtk2::ListStore->new(
         'Glib::String', 'Glib::Double', 'Glib::String', 'Glib::UInt',
@@ -281,11 +303,12 @@ sub new {
     $treeview->append_column($tc_artist);
     $treeview->set_has_tooltip(1);
     $treeview->set_tooltip_text(
-            "Middle-click on local artists to set a filter on them, "
-          . "right-click non-local artists to search for them on the web.");
+        "Middle-click on local artists to set a filter on them, "
+      . "right-click non-local artists to search for them on the web.");
+
     my $renderer = Gtk2::CellRendererText->new;
-    my $tc_similar =
-      Gtk2::TreeViewColumn->new_with_attributes("%", $renderer, text => 1);
+    my $tc_similar = Gtk2::TreeViewColumn->new_with_attributes(
+        "%", $renderer, text => 1);
     $tc_similar->set_cell_data_func(
         $renderer,
         sub {
@@ -343,7 +366,8 @@ sub new {
 #       $toolitem->set_proxy_menu_item($key,$menuitem);
     }
     for my $button (
-        [   refresh => 'gtk-refresh',
+        [
+            refresh => 'gtk-refresh',
             sub {
                 my $self = ::find_ancestor($_[0], __PACKAGE__);
                 SongChanged($self, 'force');
@@ -351,7 +375,8 @@ sub new {
             "Refresh",
             "Refresh"
         ],
-        [   save => 'gtk-save',
+        [
+            save => 'gtk-save',
             \&Save_text,
             "Save",
             "Save artist biography",
@@ -364,15 +389,17 @@ sub new {
         $item->signal_connect(clicked => $cb);
         $item->set_tooltip_text($tip) if $tip;
         my $menuitem = Gtk2::ImageMenuItem->new($label);
-        $menuitem->set_image(Gtk2::Image->new_from_stock($stock, 'menu'));
+        $menuitem->set_image(
+            Gtk2::Image->new_from_stock($stock, 'menu'));
         $item->set_proxy_menu_item($key, $menuitem);
         $toolbar->insert($item, -1);
 
         if ($key eq 'save') {
             $item->show_all;
             $item->set_no_show_all(1);
-            my $update =
-              sub { $_[0]->set_visible(!$::Options{OPT . 'AutoSave'}); };
+            my $update = sub {
+                $_[0]->set_visible(!$::Options{OPT . 'AutoSave'});
+            };
             ::Watch($item, plugin_artistinfo_option_save => $update);
             $update->($item);
         }
@@ -420,7 +447,7 @@ sub toggled_cb {
         $self->{site} = $togglebutton->{key};
         $self->SongChanged;
         $textview->set_tooltip_text($self->{site})
-          if $self->{site} ne "events";
+            if $self->{site} ne "events";
     }
 }
 
@@ -449,20 +476,26 @@ sub prefbox {
     );
     my $autosave = ::NewPrefCheckButton(
         OPT . 'AutoSave' => "Auto-save positive finds",
-        tip              => "only works when the artist-info tab is displayed",
-        cb               => sub { ::HasChanged('plugin_artistinfo_option_save'); }
+        tip => "only works when the artist-info tab is displayed",
+        cb => sub {
+            ::HasChanged('plugin_artistinfo_option_save');
+        }
     );
     my $picsize = ::NewPrefSpinButton(
         OPT . 'ArtistPicSize', 50, 500,
         step => 5,
         page => 10,
         text => "Artist picture size : %d",
-        cb   => sub { ::HasChanged('plugin_artistinfo_option_pic'); }
+        cb   => sub {
+            ::HasChanged('plugin_artistinfo_option_pic');
+        }
     );
     my $picshow = ::NewPrefCheckButton(
         OPT . 'ArtistPicShow' => "Show artist picture",
-        widget                => ::Vpack($picsize),
-        cb => sub { ::HasChanged('plugin_artistinfo_option_pic'); }
+        widget => ::Vpack($picsize),
+        cb => sub {
+            ::HasChanged('plugin_artistinfo_option_pic');
+        }
     );
 
 #my $eventformat = ::NewPrefEntry(
@@ -506,18 +539,22 @@ sub prefbox {
     );
     my $similar_local = ::NewPrefCheckButton(
         OPT . 'SimilarLocal' => "Only show similar artists from local library",
-        tip                  => "applied on reload"
+        tip => "applied on reload"
     );
     my $similar_exclude_seed = ::NewPrefCheckButton(
         OPT . 'SimilarExcludeSeed' => "Exclude 'seed'-artist from queue",
-        tip =>
-          "The artists similar to the 'seed'-artist will be used to populate "
+        tip => "The artists similar to the 'seed'-artist will be used to populate "
           . "the queue, but you can decide to exclude the 'seed'-artist him/herself."
     );
-    my $artistinfo =
-      ::NewIconButton('plugin-artistinfo', undef,
-        sub { ::main::openurl("http://www.last.fm/music/"); },
-        'none', "Open last.fm website in your browser");
+    my $artistinfo = ::NewIconButton(
+        'plugin-artistinfo',
+        undef,
+        sub {
+            ::main::openurl("http://www.last.fm/music/");
+        },
+        'none',
+        "Open last.fm website in your browser"
+    );
     my $titlebox = Gtk2::HBox->new(0, 0);
     $titlebox->pack_start($picshow, 1, 1, 0);
     $titlebox->pack_start($artistinfo,  0, 0, 5);
@@ -529,24 +566,28 @@ sub prefbox {
     my $frame_similar = Gtk2::Frame->new("Similar Artists");
     $frame_similar->add(
         ::Vpack(
-            $similar_limit, $similar_rating,
-            $similar_local, $similar_exclude_seed
+            $similar_limit,
+            $similar_rating,
+            $similar_local,
+            $similar_exclude_seed
         )
     );
     $vbox->pack_start($_, ::FALSE, ::FALSE, 5)
-      for $titlebox, $frame_bio, $frame_similar; #$frame_albums
+        for $titlebox, $frame_bio, $frame_similar; #$frame_albums
     return $vbox;
 }
 
 sub filename_preview {
     return '' unless defined $::SongID;
-    my $t =
-      ::pathfilefromformat($::SongID, $::Options{OPT . 'PathFile'}, undef, 1);
+    my $t = ::pathfilefromformat(
+        $::SongID,
+        $::Options{OPT . 'PathFile'},
+        undef,
+        1
+    );
     $t = ::filename_to_utf8displayname($t) if $t;
-    $t =
-      $t
-      ? ::PangoEsc("example : " . $t)
-      : "<i>" . ::PangoEsc("invalid pattern") . "</i>";
+    $t = $t ? ::PangoEsc("example : " . $t)
+            : "<i>" . ::PangoEsc("invalid pattern") . "</i>";
     return '<small>' . $t . '</small>';
 }
 
@@ -584,7 +625,8 @@ sub tv_contextmenu {
     elsif ($event->button == 3) {
         if ($url eq "local") {
             ::PopupAAContextMenu(
-                {   gid   => $aID,
+                {
+                    gid   => $aID,
                     self  => $treeview,
                     field => 'artists',
                     mode  => 'S'
@@ -597,8 +639,14 @@ sub tv_contextmenu {
             my $title = Gtk2::MenuItem->new("Search for artist on:");
             $menu->prepend($title);
             $menu->show_all;
-            $menu->popup(undef, undef, undef, undef, $event->button,
-                $event->time);
+            $menu->popup(
+                undef,
+                undef,
+                undef,
+                undef,
+                $event->button,
+                $event->time
+            );
         }
         return 1;
     }
@@ -619,9 +667,17 @@ sub CreateSearchMenu {
         }
         my $menuitem = Gtk2::ImageMenuItem->new($key);
         $menuitem->set_image(
-            Gtk2::Image->new_from_stock('plugin-artistinfo-' . $key, 'menu'));
+            Gtk2::Image->new_from_stock(
+                'plugin-artistinfo-' . $key,
+                'menu'
+            )
+        );
         $menuitem->signal_connect(
-            activate => sub { ::main::openurl($url) if $url; return 0; });
+            activate => sub {
+                ::main::openurl($url) if $url;
+                return 0;
+            }
+        );
         $menu->append($menuitem);
     }
     return $menu;
@@ -636,19 +692,22 @@ sub apiczoom {
     return 0 unless $img;
 
     my $menu = Gtk2::Menu->new;
-    $menu->modify_bg('normal', Gtk2::Gdk::Color->parse('black'))
-      ;    # black bg for the artistpic-popup
+
+    # black bg for the artistpic-popup
+    $menu->modify_bg('normal', Gtk2::Gdk::Color->parse('black'));
     my $apic = Gtk2::MenuItem->new;
     $apic->modify_bg('selected', Gtk2::Gdk::Color->parse('black'));
     $apic->add($img);
 
     my $artist = Songs::Gid_to_Get("artist", $aID);
     my $item   = Gtk2::MenuItem->new;
-    my $label  = Gtk2::Label
-      ->new;    # use a label instead of a normal menu-item for formatted text
+
+    # use a label instead of a normal menu-item for formatted text
+    my $label  = Gtk2::Label->new;
+
     $item->modify_bg('selected', Gtk2::Gdk::Color->parse('black'));
     $label->modify_fg($_, Gtk2::Gdk::Color->parse('white'))
-      for qw/normal prelight/;
+        for qw/normal prelight/;
     $label->set_line_wrap(1);
     $label->set_justify('center');
     $label->set_ellipsize('end');
@@ -658,14 +717,25 @@ sub apiczoom {
     $menu->append($apic);
     $menu->append($item);
     $menu->show_all;
-    $menu->popup(undef, undef, undef, undef, $event->button, $event->time);
+    $menu->popup(
+        undef,
+        undef,
+        undef,
+        undef,
+        $event->button,
+        $event->time
+    );
     return 1;
 }
 
 sub update_cursor_cb {
     my $textview = $_[0];
     my (undef, $wx, $wy, undef) = $textview->window->get_pointer;
-    my ($x, $y) = $textview->window_to_buffer_coords('widget', $wx, $wy);
+    my ($x, $y) = $textview->window_to_buffer_coords(
+        'widget',
+        $wx,
+        $wy
+    );
     my $iter   = $textview->get_iter_at_location($x, $y);
     my $cursor = 'xterm';
     for my $tag ($iter->get_tags) {
@@ -676,15 +746,20 @@ sub update_cursor_cb {
     }
     return if ($textview->{cursor} || '') eq $cursor;
     $textview->{cursor} = $cursor;
-    $textview->get_window('text')->set_cursor(Gtk2::Gdk::Cursor->new($cursor));
+    $textview->get_window('text')->set_cursor(
+        Gtk2::Gdk::Cursor->new($cursor)
+    );
 }
 
 sub button_release_cb {
     my ($textview, $event) = @_;
     my $self = ::find_ancestor($textview, __PACKAGE__);
     return ::FALSE unless $event->button == 1;
-    my ($x, $y) =
-      $textview->window_to_buffer_coords('widget', $event->x, $event->y);
+    my ($x, $y) = $textview->window_to_buffer_coords(
+        'widget',
+        $event->x,
+        $event->y
+    );
     my $url = $self->url_at_coords($x, $y, $textview);
     ::main::openurl($url) if $url;
     return ::FALSE;
@@ -709,8 +784,11 @@ sub SongChanged {
     my $self = ::find_ancestor($widget, __PACKAGE__);
     my $ID   = ::GetSelID($self);
     return unless defined $ID;
-    $self->ArtistChanged(Songs::Get_gid($ID, 'artist'),
-        Songs::Get_gid($ID, 'album'), $force);
+    $self->ArtistChanged(
+        Songs::Get_gid($ID, 'artist'),
+        Songs::Get_gid($ID, 'album'),
+        $force
+    );
 }
 
 sub ArtistChanged {
@@ -723,18 +801,17 @@ sub ArtistChanged {
     $self->{artistplaycount}   = AA::Get("playcount:sum", 'artist', $aID);
     $self->{albumplaycount}    = AA::Get("playcount:sum", 'album', $albumID);
     my $tip = join "\n",
-      "Average rating:" . ' ' . $self->{artistratingvalue},
-      "Rating range:" . ' ' . $self->{artistratingrange},
+      "Average rating:"   . ' ' . $self->{artistratingvalue},
+      "Rating range:"     . ' ' . $self->{artistratingrange},
       "Artist playcount:" . ' ' . $self->{artistplaycount},
-      "Album playcount:" . ' ' . $self->{albumplaycount};
+      "Album playcount:"  . ' ' . $self->{albumplaycount};
 
-    $self->{artistrating}
-      ->set_from_pixbuf(Songs::Stars($self->{artistratingvalue}, 'rating'));
+    $self->{artistrating}->set_from_pixbuf(
+        Songs::Stars($self->{artistratingvalue}, 'rating'));
     $self->{Ltitle}->set_markup(
         AA::ReplaceFields($aID, "<b>%a</b>", "artist", 1));
     $self->{Lstats}->set_markup(
-        AA::ReplaceFields($aID, '%X « %s' . "\n%y", "artist", 1)
-    );
+        AA::ReplaceFields($aID, '%X « %s' . "\n%y", "artist", 1));
 
     for my $name (qw/Ltitle Lstats artistrating/) {
         $self->{$name}->set_tooltip_text($tip);
@@ -748,20 +825,33 @@ sub ArtistChanged {
         if ($self->{site} eq "biography")
         {    # check for local biography file before loading the page
             unless ($force) {
-                my $file =
-                  ::pathfilefromformat(::GetSelID($self),
+                my $file = ::pathfilefromformat(
+                    ::GetSelID($self),
                     $::Options{OPT . 'PathFile'},
-                    undef, 1);
+                    undef,
+                    1
+                );
                 if ($file && -r $file) {
-                    ::IdleDo('8_artistinfo' . $self,
-                        1000, \&load_file, $self, $file);
+                    ::IdleDo(
+                        '8_artistinfo' . $self,
+                        1000,
+                        \&load_file,
+                        $self,
+                        $file
+                    );
                     $self->{sw2}->hide;
                     $self->{sw1}->show;
                     return;
                 }
             }
         }
-        ::IdleDo('8_artistinfo' . $self, 1000, \&load_url, $self, $url);
+        ::IdleDo(
+            '8_artistinfo' . $self,
+            1000,
+            \&load_url,
+            $self,
+            $url
+        );
     }
 }
 
@@ -787,8 +877,10 @@ sub load_url {
     $self->{sw2}->hide;
     $self->{sw1}->show;
     $self->{waiting} = Simple_http::get_with_cb(
-        cb    => sub { $self->loaded(@_) },
-        url   => $url,
+        cb => sub {
+            $self->loaded(@_)
+        },
+        url => $url,
         cache => 1
     );
 }
@@ -806,8 +898,12 @@ sub loaded {
     $self->{url} = $prop{url} if $prop{url};    #for redirections
     $buffer->delete($buffer->get_bounds);
     my $encoding = 'utf-8';
-    if ($type && $type =~ m#^text/.*; ?charset=([\w-]+)#) { $encoding = $1 }
-    if ($data =~ m/xml version/) { $encoding = 'utf-8'; }
+    if ($type && $type =~ m#^text/.*; ?charset=([\w-]+)#) {
+        $encoding = $1
+    }
+    if ($data =~ m/xml version/) {
+        $encoding = 'utf-8';
+    }
     $encoding = $1
       if $data
       =~ m#<meta *http-equiv="Content-Type" *content="text/html; charset=([\w-]+)"#;
@@ -817,7 +913,9 @@ sub loaded {
       ; #microsoft use the superset cp1252 of iso-8859-1 but says it's iso-8859-1
     $encoding ||= 'cp1252';    #default encoding
     $data = Encode::decode($encoding, $data) if $encoding;
-    if ($encoding eq 'utf-8') { $data = ::decode_html($data); }
+    if ($encoding eq 'utf-8') {
+        $data = ::decode_html($data);
+    }
     my $iter = $buffer->get_start_iter;
 
     my $tag_warning = $buffer->create_tag(
@@ -849,11 +947,16 @@ sub loaded {
           =~ m|^.*?<name>([^<]*)</name>.*?<url>([^<]*)</url>.*?<listeners>([^<]*)</listeners>.*?<playcount>([^<]*)</playcount>.*?<content>(.*?)\n[^\n]*</content>|s
           ;   # last part of the regexp removes the license-notice (=last line)
 
+        # Fallback text if artist-info not found
         if (!defined $data) {
             $infoheader = "\n" . "No results found";
             $tag_header = $tag_noresults;
-            $buffer->insert_with_tags($iter, $infoheader . "\n", $tag_header);
-        }     # fallback text if artist-info not found
+            $buffer->insert_with_tags(
+                $iter,
+                $infoheader . "\n",
+                $tag_header
+            );
+        }
         else {
             for ($data) {
                 s/<br \/>|<\/p>/\n/gi;
@@ -871,12 +974,15 @@ sub loaded {
             my $local_artist = Songs::Gid_to_Get("artist", $aID);
             my $warning;
             $warning = "Redirected to: " . $lfm_artist . "\n"
-              if $lfm_artist ne $local_artist;
+                if $lfm_artist ne $local_artist;
             $buffer->insert_with_tags($iter, $warning, $tag_warning)
-              if $warning;
+                if $warning;
             $buffer->insert($iter, $data);
-            $buffer->insert_with_tags($iter,
-                "\n\n" . "Edit in the last.fm wiki", $href);
+            $buffer->insert_with_tags(
+                $iter,
+                "\n\n" . "Edit in the last.fm wiki",
+                $href
+            );
             $buffer->insert_with_tags(
                 $iter,
                 "\n\n"
@@ -899,19 +1005,25 @@ sub loaded {
         my $artistGID = Songs::Get_gid($::SongID, 'artist');
         my $albumIDS = AA::GetIDs(artist => $artistGID);
         for my $albumID (@{ $albumIDS }) {
-            my $album =
-                Songs::Gid_to_Get(album => Songs::Get_gid($albumID, 'album'));
+            my $album = Songs::Gid_to_Get(
+                album => Songs::Get_gid($albumID, 'album')
+            );
             $local_album{$album} = 1;
         }
 
         my $json = JSON::PP->new->ascii->pretty->allow_nonref;
         my $text = $json->decode($data);
 
+        # Fallback text if album-info not found
         if (!defined $data) {
             $infoheader = "\n" . "No results found";
             $tag_header = $tag_noresults;
-            $buffer->insert_with_tags($iter, $infoheader . "\n", $tag_header);
-        }    # fallback text if album-info not found
+            $buffer->insert_with_tags(
+                $iter,
+                $infoheader . "\n",
+                $tag_header
+            );
+        }
         else {
             #$infoheader = "Artist Albums";
             #$buffer->insert_with_tags($iter, $infoheader . "\n", $tag_header);
@@ -927,7 +1039,6 @@ sub loaded {
                     $tag_header = $buffer->create_tag(
                         undef,
                         justification => 'left',
-
                         #foreground    => "#4ba3d2",
                     );
                     $tag_header->{url} = $name->{url};
@@ -935,8 +1046,11 @@ sub loaded {
 
                     if ($local_album{$album_name}) {
                         #my $img = $name->{image}[0]->{"#text"};
-                        $buffer->insert_with_tags($iter, "✅ $album_name\n",
-                            $tag_header);
+                        $buffer->insert_with_tags(
+                            $iter,
+                            "✅ $album_name\n",
+                            $tag_header
+                        );
                     }
                     else {
                         $tag_header = $buffer->create_tag(
@@ -947,8 +1061,11 @@ sub loaded {
                         $tag_header->{url} = $name->{url};
                         $tag_header->{tip} = $name->{url};
 
-                        $buffer->insert_with_tags($iter, "✖ $album_name\n",
-                            $tag_header);
+                        $buffer->insert_with_tags(
+                            $iter,
+                            "✖ $album_name\n",
+                            $tag_header
+                        );
                     }
                 }
             }
@@ -1001,11 +1118,14 @@ sub loaded {
         $self->{sw2}->show;
         for my $s_artist (split /<\/artist>/, $data) {
             my %s_artist;
+
             $s_artist{$1} = ::decode_html($2)
-              while $s_artist =~ m#<(\w+)>([^<]*)</\1>#g;
-            next
-              unless $s_artist{name}
-              ;   # otherwise the last </artist> is also treated like an artist
+                while $s_artist =~ m#<(\w+)>([^<]*)</\1>#g;
+
+            # otherwise the last </artist> is also treated like an
+            # artist
+            next unless $s_artist{name};
+
             if ($s_artist{match} >= $::Options{OPT . 'SimilarRating'} / 100) {
                 my $aID   = Songs::Search_artistid($s_artist{name});
                 my $stats = '';
@@ -1160,7 +1280,7 @@ sub PopulateQueue {
     for my $s_artist (split /<\/artist>/, $data) {
         my %s_artist;
         $s_artist{$1} = ::decode_html($2)
-          while $s_artist =~ m#<(\w+)>([^<]*)</\1>#g;
+            while $s_artist =~ m#<(\w+)>([^<]*)</\1>#g;
         next unless $s_artist{name};
         if ($s_artist{match} >= $::Options{OPT . 'SimilarRating'} / 100) {
             my $aID = Songs::Search_artistid($s_artist{name});
@@ -1171,16 +1291,20 @@ sub PopulateQueue {
       unless $::Options{OPT . 'SimilarExcludeSeed'}
       ;    # add currently playing artist as well
 
-    my $filter = Filter->newadd(0, map Songs::MakeFilterFromGID("artist", $_),
-        @artist_gids);
+    my $filter = Filter->newadd(
+        0,
+        map Songs::MakeFilterFromGID("artist", $_), @artist_gids
+    );
     my $random = Random->new('random:', $filter->filter($::ListPlay));
-    my @IDs    = $random->Draw($nb, [@$::Queue, $::SongID])
-      ;    # add queue and current song to blacklist (won't draw)
+
+    # add queue and current song to blacklist (won't draw)
+    my @IDs    = $random->Draw($nb, [@$::Queue, $::SongID]);
+
     return unless @IDs;
     $::Queue->Push(\@IDs);
 }
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim: sw=4 ts=4 sts=4 et cc=72
+# End of file.
