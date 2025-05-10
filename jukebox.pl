@@ -1672,9 +1672,12 @@ sub strftime_utf8 {
 
 # english and localized, full and abbreviated, day names
 my %DAYS = (
-    map({ ::superlc(strftime_utf8('%a', 0, 0, 0, 1, 0, 100, $_)) => $_,
-              ::superlc(strftime_utf8('%A', 0, 0, 0, 1, 0, 100, $_)) => $_ }
-        0 .. 6),
+    map(
+        {
+            ::superlc(strftime_utf8('%a', 0, 0, 0, 1, 0, 100, $_)) => $_,
+            ::superlc(strftime_utf8('%A', 0, 0, 0, 1, 0, 100, $_)) => $_
+        } 0 .. 6
+    ),
     sun => 0,
     mon => 1,
     tue => 2,
@@ -1686,9 +1689,12 @@ my %DAYS = (
 
 # english and localized, full and abbreviated, month names
 my %MONTHS = (
-    map({ ::superlc(strftime_utf8('%b', 0, 0, 0, 1, $_, 100)) => $_ + 1,
-              ::superlc(strftime_utf8('%B', 0, 0, 0, 1, $_, 100)) => $_ + 1 }
-        0 .. 11),
+    map(
+        {
+            ::superlc(strftime_utf8('%b', 0, 0, 0, 1, $_, 100)) => $_ + 1,
+            ::superlc(strftime_utf8('%B', 0, 0, 0, 1, $_, 100)) => $_ + 1
+        } 0 .. 11
+    ),
     jan => 1,
     feb => 2,
     mar => 3,
@@ -1702,9 +1708,9 @@ my %MONTHS = (
     nov => 11,
     dec => 12
 );
-for my $h (\%DAYS,
-    \%MONTHS)    #remove "." at the end of some localized day/month names
-{
+
+# Remove "." at the end of some localized day/month names
+for my $h (\%DAYS, \%MONTHS) {
     for my $key (keys %$h) {
         $h->{$key} = delete $h->{"$key."} if $key =~ s/\.$//;
     }
@@ -13736,5 +13742,5 @@ sub Abort      # GMB::DropURI object must not be used after that
     %$self = (); # content is emptied to prevent reference cycles (memory leak)
 }
 
-# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# vim: sw=4 ts=4 sts=4 et cc=72 tw=70
 # End of file.
