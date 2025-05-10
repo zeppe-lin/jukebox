@@ -8496,12 +8496,11 @@ sub AboutDialog {
     $dialog->set_version(VERSIONSTRING);
     $dialog->set_copyright('Copyright © 2005-2015 Quentin Sculo');
     $dialog->set_logo_icon_name('jukebox');
-
-    #$dialog->set_comments();
-    $dialog->set_license(
-        "Released under the GNU General Public Licence v3:\n" .
-        'http://www.gnu.org/copyleft/gpl.html'
-    );
+    $dialog->set_comments('Based on the gmusicbrowser project by Quentin Sculo.');
+    $dialog->set_license(<<EOF);
+Released under the GNU General Public Licence v3:
+http://www.gnu.org/copyleft/gpl.html
+EOF
     $dialog->set_website('https://github.com/zeppe-lin/jukebox/');
     $dialog->set_authors('Quentin Sculo <squentin@free.fr>');
     $dialog->set_artists(<<EOF);
