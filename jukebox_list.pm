@@ -18,37 +18,52 @@ use constant {
 };
 
 our @MenuPlaying = (
-    {   label => "Follow playing song",
-        code =>
-          sub { $_[0]{songlist}->FollowSong if $_[0]{songlist}->{follow}; },
+    {
+        label => "Follow playing song",
+        code => sub {
+            $_[0]{songlist}->FollowSong
+                if $_[0]{songlist}->{follow};
+        },
         toggleoption => 'songlist/follow'
     },
-    {   label => "Filter on playing Album",
+    {
+        label => "Filter on playing Album",
         code  => sub {
-            ::SetFilter($_[0]{songlist},
-                Songs::MakeFilterFromID('album', $::SongID))
-              if defined $::SongID;
+            ::SetFilter(
+                $_[0]{songlist},
+                Songs::MakeFilterFromID('album', $::SongID)
+            ) if defined $::SongID;
         }
     },
-    {   label => "Filter on playing Artist",
+    {
+        label => "Filter on playing Artist",
         code  => sub {
-            ::SetFilter($_[0]{songlist},
-                Songs::MakeFilterFromID('artists', $::SongID))
-              if defined $::SongID;
+            ::SetFilter(
+                $_[0]{songlist},
+                Songs::MakeFilterFromID('artists', $::SongID)
+            ) if defined $::SongID;
         }
     },
-    {   label => "Filter on playing Song",
+    {
+        label => "Filter on playing Song",
         code  => sub {
-            ::SetFilter($_[0]{songlist},
-                Songs::MakeFilterFromID('title', $::SongID))
-              if defined $::SongID;
+            ::SetFilter(
+                $_[0]{songlist},
+                Songs::MakeFilterFromID('title', $::SongID)
+            ) if defined $::SongID;
         }
     },
-    {   label => "Use the playing filter",
-        code  => sub { ::SetFilter($_[0]{songlist}, $::PlayFilter); },
-        test  => sub { ::GetSonglist($_[0]{songlist})->{mode} ne 'playlist' }
-    },    #FIXME	if queue use queue, if $ListMode use list
-    {   label   => "Recent albums",
+    {
+        label => "Use the playing filter",
+        code  => sub {
+            ::SetFilter($_[0]{songlist}, $::PlayFilter);
+        },
+        test  => sub {
+            ::GetSonglist($_[0]{songlist})->{mode} ne 'playlist'
+        }
+    }, # FIXME: if queue use queue, if $ListMode use list
+    {
+        label   => "Recent albums",
         submenu => sub {
             my $sl  = $_[0]{songlist};
             my @gid = ::uniq(Songs::Map_to_gid('album', $::Recent));
@@ -64,7 +79,8 @@ our @MenuPlaying = (
             return $m;
         }
     },
-    {   label   => "Recent artists",
+    {
+        label   => "Recent artists",
         submenu => sub {
             my $sl  = $_[0]{songlist};
             my @gid = ::uniq(Songs::Map_to_gid('artist', $::Recent));
@@ -80,7 +96,8 @@ our @MenuPlaying = (
             return $m;
         }
     },
-    {   label                => "Recent songs",
+    {
+        label                => "Recent songs",
         submenu_use_markup   => 1,
         submenu_ordered_hash => 1,
         submenu_reverse      => 1,
@@ -102,8 +119,10 @@ our @MenuPlaying = (
             ];
         },
         code => sub {
-            ::SetFilter($_[0]{songlist},
-                Songs::MakeFilterFromID('title', $_[1]));
+            ::SetFilter(
+                $_[0]{songlist},
+                Songs::MakeFilterFromID('title', $_[1])
+            );
         },
     },
 );
@@ -115,13 +134,22 @@ sub makeFilterBox {
         undef,
         'title:si:',
         "Edit filter..." => sub {
-            ::EditFilter($box, ::GetFilter($box), undef,
-                sub { ::SetFilter($box, $_[0]) if defined $_[0] });
+            ::EditFilter(
+                $box,
+                ::GetFilter($box),
+                undef,
+                sub {
+                    ::SetFilter($box, $_[0]) if defined $_[0]
+                }
+            );
         }
     );
-    my $okbutton =
-      ::NewIconButton('gtk-apply', undef, sub { $FilterWdgt->activate },
-        'none');
+    my $okbutton = ::NewIconButton(
+        'gtk-apply',
+        undef,
+        sub { $FilterWdgt->activate },
+        'none'
+    );
     $okbutton->set_tooltip_text("apply filter");
     $box->pack_start($FilterWdgt, FALSE, FALSE, 0);
     $box->pack_start($okbutton,   FALSE, FALSE, 0);
@@ -153,8 +181,15 @@ sub makeLockToggle {
             1;
         }
     );
-    ::set_drag($toggle,
-        dest => [::DRAG_FILTER, sub { ::SetFilter($_[0], $_[2], 0); }]);
+    ::set_drag(
+        $toggle,
+        dest => [
+            ::DRAG_FILTER,
+            sub {
+                ::SetFilter($_[0], $_[2], 0);
+            }
+        ]
+    );
     ::WatchFilter(
         $toggle,
         $opt->{group},
@@ -178,13 +213,18 @@ sub makeLockToggle {
 
 sub make_sort_menu {
     my $selfitem = $_[0];
-    my $songlist =
-        $selfitem->isa('SongList::Common')
-      ? $selfitem
-      : ::GetSonglist($selfitem);
-    my $menu = ($selfitem->can('get_submenu') && $selfitem->get_submenu)
-      || Gtk2::Menu->new;
-    my $menusub = sub { $songlist->Sort($_[1]) };
+
+    my $songlist = $selfitem->isa('SongList::Common')
+                   ? $selfitem
+                   : ::GetSonglist($selfitem);
+
+    my $menu =  ($selfitem->can('get_submenu') && $selfitem->get_submenu)
+              || Gtk2::Menu->new;
+
+    my $menusub = sub {
+        $songlist->Sort($_[1])
+    };
+
     for my $name (sort keys %{$::Options{SavedSorts}}) {
         my $sort = $::Options{SavedSorts}{$name};
         my $item = Gtk2::CheckMenuItem->new_with_label($name);
@@ -195,7 +235,8 @@ sub make_sort_menu {
     }
     my $itemEditSort = Gtk2::ImageMenuItem->new("Custom...");
     $itemEditSort->set_image(
-        Gtk2::Image->new_from_stock('gtk-preferences', 'menu'));
+        Gtk2::Image->new_from_stock('gtk-preferences', 'menu')
+    );
     $itemEditSort->signal_connect(
         activate => sub {
             my $sort = ::EditSortOrder($selfitem, $songlist->{sort});
@@ -302,7 +343,10 @@ sub Remove {
 sub button_press_event_cb {
     my ($self, $event) = @_;
     my $menu = Gtk2::Menu->new;
-    for my $mode (sort { $Modes{$a}{label} cmp $Modes{$b}{label} } keys %Modes)
+    for my $mode (sort {
+                      $Modes{$a}{label} cmp $Modes{$b}{label}
+                  } keys %Modes
+    )
     {
         my $item = Gtk2::CheckMenuItem->new($Modes{$mode}{label});
         $item->set_draw_as_radio(1);
@@ -434,50 +478,75 @@ use base 'Gtk2::Box';
 
 sub new {
     my ($class, $opt) = @_;
-    my $self =
-      ($opt->{orientation} || '') eq 'vertical'
-      ? Gtk2::VBox->new
-      : Gtk2::HBox->new;
+
+    my $self = ($opt->{orientation} || '') eq 'vertical'
+                ? Gtk2::VBox->new
+                : Gtk2::HBox->new;
+
     bless $self, $class;
 
     $self->{group}    = $opt->{group};
+
     $self->{bshuffle} = ::NewIconButton(
         'gmb-shuffle',
         ($opt->{small} ? '' : "Shuffle"),
         sub { ::GetSongArray($self)->Shuffle }
     );
+
     $self->{brm} = ::NewIconButton(
         'gtk-remove',
         ($opt->{small} ? '' : "Remove"),
         sub { ::GetSonglist($self)->RemoveSelected }
     );
+
     $self->{bclear} = ::NewIconButton(
         'gtk-clear',
         ($opt->{small} ? '' : "Clear"),
         sub { ::GetSonglist($self)->Empty }
     );
-    $self->{bup} = ::NewIconButton('gtk-go-up', undef,
-        sub { ::GetSonglist($self)->MoveUpDown(1) });
-    $self->{bdown} = ::NewIconButton('gtk-go-down', undef,
-        sub { ::GetSonglist($self)->MoveUpDown(0) });
-    $self->{btop} = ::NewIconButton('gtk-goto-top', undef,
-        sub { ::GetSonglist($self)->MoveUpDown(1, 1) });
-    $self->{bbot} = ::NewIconButton('gtk-goto-bottom', undef,
-        sub { ::GetSonglist($self)->MoveUpDown(0, 1) });
+
+    $self->{bup} = ::NewIconButton(
+        'gtk-go-up',
+        undef,
+        sub { ::GetSonglist($self)->MoveUpDown(1) }
+    );
+
+    $self->{bdown} = ::NewIconButton(
+        'gtk-go-down',
+        undef,
+        sub { ::GetSonglist($self)->MoveUpDown(0) }
+    );
+
+    $self->{btop} = ::NewIconButton(
+        'gtk-goto-top',
+        undef,
+        sub { ::GetSonglist($self)->MoveUpDown(1, 1) }
+    );
+
+    $self->{bbot} = ::NewIconButton(
+        'gtk-goto-bottom',
+        undef,
+        sub { ::GetSonglist($self)->MoveUpDown(0, 1) }
+    );
 
     $self->{brm}->set_tooltip_text("Remove selected songs");
     $self->{bclear}->set_tooltip_text("Remove all songs");
 
     if (my $r = $opt->{relief}) {
         $self->{$_}->set_relief($r)
-          for qw(brm bclear bup bdown btop bbot bshuffle);
+            for qw(brm bclear bup bdown btop bbot bshuffle);
     }
+
     $self->pack_start($self->{$_}, FALSE, FALSE, 2)
-      for qw(btop bup bdown bbot brm bclear bshuffle);
+        for qw(btop bup bdown bbot brm bclear bshuffle);
 
     ::Watch($self, 'Selection_' . $self->{group}, \&SelectionChanged);
     ::Watch($self, SongArray => \&ListChanged);
-    $self->{PostInit} = sub { $self->SelectionChanged; $self->ListChanged; };
+
+    $self->{PostInit} = sub {
+        $self->SelectionChanged;
+        $self->ListChanged;
+    };
 
     return $self;
 }
@@ -548,7 +617,8 @@ sub new {
     $self->{eventcombo}->add($combo);
     $self->{spin} = ::NewPrefSpinButton(
         'MaxAutoFill',
-        1, 50,
+        1,
+        50,
         step => 1,
         page => 5,
         cb   => sub {
@@ -558,7 +628,8 @@ sub new {
     );
     $self->{spin}->set_no_show_all(1);
 
-    $self->pack_start($self->{$_}, FALSE, FALSE, 2) for qw/eventcombo spin/;
+    $self->pack_start($self->{$_}, FALSE, FALSE, 2)
+        for qw/eventcombo spin/;
 
     ::Watch($self, QueueAction     => \&Update);
     ::Watch($self, QueueActionList => \&Fill);
@@ -575,9 +646,13 @@ sub Fill {
     my $i = 0;
     for my $action (::List_QueueActions(0)) {
         $store->set(
-            $store->append, 0, $::QActions{$action}{icon},
-            1,              $::QActions{$action}{short},
-            2,              $action
+            $store->append,
+            0,
+            $::QActions{$action}{icon},
+            1,
+            $::QActions{$action}{short},
+            2,
+            $action
         );
         $self->{actionindex}{$action} = $i++;
     }
@@ -653,7 +728,9 @@ sub CommonInit {
       "Library empty.\n\nUse the settings dialog to add music."
       unless defined $self->{markup_library_empty} or $type =~ m/[QL]/;
 
-    ::WatchFilter($self, $self->{group}, \&SetFilter) if $type !~ m/[QL]/;
+    ::WatchFilter($self, $self->{group}, \&SetFilter)
+        if $type !~ m/[QL]/;
+
     $self->{need_init} = 1;
     $self->signal_connect_after(
         show => sub {
@@ -662,11 +739,16 @@ sub CommonInit {
             if ($self->{type} =~ m/[QLA]/) {
                 $self->SongArray_changed_cb($self->{array}, 'replace');
             }
-            else { ::InitFilter($self); }
+            else {
+                ::InitFilter($self);
+            }
         }
     );
-    $self->signal_connect_after('map' => sub { $_[0]->FollowSong })
-      unless $self->{type} =~ m/[QL]/;
+    $self->signal_connect_after(
+        'map' => sub {
+            $_[0]->FollowSong
+        }
+    ) unless $self->{type} =~ m/[QL]/;
 
     $self->{colwidth} = {split / +/, $opt->{colwidth}};
 
@@ -710,7 +792,8 @@ sub CommonInit {
     $self->{follow} = 0 if !defined $self->{follow};
 
     delete $self->{autoupdate}
-      unless $songarray && $songarray->isa('SongArray::AutoUpdate');
+        unless $songarray && $songarray->isa('SongArray::AutoUpdate');
+
     $self->{array} = $songarray || SongArray->new;
 
     $self->RegisterGroup($self->{group});
@@ -720,7 +803,7 @@ sub CommonInit {
 sub RegisterGroup {
     my ($self, $group) = @_;
     $Register{$group} = $self;
-    ::weaken($Register{$group});    #or use a destroy cb ?
+    ::weaken($Register{$group}); # or use a destroy cb ?
 }
 
 sub UpdatePlayListFilter {
@@ -783,7 +866,11 @@ sub PlaySelected    ##
 {
     my $self = $_[0];
     my @IDs  = $self->GetSelectedIDs;
-    ::Select(song => 'first', play => 1, staticlist => \@IDs) if @IDs;
+    ::Select(
+        song => 'first',
+        play => 1,
+        staticlist => \@IDs
+    ) if @IDs;
 }
 
 sub EnqueueSelected    ##
@@ -822,13 +909,14 @@ sub MoveUpDown {
     my $songarray = $self->{array};
     my $rows      = $self->GetSelectedRows;
     if ($max) {
-        if   ($up) { $songarray->Top($rows); }
+        if   ($up) { $songarray->Top($rows);    }
         else       { $songarray->Bottom($rows); }
+
         $self->Scroll_to_TopEnd(!$up);
     }
     else {
-        if   ($up) { $songarray->Up($rows) }
-        else       { $songarray->Down($rows) }
+        if   ($up) { $songarray->Up($rows)      }
+        else       { $songarray->Down($rows)    }
     }
 }
 
@@ -836,10 +924,14 @@ sub Hide {
     my ($self, $hide) = @_;
     my $name     = $self->{hidewidget} || $self->{name};
     my $toplevel = ::get_layout_widget($self);
+
     unless ($toplevel) {
-        $self->{need_hide} = $name if $hide;
+        $self->{need_hide} = $name
+            if $hide;
+
         return;
     }
+
     if ($hide) { $toplevel->Hide($name, $self->{shrinkonhide}) }
     else       { $toplevel->Show($name, $self->{shrinkonhide}) }
 }
@@ -855,10 +947,18 @@ sub Activate {
     $aftercmd = $1 if $activate =~ s/&(.*)$//;
 
     if ($activate eq 'playlist') {
-        ::Select(staticlist => [@$songarray], position => $row, play => 1);
+        ::Select(
+            staticlist => [@$songarray],
+            position => $row,
+            play => 1
+        );
     }
     elsif ($activate eq 'filter_and_play') {
-        ::Select(filter => $self->{filter}, song => $ID, play => 1);
+        ::Select(
+            filter => $self->{filter},
+            song => $ID,
+            play => 1
+        );
     }
     elsif ($activate eq 'filter_sort_and_play') {
         ::Select(
@@ -870,15 +970,24 @@ sub Activate {
     }
     elsif ($activate eq 'remove_and_play') {
         $songarray->Remove([$row]);
-        ::Select(song => $ID, play => 1);
+        ::Select(
+            song => $ID,
+            play => 1
+        );
     }
-    elsif ($activate eq 'remove')     { $songarray->Remove([$row]); }
-    elsif ($activate eq 'properties') { ::DialogSongProp($ID); }
+    elsif ($activate eq 'remove') {
+        $songarray->Remove([$row]);
+    }
+    elsif ($activate eq 'properties') {
+        ::DialogSongProp($ID);
+    }
     elsif ($activate eq 'play') {
         if   ($self->{type} eq 'A') { ::Select(position => $row, play => 1); }
         else                        { ::Select(song     => $ID,  play => 1); }
     }
-    else { ::DoActionForList($activate, [$ID]); }
+    else {
+        ::DoActionForList($activate, [$ID]);
+    }
 
     ::run_command($self, $aftercmd) if $aftercmd;
 }
@@ -979,7 +1088,8 @@ sub EditRowTip {
     my $self = shift;
     if ($self->{rowtip_edit}) { $self->{rowtip_edit}->force_present; return; }
     my $dialog = Gtk2::Dialog->new(
-        "Edit row tip", $self->get_toplevel,
+        "Edit row tip",
+        $self->get_toplevel,
         [qw/destroy-with-parent/],
         'gtk-apply'  => 'apply',
         'gtk-ok'     => 'ok',
@@ -1022,7 +1132,9 @@ sub EditRowTip {
             my ($dialog, $response) = @_;
             my $tip = $entry->get_text;
             if ($response eq 'ok' || $response eq 'apply') {
-                ::PrefSaveHistory(RowTip_history => $tip) if $tip;
+                ::PrefSaveHistory(RowTip_history => $tip)
+                    if $tip;
+
                 $self->SetRowTip($tip);
             }
             $dialog->destroy unless $response eq 'apply';
@@ -1053,9 +1165,11 @@ INIT {
             value => sub {
                 defined $::SongID
                   && $_[2] == $::SongID
-                  && ( !$_[0]{is_playlist}
-                    || !defined $::Position
-                    || $::Position == $_[1]) ? 'italic' : 'normal';
+                  && (
+                         !$_[0]{is_playlist}
+                      || !defined $::Position
+                      || $::Position == $_[1]
+                  ) ? 'italic' : 'normal';
             },
             attrib => 'style',
             type   => 'Gtk2::Pango::Style',
@@ -1064,11 +1178,11 @@ INIT {
             value => sub {
                 defined $::SongID
                   && $_[2] == $::SongID
-                  && ( !$_[0]{is_playlist}
-                    || !defined $::Position
-                    || $::Position == $_[1])
-                  ? PANGO_WEIGHT_BOLD
-                  : PANGO_WEIGHT_NORMAL;
+                  && (
+                         !$_[0]{is_playlist}
+                      || !defined $::Position
+                      || $::Position == $_[1]
+                  ) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL;
             },
             attrib => 'weight',
             type   => 'Glib::Uint',
@@ -1089,8 +1203,10 @@ INIT {
             menu  => 'Title - Artist - Album',
             title => 'Song',
             value => sub {
-                ::ReplaceFieldsAndEsc($_[2],
-                    "<b>%t</b>%V\n<small><i>%a</i> - %l</small>");
+                ::ReplaceFieldsAndEsc(
+                    $_[2],
+                    "<b>%t</b>%V\n<small><i>%a</i> - %l</small>"
+                );
             },
             attrib  => 'markup',
             type    => 'Glib::String',
@@ -1132,11 +1248,11 @@ INIT {
                         && $ID == $::SongID
                         && (   !$_[0]{is_playlist}
                             || !defined $::Position
-                            || $::Position == $_[1])
+                            || $::Position == $_[1]
+                           )
                     ),
                     'text'
-                  )
-                  || Songs::Display($ID, 'track');
+                ) || Songs::Display($ID, 'track');
             },
             type   => 'Glib::String',
             attrib => 'markup',
@@ -1163,7 +1279,11 @@ INIT {
             title => "Album picture",
             width => 100,
             value => sub {
-                CellRendererSongsAA::get_value('album', $_[0]{array}, $_[1]);
+                CellRendererSongsAA::get_value(
+                    'album',
+                    $_[0]{array},
+                    $_[1]
+                );
             },
             class   => 'CellRendererSongsAA',
             attrib  => 'ref',
@@ -1177,8 +1297,11 @@ INIT {
         artistpic => {
             title => "Artist picture",
             value => sub {
-                CellRendererSongsAA::get_value('first_artist', $_[0]{array},
-                    $_[1]);
+                CellRendererSongsAA::get_value(
+                    'first_artist',
+                    $_[0]{array},
+                    $_[1]
+                );
             },
             class   => 'CellRendererSongsAA',
             attrib  => 'ref',
@@ -1192,8 +1315,12 @@ INIT {
         stars => {
             title => "Rating",
             menu  => "Rating (picture)",
-            value =>
-              sub { Songs::Stars(Songs::Get($_[2], 'rating'), 'rating'); },
+            value => sub {
+                Songs::Stars(
+                    Songs::Get($_[2], 'rating'),
+                    'rating'
+                );
+            },
             class   => 'Gtk2::CellRendererPixbuf',
             attrib  => 'pixbuf',
             type    => 'Gtk2::Gdk::Pixbuf',
@@ -1220,10 +1347,14 @@ INIT {
 }
 
 our @ColumnMenu = (
-    {   label   => "_Sort by",
-        submenu => sub { Browser::make_sort_menu($_[0]{self}) },
+    {
+        label   => "_Sort by",
+        submenu => sub {
+            Browser::make_sort_menu($_[0]{self})
+        },
     },
-    {   label   => "_Insert column",
+    {
+        label   => "_Insert column",
         submenu => sub {
             my %names = map {
                 my $l = $SLC_Prop{$_}{menu} || $SLC_Prop{$_}{title};
@@ -1233,38 +1364,62 @@ our @ColumnMenu = (
             return \%names;
         },
         submenu_reverse => 1,
-        code      => sub { $_[0]{self}->ToggleColumn($_[1], $_[0]{pos}); },
+        code      => sub {
+            $_[0]{self}->ToggleColumn(
+                $_[1],
+                $_[0]{pos}
+            );
+        },
         stockicon => 'gtk-add'
     },
-    {   label => sub {
+    {
+        label => sub {
             '_Remove this column' . ' ('
               . ($SLC_Prop{$_[0]{pos}}{menu} || $SLC_Prop{$_[0]{pos}}{title})
               . ')';
         },
-        code => sub { $_[0]{self}->ToggleColumn($_[0]{pos}, $_[0]{pos}); },
+        code => sub {
+            $_[0]{self}->ToggleColumn(
+                $_[0]{pos},
+                $_[0]{pos}
+            );
+        },
         stockicon => 'gtk-remove'
     },
-    {   label => "Edit row tip...",
-        code  => sub { $_[0]{self}->EditRowTip; },
+    {
+        label => "Edit row tip...",
+        code  => sub {
+            $_[0]{self}->EditRowTip;
+        },
     },
-    {   label => "Keep list filtered and sorted",
-        code =>
-          sub { $_[0]{self}{array}->SetAutoUpdate($_[0]{self}{autoupdate}); },
+    {
+        label => "Keep list filtered and sorted",
+        code => sub {
+            $_[0]{self}{array}->SetAutoUpdate(
+                $_[0]{self}{autoupdate}
+            );
+        },
         toggleoption => 'self/autoupdate',
         mode         => 'B',
     },
-    {   label => "Follow playing song",
-        code  => sub { $_[0]{self}->FollowSong if $_[0]{self}{follow}; },
+    {
+        label => "Follow playing song",
+        code  => sub {
+            $_[0]{self}->FollowSong
+                if $_[0]{self}{follow};
+        },
         toggleoption => 'self/follow',
     },
-    {   label => "Go to playing song",
-        code  => sub { $_[0]{self}->FollowSong; },
+    {
+        label => "Go to playing song",
+        code  => sub {
+            $_[0]{self}->FollowSong;
+        },
     },
 );
 
 our @DefaultOptions = (
-    cols =>
-      'playandqueue title artist album year length track file lastplay playcount rating',
+    cols => 'playandqueue title artist album year length track file lastplay playcount rating',
     playrow      => 'boldrow',
     headers      => 'on',
     no_typeahead => 0,
@@ -1273,6 +1428,7 @@ our @DefaultOptions = (
 sub init_textcolumns #FIXME support calling it multiple times => remove columns for removed fields, update added columns ?
 {
     for my $key (Songs::ColumnsKeys()) {
+
         $SLC_Prop{$key} = {
             title  => Songs::FieldName($key),
             value  => sub { Songs::Display($_[2], $key) },
@@ -1282,7 +1438,9 @@ sub init_textcolumns #FIXME support calling it multiple times => remove columns 
             width  => Songs::FieldWidth($key),
             depend => join(' ', Songs::Depends($key)),
         };
-        $SLC_Prop{$key}{init}{xalign} = 1 if Songs::ColumnAlign($key);
+
+        $SLC_Prop{$key}{init}{xalign} = 1
+            if Songs::ColumnAlign($key);
     }
 }
 
@@ -1323,9 +1481,13 @@ sub new {
         dest   => [::DRAG_ID, ::DRAG_FILE, \&drag_received_cb],
         motion => \&drag_motion_cb,
     );
-    $tv->signal_connect(drag_data_delete =>
-          sub { $_[0]->signal_stop_emission_by_name('drag_data_delete'); })
-      ;    #ignored
+
+    # ignored
+    $tv->signal_connect(
+        drag_data_delete => sub {
+            $_[0]->signal_stop_emission_by_name('drag_data_delete');
+        }
+    );
 
     $tv->set_rules_hint(TRUE);
     $tv->set_headers_clickable(TRUE);
@@ -1348,8 +1510,11 @@ sub new {
     $tv->signal_connect(row_activated  => \&row_activated_cb);
     $tv->get_selection->signal_connect(changed => \&sel_changed_cb);
     $tv->get_selection->set_mode('multiple');
+
+    # requires gtk+ 2.12, Gtk2 1.160
     $tv->signal_connect(query_tooltip => \&query_tooltip_cb)
-      if *Gtk2::Widget::set_has_tooltip{CODE}; # requires gtk+ 2.12, Gtk2 1.160
+        if *Gtk2::Widget::set_has_tooltip{CODE};
+
     $self->SetRowTip($opt->{rowtip});
 
     # used to draw text when treeview empty
@@ -1357,14 +1522,17 @@ sub new {
     $tv->get_hadjustment->signal_connect_swapped(
         changed => sub {
             my $tv = shift;
-            $tv->queue_draw unless $tv->get_model->iter_n_children;
+            $tv->queue_draw
+                unless $tv->get_model->iter_n_children;
         },
         $tv
     );
 
     $self->AddColumn($_) for split / +/, $opt->{cols};
+
+    # make sure there is at least one column
     $self->AddColumn('title')
-      unless $tv->get_columns;    #make sure there is at least one column
+        unless $tv->get_columns;
 
     ::Watch($self, SongArray    => \&SongArray_changed_cb);
     ::Watch($self, SongsChanged => \&SongsChanged_cb);
@@ -1420,9 +1588,9 @@ sub AddColumn {
     $column->set_sizing('fixed');
     $column->set_resizable(TRUE);
     $column->set_min_width(0);
-    $column->set_fixed_width($self->{colwidth}{$colid}
-          || $prop->{width}
-          || 100);
+    $column->set_fixed_width(
+        $self->{colwidth}{$colid} || $prop->{width} || 100
+    );
     $column->set_clickable(TRUE);
     $column->set_reorderable(TRUE);
 
@@ -1437,7 +1605,7 @@ sub AddColumn {
     ) if defined $prop->{sort};
     my $tv = $self->child;
     if   (defined $pos) { $tv->insert_column($column, $pos); }
-    else                { $tv->append_column($column); }
+    else                { $tv->append_column($column);       }
     #################################### connect col selection menu to right-click on column
     my $label = Gtk2::Label->new($prop->{title});
     $column->set_widget($label);
@@ -1483,8 +1651,14 @@ sub UpdateSortIndicator {
 
 sub SelectColumns {
     my ($self, $pos) = @_;
-    ::PopupContextMenu(\@ColumnMenu,
-        {self => $self, 'pos' => $pos, mode => $self->{type},});
+    ::PopupContextMenu(
+        \@ColumnMenu,
+        {
+            self => $self,
+            'pos' => $pos,
+            mode => $self->{type},
+        }
+    );
 }
 
 sub ToggleColumn {
@@ -1504,7 +1678,7 @@ sub ToggleColumn {
     }
     $self->AddColumn($colid, $position) if defined $position;
     $self->AddColumn('title')
-      unless $tv->get_columns;    #if removed the last column
+        unless $tv->get_columns;    #if removed the last column
     $self->{cols_to_watch} = undef;   #to force update list of columns to watch
 }
 
@@ -1513,12 +1687,19 @@ sub set_has_tooltip { $_[0]->child->set_has_tooltip($_[1]) }
 sub expose_cb {
     my ($tv, $event) = @_;
     my $self = $tv->parent;
-    unless ($tv->get_model->iter_n_children && $event->window != $tv->window) {
+
+    unless (   $tv->get_model->iter_n_children
+            && $event->window != $tv->window
+        )
+    {
         $tv->get_bin_window->clear;
 
         # draw empty text when no songs
-        $self->DrawEmpty($tv->get_bin_window, $tv->window,
-            $tv->get_hadjustment->value);
+        $self->DrawEmpty(
+            $tv->get_bin_window,
+            $tv->window,
+            $tv->get_hadjustment->value
+        );
     }
     return 0;
 }
@@ -1526,8 +1707,9 @@ sub expose_cb {
 sub query_tooltip_cb {
     my ($tv, $x, $y, $keyb, $tooltip) = @_;
     return 0 if $keyb;
-    my ($path, $column) =
-      $tv->get_path_at_pos($tv->convert_widget_to_bin_window_coords($x, $y));
+    my ($path, $column) = $tv->get_path_at_pos(
+        $tv->convert_widget_to_bin_window_coords($x, $y)
+    );
     return 0 unless $path;
     my ($row) = $path->get_indices;
     my $self  = ::find_ancestor($tv, __PACKAGE__);
@@ -1550,7 +1732,9 @@ sub GetCurrentRow {
 
 sub GetSelectedRows {
     my $self = shift;
-    return [map $_->to_string, $self->child->get_selection->get_selected_rows];
+    return [
+        map $_->to_string, $self->child->get_selection->get_selected_rows
+    ];
 }
 
 sub drag_received_cb {
@@ -1604,8 +1788,15 @@ sub drag_motion_cb {
 sub sel_changed_cb {
     my $treesel = $_[0];
     my $group   = $treesel->get_tree_view->parent->{group};
-    ::IdleDo('1_Changed' . $group, 10, \&::HasChanged, 'Selection_' . $group)
-      ; #delay it, because it can be called A LOT when, for example, removing 10000 selected rows
+
+    # Delay it, because it can be called A LOT when, for example, removing
+    # 10000 selected rows
+    ::IdleDo(
+        '1_Changed' . $group,
+        10,
+        \&::HasChanged,
+        'Selection_' . $group
+    );
 }
 
 sub cursor_changed_cb {
