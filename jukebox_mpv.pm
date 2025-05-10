@@ -15,7 +15,7 @@ use warnings;
 use IO::Socket::UNIX;
 use JSON::PP;
 use Time::HiRes 'sleep';
-use POSIX ':sys_wait_h';    #for WNOHANG in waitpid
+use POSIX ':sys_wait_h'; # for WNOHANG in waitpid
 
 #$SIG{CHLD} = 'IGNORE';  # to make sure there are no zombies #cause crash after displaying a file dialog and then runnning an external command with mandriva's gtk2
 #$SIG{CHLD} = sub { while (waitpid(-1, WNOHANG)>0) {} };
@@ -32,7 +32,8 @@ my @cmd_queue;
 
 my $SOCK = $::HomeDir . "gmb_mpv_sock";
 
-$::PlayPacks{Play_mpv} = 1;    #register the package
+# Register the package.
+$::PlayPacks{Play_mpv} = 1;
 
 sub init {
     undef %supported;
@@ -46,7 +47,9 @@ sub init {
     }
     $mpv ||= ::first {-x $_} map $_ . ::SLASH . 'mpv', split /:/, $ENV{PATH};
 
-    warn "mpv: found mpv version $version\n" if $version && $::debug;
+    warn "mpv: found mpv version $version\n"
+        if $version && $::debug;
+
     if (!check_version(0, 28)) {
         $mpv = undef;
         warn "mpv version earlier than 0.28 are not supported -> mpv backend disabled\n";
@@ -103,7 +106,9 @@ sub cmd_push {
     my $callback;
 
     # If the first argument is a subroutine, use it as callback
-    if (ref($args[0]) eq 'CODE') { $callback = shift @args; }
+    if (ref($args[0]) eq 'CODE') {
+        $callback = shift @args;
+    }
     push @cmd_queue, $callback;
     my $cmd = JSON::PP->new->encode({command => \@args});
     print $sockfh "$cmd\n";
@@ -113,7 +118,10 @@ sub cmd_push {
 sub cmd_shift {
     my $data     = shift;
     my $callback = shift @cmd_queue;
-    if ($callback) { $callback->($data); }
+
+    if ($callback) {
+        $callback->($data);
+    }
 }
 
 sub launch_mpv {
@@ -151,7 +159,7 @@ sub launch_mpv {
     elsif ($ChildPID == 0) {
         # child
         exec @cmd_and_args
-          or print STDERR "launch failed (@cmd_and_args)  : $!\n";
+            or print STDERR "launch failed (@cmd_and_args)  : $!\n";
         POSIX::_exit(1);
     }
 
@@ -159,12 +167,14 @@ sub launch_mpv {
     for (0 .. 200) {
         $sockfh = IO::Socket::UNIX->new(Peer => $SOCK, Type => SOCK_STREAM);
         last if $sockfh || (waitpid($ChildPID, WNOHANG) != 0);
-        warn "jukebox_mpv: could not connect to socket; retrying\n" if $::debug;
+        warn "jukebox_mpv: could not connect to socket; retrying\n"
+            if $::debug;
         sleep 0.01;
     }
     unless ($sockfh) {
         handle_error(
-            "failed to connect to socket (probably failed to launch mpv): $!");
+            "failed to connect to socket (probably failed to launch mpv): $!"
+        );
         return;
     }
     $sockfh->autoflush(1);
@@ -206,11 +216,19 @@ sub append_next {
 sub _remotemsg {
     my $eof;
     while (my $line = <$sockfh>) {
-        my $msg = JSON::PP->new->decode($line)
-          ; # use JSON::PP->new->decode instead of decode_json (equivalent to JSON::PP->new->utf8->decode) because decode_json converts to utf8, which gives error with invalid utf8 filenames (only happens for mpv >0.9.0)
-        warn "mpv raw-output: $line" if $::debug;
+        # use JSON::PP->new->decode instead of decode_json (equivalent to
+        # JSON::PP->new->utf8->decode) because decode_json converts to utf8,
+        # which gives error with invalid utf8 filenames (only happens for mpv
+        # >0.9.0)
+        my $msg = JSON::PP->new->decode($line);
+
+        warn "mpv raw-output: $line"
+            if $::debug;
+
         if (my $error = $msg->{error}) {
-            warn "mpv error: $error" unless $error eq 'success';
+            warn "mpv error: $error"
+                unless $error eq 'success';
+
             cmd_shift($msg->{data});
         }
         elsif (my $event = $msg->{event}) {
@@ -253,7 +271,11 @@ sub handle_eof {
     if ($::PlayTime < Songs::Get($::SongID, 'length') - 5) {
         handle_error("Playback ended unexpectedly.");
     }
-    else { $Called_from_eof = 1; ::end_of_file(); $Called_from_eof = 0; }
+    else {
+        $Called_from_eof = 1;
+        ::end_of_file();
+        $Called_from_eof = 0;
+    }
 }
 
 sub handle_error {
@@ -270,7 +292,7 @@ sub _eos_cb {
     if ($ChildPID && $ChildPID == waitpid($ChildPID, WNOHANG)) {
         $error = "Check your audio settings" if $?;
     }
-    while (waitpid(-1, WNOHANG) > 0) { }    #reap dead children
+    while (waitpid(-1, WNOHANG) > 0) { } # reap dead children
     handle_error($error or "mpv process closed unexpectedly.");
     return 1;
 }
@@ -299,8 +321,9 @@ sub Stop {
     }
     if ($ChildPID) {
         cmd_push('quit');
-        Glib::Timeout->add(100, \&_Kill_timeout) unless @pidToKill;
-        $Kill9 = 0;    #_Kill_timeout will first try INT, then KILL
+        Glib::Timeout->add(100, \&_Kill_timeout)
+            unless @pidToKill;
+        $Kill9 = 0; # _Kill_timeout will first try INT, then KILL
         push @pidToKill, $ChildPID;
         undef $ChildPID;
     }
@@ -321,30 +344,36 @@ sub Stop {
 
 sub _Kill_timeout    #make sure old children are dead
 {
-    while (waitpid(-1, WNOHANG) > 0) { }    #reap dead children
-    @pidToKill = grep kill(0, $_),
-      @pidToKill;    #checks to see which ones are still there
+    while (waitpid(-1, WNOHANG) > 0) { } # reap dead children
+
+    # check to see which ones are still there
+    @pidToKill = grep kill(0, $_), @pidToKill;
     if (@pidToKill) {
         warn "Sending " . ($Kill9 ? 'KILL' : 'INT') . " signal to @pidToKill\n"
-          if $::debug;
+            if $::debug;
+
         if   ($Kill9) { kill KILL => @pidToKill; }
         else          { kill INT  => @pidToKill; }
-        $Kill9 = 1;    #use KILL if they are still there next time
+
+        $Kill9 = 1; # use KILL if they are still there next time
     }
-    return @pidToKill;    #removes the timeout if no more @pidToKill
+    return @pidToKill; # removes the timeout if no more @pidToKill
 }
 
 sub AdvancedOptions {
     my $vbox = Gtk2::VBox->new(::FALSE, 2);
     my $sg1  = Gtk2::SizeGroup->new('horizontal');
     my $opt  = ::NewPrefEntry('mpvoptions', "mpv options :", sizeg1 => $sg1);
+
+    # FIXME comma before <for>???
     $vbox->pack_start($_, ::FALSE, ::FALSE, 2), for $opt;
+
     return $vbox;
 }
 
 # Volume functions
-sub GetVolume {$::Volume}
-sub GetMute   {$::Mute}
+sub GetVolume { $::Volume }
+sub GetMute   { $::Mute   }
 
 sub SetVolume {
     shift;
@@ -377,7 +406,7 @@ sub convertvolume {
 
 sub get_EQ_string {
     my $val = shift;
-    my @freqs = (29, 59, 119, 237, 474, 947, 1900, 3800, 7500, 15000);
+    my @freqs = (qw(29 59 119 237 474 947 1900 3800 7500 15000));
     my @gains = split /:/, $val;
     my $fireq_string = 'gain_entry=';
     my @entries;
