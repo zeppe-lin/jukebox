@@ -35,10 +35,9 @@ use Encode qw(decode encode);
 my %IsParent;
 
 INIT {
-
     # unused parent atoms: tref imap edts mdra rmra imag vnrp dinf
     $IsParent{$_} = 0
-      for qw/moov trak udta mdia minf stbl ilst moof traf/;
+        for qw/moov trak udta mdia minf stbl ilst moof traf/;
 
     # 4 bytes version/flags = byte hex version + 24-bit hex flags
     # (current = 0)
@@ -90,8 +89,8 @@ sub _openw {
         my $err = "Error opening '$file' for writing :\n$!";
         warn $err . "\n";
         return undef
-          unless $self->{errorsub}
-          && $self->{errorsub}($!, 'openwrite', $file) eq 'retry';
+            unless $self->{errorsub}
+                && $self->{errorsub}($!, 'openwrite', $file) eq 'retry';
     }
     binmode $fh;
     unless ($tmp) {
@@ -140,10 +139,9 @@ sub remove_all {
     if ($key =~ m/^(.*)----(.*)$/) {
         my $appid  = $1;
         my $subkey = $2;
-        my $re =
-          $appid eq ''
-          ? qr/^.*----\Q$subkey\E$/i
-          : qr/^(?:\Q$appid\E)?----\Q$subkey\E$/i;
+        my $re = $appid eq ''
+                    ? qr/^.*----\Q$subkey\E$/i
+                    : qr/^(?:\Q$appid\E)?----\Q$subkey\E$/i;
         @arrays = map $ilst->{$_}, grep m/$re/, keys %$ilst;
     }
     elsif (my $array = $ilst->{$key}) {
@@ -180,10 +178,9 @@ sub get_values {
     if ($key =~ m/^(.*)----(.*)$/) {
         my $appid  = $1;
         my $subkey = $2;
-        my $re =
-          $appid eq ''
-          ? qr/^.*----\Q$subkey\E$/i
-          : qr/^(?:\Q$appid\E)?----\Q$subkey\E$/i;
+        my $re = $appid eq ''
+                    ? qr/^.*----\Q$subkey\E$/i
+                    : qr/^(?:\Q$appid\E)?----\Q$subkey\E$/i;
         return map @{$ilst->{$_}}, grep m/$re/, keys %$ilst;
     }
     my $v = $ilst->{$key};
@@ -193,10 +190,10 @@ sub get_values {
 sub get_field_info {
     my $key = shift;
     my $type =
-        $key =~ s/^Unknown tag with flag=\d+ and key=// ? 'u'
-      : $key eq 'covr'                                  ? 'p'
-      : $key =~ m/^cpil$|^pgap$|^pcst$/                 ? 'f'
-      :                                                   't';
+            $key =~ s/^Unknown tag with flag=\d+ and key=// ? 'u'
+          : $key eq 'covr'                                  ? 'p'
+          : $key =~ m/^cpil$|^pgap$|^pcst$/                 ? 'f'
+          :                                                   't';
     if ($key =~ m/^(.*)----(.*)$/) {
         return 'tt' . $type, '----', $key, $1, $2;
     }
@@ -219,13 +216,11 @@ sub ParseAtomTree {
         my ($length, $name) = unpack 'NA4', $buffer;
         my $offset   = tell($fh) - 8;
         my $headsize = 8;
-        # $length == 1 means 64-bit length follow
-        if ($length == 1) {
+        if ($length == 1) { # length == 1 means 64-bit length follow
             read($fh, $buffer, 8);
             my ($length1, $length2) = unpack 'NN', $buffer;
             if ($length1 > 0) {
-                warn
-                  "atom '$name' has a size >4GB, unsupported => can't read file\n";
+                warn "atom '$name' has a size >4GB, unsupported => can't read file\n";
                 return;
             }
             $length   = $length2;
@@ -251,9 +246,7 @@ sub ParseAtomTree {
         my $isparent   = $IsParent{$name};
 
         # 0 but defined: children of ilst are parents
-        $isparent = 0
-          if @parents
-          && $parents[-1] eq 'ilst';
+        $isparent = 0 if @parents && $parents[-1] eq 'ilst';
         if (defined $isparent) {
             push @left,    $datalength;
             push @parents, $name;
@@ -287,13 +280,10 @@ sub ParseAtomTree {
         }
         elsif ($name eq 'mvhd') {
             read($fh, $buffer, $datalength);
-            my ($version, $timescale, $duration) =
-                unpack 'Cx3x4x4NN', $buffer;
+            my ($version, $timescale, $duration) = unpack 'Cx3x4x4NN', $buffer;
             if ($version == 1) {
-                ($timescale, $duration, my $duration2) =
-                    unpack 'x4x8x8NNN', $buffer;
-                $info{seconds} =
-                    ($duration * 2**32 + $duration2) / $timescale;
+                ($timescale, $duration, my $duration2) = unpack 'x4x8x8NNN', $buffer;
+                $info{seconds} = ($duration * 2**32 + $duration2) / $timescale;
             }
             else {
                 $info{seconds} = $duration / $timescale;
@@ -301,12 +291,11 @@ sub ParseAtomTree {
         }
         elsif ($name eq 'stsd') {
             read($fh, $buffer, $datalength);
+
             my ($type, $channels, $bitspersample, $samplerate) =
-              unpack 'x4x4x4A4x16nnx2N', $buffer;
+                unpack 'x4x4x4A4x16nnx2N', $buffer;
 
-            if (($type eq 'mp4a' || $type eq 'alac')
-                && !$info{traktype}) {
-
+            if (($type eq 'mp4a' || $type eq 'alac') && !$info{traktype}) {
                 # ignore if non mp4a/alac, and only read the first one
                 # if more than one (can it happen ?)
                 $info{channels}      = $channels;
@@ -356,8 +345,10 @@ sub ParseAtomTree {
     while (@ilst) {
         my ($key, $data) = splice @ilst, 0, 2;
         if ($key eq '----') {
-            $key =
-              substr($data->{mean}, 4) . '----' . substr($data->{name}, 4);
+            $key = substr($data->{mean}, 4)
+                 . '----'
+                 . substr($data->{name}, 4);
+
             $data = $data->{data};
             next unless defined $data;
         }
@@ -370,12 +361,14 @@ sub ParseAtomTree {
             $val = join '/', unpack 'x2nn', $val;
         }
         elsif ($key eq 'gnre') {
+            # genre uses id3 genre number + 1
             $val = unpack 'xC', $val;
             $val = $val ? $Tag::MP3::Genres[$val - 1] : '';
             $key = "\xa9gen";
-        } # genre uses id3 genre number +1
+        }
         elsif ($key eq 'covr') {
-            # nothing to do, $val contains the binary data of the picture
+            # nothing to do, $val contains the binary data of the
+            # picture
         }
         elsif ($key eq 'tmpo') {
             $val = unpack 'n', $val;
@@ -399,9 +392,8 @@ sub Make_ilst {
         next unless defined $val;
         my $data;
         if ($key eq 'covr') {
-            for my $val (grep defined, $val,
-                @{$self->{ilst}{covr}})    #there can be multiple covers
-            {
+            # there can be multiple covers
+            for my $val (grep defined, $val, @{$self->{ilst}{covr}}) {
                 my $flags = 13; # default to jpg
                 if ($val =~ m/^\x89PNG\x0D\x0A\x1A\x0A/) {
                     $flags = 14; # for png
@@ -409,9 +401,7 @@ sub Make_ilst {
                 #elsif ($val!=~m/^\xff\xd8\xff\xe0..JFIF\x00/s) {
                 #   warn "picture in unknown format, should be jpg or png";
                 #}
-                $data .=
-                    pack('NA4x3Cx4a*', 16 + length $val, 'data', $flags)
-                    . $val;
+                $data .= pack('NA4x3Cx4a*', 16 + length $val, 'data', $flags) . $val;
             }
             $self->{ilst}{covr} = [];
         }
@@ -425,8 +415,9 @@ sub Make_ilst {
                 my ($mean, $name) = ref $val ? @$val : ($1, $2);
                 $val  = $val->[2] if ref $val;
                 $key  = '----';
-                $data = pack 'NA4x4a*NA4x4a*', (12 + length $mean), 'mean',
-                  $mean, (12 + length $name), 'name', $name;
+                $data = pack 'NA4x4a*NA4x4a*',
+                            (12 + length $mean), 'mean', $mean,
+                            (12 + length $name), 'name', $name;
             }
             if ($key eq 'trkn' || $key eq 'disk') {
                 next unless $val =~ m#(\d+)(?:/(\d+))?#;
@@ -446,14 +437,15 @@ sub Make_ilst {
                 $key   = 'gnre';
                 $flags = 0;
                 $val   = ::first {
-                    $val eq $Tag::MP3::Genres[$_]
-                } 0 .. $#Tag::MP3::Genres;
+                                $val eq $Tag::MP3::Genres[$_]
+                         } 0 .. $#Tag::MP3::Genres;
                 $val = pack 'xC', $val + 1; # gnre uses id3 genre number +1
             }
-            elsif ($flags == 1) { $val = encode('utf-8', $val); }
+            elsif ($flags == 1) {
+                $val = encode('utf-8', $val);
+            }
 
-            $data .=
-                pack 'NA4x3Cx4a*', (16 + length $val), 'data', $flags, $val;
+            $data .= pack 'NA4x3Cx4a*', (16 + length $val), 'data', $flags, $val;
         }
         $ilst .= pack 'NA4a*', (8 + length $data), $key, $data;
     }
@@ -480,14 +472,15 @@ sub write_file {
     if (8 == read $fh, my ($buffer), 8) {
         my ($length, $name) = unpack 'NA4', $buffer;
 
-        # $length==1 means 64-bit length follow
+        # $length == 1 means 64-bit length follow
         if ($length == 1 && 8 == read($fh, $buffer, 8)) {
             my ($length1, $length2) = unpack 'NN', $buffer;
             if ($length1 == 0 && $length2 >= 16) {
                 $length = $length2;
             }
         }
-        $free_after_moov = $length if $name eq 'free' && $length >= 8;
+        $free_after_moov = $length
+            if $name eq 'free' && $length >= 8;
     }
     $self->_close;
     my $oldilst = substr $moov, $ilst_offset, $oldsize;
@@ -497,17 +490,20 @@ sub write_file {
     if (  $poffset->[-1] - $moov_offset + $psize->[-1]
         > $ilst_offset + $oldsize) {
 
-        my ($length, $name) = unpack 'NA4', substr $moov,
-          $ilst_offset + $oldsize, 8;
+        my ($length, $name) =
+            unpack 'NA4', substr $moov, $ilst_offset + $oldsize, 8;
+
         if ($length == 1) {
-            # $length==1 means 64-bit length follow
+            # $length == 1 means 64-bit length follow
             my ($length1, $length2) =
                 unpack 'NN', substr $moov, $ilst_offset + $oldsize + 8, 8;
+
             if ($length1 == 0 && $length2 >= 16) {
                 $length = $length2;
             }
         }
-        $oldsize += $length if $name eq 'free' && $length >= 8;
+        $oldsize += $length
+            if $name eq 'free' && $length >= 8;
     }
     my $free = $oldsize - length $newilst; # warn "  free1=$free\n";
     if ($free >= 2**32) {
@@ -516,7 +512,8 @@ sub write_file {
     }
     elsif (        $free == 0
            || (    $free >= 8
-               && ($free < 2048 || $self->{nofullrewrite}))) {
+               && ($free < 2048 || $self->{nofullrewrite})))
+    {
 
         warn "in place editing1.\n";
         $newilst .= pack('NA4', $free, 'free') . "\x00" x ($free - 8)
@@ -538,17 +535,17 @@ sub write_file {
         for my $i (0 .. $#$poffset) {
             # resize ilst's parents
             substr $moov, $poffset->[$i] - $moov_offset, 4,
-              pack('N', $psize->[$i] += $delta1);
+                pack('N', $psize->[$i] += $delta1);
         }
         my $free = $free_after_moov - $delta1;
         #warn "  free2=$free\n";
         if (        $free == 0
             || (    $free >= 8
-                && ($free < 20480 || $self->{nofullrewrite}))) {
-
+                && ($free < 20480 || $self->{nofullrewrite})))
+        {
             warn "in place editing2.\n";
             $moov .= pack('NA4', $free, 'free') . "\x00" x ($free - 8)
-              if $free;
+                if $free;
             $fh = $self->_openw or return 0;
             seek $fh, $poffset->[0], 0;
             print $fh $moov or warn $!;
@@ -557,36 +554,39 @@ sub write_file {
             $self->_close;
         }
         elsif ($self->{nofullrewrite}) {
-            warn
-              "file contains a co64 or tfhd atom, adding metadata bigger than the free space is not supported.\n";
+            warn "file contains a co64 or tfhd atom, adding metadata bigger than the free space is not supported.\n";
             return 0;
         }
         else {
-            my $delta2 = 4096 - $free;    #warn "delta2=$delta2\n";
+            my $delta2 = 4096 - $free;
+            # warn "delta2=$delta2\n";
             $moov .= pack('NA4', 4096, 'free') . "\x00" x (4096 - 8);
             my $INfh  = $self->_open     or return 0;
-            my $OUTfh = $self->_openw(1) or return 0;    #open .TEMP file
+            my $OUTfh = $self->_openw(1) or return 0; # open .TEMP file
             my $werr;
 
             my $toplevels = $self->{toplevels};
             while (@$toplevels) {
                 my ($name, $o, $s, $stco) = splice @$toplevels, 0, 4;
-                if ($o == $moov_offset)                  #$name eq 'moov'
+                if ($o == $moov_offset) #$name eq 'moov'
                 {
+                    # fix offset for stco after ilst
                     for (my $i = 1; $i <= $#$stco; $i += 2) {
-                        $stco->[$i] += $delta1 if $stco->[$i] > $ilst_offset;
-                    }    #fix offset for stco after ilst
+                        $stco->[$i] += $delta1
+                            if $stco->[$i] > $ilst_offset;
+                    }
                     _UpdateStco($stco, \$moov, $moov_offset, $delta2);
                     print $OUTfh $moov or warn $! and $werr++;
                     splice @$toplevels, 0, 4
-                      if @$toplevels && $toplevels->[0] eq 'free';
+                        if @$toplevels && $toplevels->[0] eq 'free';
                 }
                 elsif ($name eq 'mdat') {
                     seek $INfh, $o, 0;
                     while ($s > 0) {
                         my $size = ($s > 1048576) ? 1048576 : $s;
                         read $INfh, my ($buffer), $size;
-                        print $OUTfh $buffer or warn $! and $werr++;
+                        print $OUTfh $buffer
+                            or warn $! and $werr++;
                         $s -= $size;
                     }
                 }
@@ -594,7 +594,8 @@ sub write_file {
                     seek $INfh, $o, 0;
                     read $INfh, my ($buffer), $s;
                     _UpdateStco($stco, \$buffer, $moov_offset, $delta2);
-                    print $OUTfh $buffer or warn $! and $werr++;
+                    print $OUTfh $buffer
+                        or warn $! and $werr++;
                 }
                 last if $werr;
             }
@@ -606,12 +607,15 @@ sub write_file {
                 return 0;
             }
             warn "replacing old file with new file.\n";
-            unlink $self->{filename} && rename $self->{filename} . '.TEMP',
-              $self->{filename};
+            unlink $self->{filename}
+                && rename $self->{filename} . '.TEMP', $self->{filename};
         }
     }
-    %$self = ()
-      ; #destroy the object to make sure it is not reused as many of its data are now invalid
+
+    # destroy the object to make sure it is not reused as many of its
+    # data are now invalid
+    %$self = ();
+
     return 1;
 }
 
@@ -620,26 +624,22 @@ sub _UpdateStco {
     while (@$stco) {
         my ($atom, $offset) = splice @$stco, 0, 2;
         if ($atom eq 'stco') {
-            my $nb = unpack 'N', substr $$chunckdataref,
-              $offset + 12;    #number of 4-bytes offset
-            my @offsets = unpack 'N*', substr $$chunckdataref, $offset + 16,
-              $nb * 4;
+            # number of 4-bytes offset
+            my $nb = unpack 'N', substr $$chunckdataref, $offset + 12;
+
+            my @offsets = unpack 'N*', substr $$chunckdataref, $offset + 16, $nb * 4;
             $_ = $_ > $change_position ? $_ + $delta : $_ for @offsets;
-            substr $$chunckdataref, $offset + 16, 4 * @offsets, pack 'N*',
-              @offsets;
+            substr $$chunckdataref, $offset + 16, 4 * @offsets, pack 'N*', @offsets;
         }
 
-#updating co64 and tfhd is not supported, will abort before reaching this point because of $self->{nofullrewrite}
-#elsif ($atom eq 'co64')
-#{
-#}
-        ##elsif ($atom eq 'tfhd')
-        #{
-        #}
+        # Updating co64 and tfhd is not supported, will abort before
+        # reaching this point because of $self->{nofullrewrite}
+        #elsif ($atom eq 'co64') { }
+        #elsif ($atom eq 'tfhd') { }
     }
 }
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# vim: sw=4 ts=4 sts=4 et cc=72 tw=70
 # End of file.
