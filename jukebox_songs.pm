@@ -22,7 +22,7 @@ our (%Def, %Types, %Categories, %FieldTemplates, @Fields, %HSort, %Aliases);
 my %FuncCache;
 
 INIT {
-    # sin 9**9**9 is slighly more portable than $nan="nan",
+    # sin 9**9**9 is slightly more portable than $nan="nan",
     # use unpack pack because the nan will be stored that way
     our $nan = unpack 'F', pack('F', sin(9**9**9));
     our %timespan_menu = (
@@ -50,18 +50,25 @@ INIT {
             grouptitle        => '#display#',
             'editwidget:many' => sub {
                 my $field = $_[0];
-                GMB::TagEdit::Combo->new(@_,
-                    Field_property($field, 'edit_listall'));
+                GMB::TagEdit::Combo->new(
+                    @_,
+                    Field_property($field, 'edit_listall')
+                );
             },
             'editwidget:single' => sub {
                 my $field = $_[0];
-                GMB::TagEdit::EntryString->new(@_, 0,
-                    Field_property($field, 'edit_listall'));
+                GMB::TagEdit::EntryString->new(
+                    @_,
+                    0,
+                    Field_property($field, 'edit_listall')
+                );
             },
             'editwidget:per_id' => sub {
                 my $field = $_[0];
-                GMB::TagEdit::EntryString->new(@_,
-                    Field_properties($field, 'editwidth', 'edit_listall'));
+                GMB::TagEdit::EntryString->new(
+                    @_,
+                    Field_properties($field, 'editwidth', 'edit_listall')
+                );
             },
             'filter:m'       => '#display# .=~. m"#VAL#"',
             'filter_prep:m'  => \&Filter::QuoteRegEx,
@@ -84,8 +91,11 @@ INIT {
                 max           => 99,
                 default_value => 65,
             ],
-            'filterdesc:fuzzy' =>
-              ["%s fuzzy match with %s", "fuzzy match", 'fuzzy string',],
+            'filterdesc:fuzzy' => [
+                "%s fuzzy match with %s",
+                "fuzzy match",
+                'fuzzy string',
+            ],
             'filterdesc:-fuzzy' => "no %s fuzzy match with %s",
             'filterdesc:mi'     => [
                 "matches regexp %s",
@@ -93,13 +103,26 @@ INIT {
                 'regexp',
                 icase => 1,
             ],
-            'filterdesc:si' =>
-              ["contains %s", "contains", 'substring', icase => 1,],
-            'filterdesc:e' => [
-                "is equal to %s", "is equal to", 'string', completion => 1,
+            'filterdesc:si' => [
+                "contains %s",
+                "contains",
+                'substring',
+                icase => 1,
             ],
-            'filterdesc:m'   => ["matches regexp %s (case sensitive)", 'mi'],
-            'filterdesc:s'   => ["contains %s (case sensitive)",       'si'],
+            'filterdesc:e' => [
+                "is equal to %s",
+                "is equal to",
+                'string',
+                completion => 1,
+            ],
+            'filterdesc:m'   => [
+                "matches regexp %s (case sensitive)",
+                'mi'
+            ],
+            'filterdesc:s'   => [
+                "contains %s (case sensitive)",
+                'si'
+            ],
             'filterdesc:-m'  => "doesn't match regexp %s (case sensitive)",
             'filterdesc:-mi' => "doesn't match regexp %s",
             'filterdesc:-s'  => "doesn't contain %s (case sensitive)",
@@ -113,7 +136,9 @@ INIT {
             default_filter       => 'si',
             autofill_re          => '.+',
         },
-        unknown => {parent => 'generic',},
+        unknown => {
+            parent => 'generic',
+        },
         virtual => {
             parent => 'string',
             _      => '#get#',
@@ -850,10 +875,26 @@ INIT {
 
             #'filterdesc:e'		=> [_"is equal to %s", _"is equal to", 'date' ],
             filter_exclude => 'e',    # do not show these filters
-            'filterdesc:>ago' => ["more than %s ago", "more than", 'ago',],
-            'filterdesc:<ago' => ["less than %s ago", "less than", 'ago',],
-            'filterdesc:>' => ["after %s",  "after",  'date',],
-            'filterdesc:<' => ["before %s", "before", 'date',],
+            'filterdesc:>ago' => [
+                "more than %s ago",
+                "more than",
+                'ago',
+            ],
+            'filterdesc:<ago' => [
+                "less than %s ago",
+                "less than",
+                'ago',
+            ],
+            'filterdesc:>' => [
+                "after %s",
+                "after",
+                'date',
+            ],
+            'filterdesc:<' => [
+                "before %s",
+                "before",
+                'date',
+            ],
             'filterdesc:b' => [
                 "between %s and %s",
                 "between (absolute dates)",
@@ -870,20 +911,29 @@ INIT {
             'filterdesc:-<'    => "after %s",
             'filterdesc:-b'    => "not between %s and %s",
             'filterdesc:-bago' => "not between %s ago and %s ago",
-            'filterdesc:h' =>
-              ["the %s most recent", "the most recent", 'number']
-            ,    #"the %s latest" "the latest" ?
-            'filterdesc:t' =>
-              ["the %s least recent", "the least recent", 'number']
-            ,    #"the %s earliest" "the earliest" ?
+            'filterdesc:h' => [
+                "the %s most recent",
+                "the most recent",
+                'number'
+               #"the %s latest" "the latest"?
+            ],
+            'filterdesc:t' => [
+                "the %s least recent",
+                "the least recent",
+                'number'
+               #"the %s earliest" "the earliest"?
+            ],
             'filterdesc:-h'  => "not the %s most recent",
             'filterdesc:-t'  => "not the %s least recent",
-            'filterpat:ago'  => [unit => \%::DATEUNITS, default_unit => 'd',],
+            'filterpat:ago'  => [
+                unit => \%::DATEUNITS,
+                default_unit => 'd',
+            ],
             'filterpat:date' => [
                 display => sub {
                     my $var = shift;
                     $var = ::strftime_utf8('%c', localtime $var)
-                      if $var =~ m/^\d+$/;
+                        if $var =~ m/^\d+$/;
                     $var;
                 },
             ],
@@ -1020,10 +1070,26 @@ INIT {
               '.!!. do{ grep($_ >= #VAL1# && $_ <= #VAL2#, #get_list#) }',
 
             #copy of filterdesc:* smartfilter:* from date type
-            'filterdesc:>ago' => ["more than %s ago", "more than", 'ago',],
-            'filterdesc:<ago' => ["less than %s ago", "less than", 'ago',],
-            'filterdesc:>' => ["after %s",  "after",  'date',],
-            'filterdesc:<' => ["before %s", "before", 'date',],
+            'filterdesc:>ago' => [
+                "more than %s ago",
+                "more than",
+                'ago',
+            ],
+            'filterdesc:<ago' => [
+                "less than %s ago",
+                "less than",
+                'ago',
+            ],
+            'filterdesc:>' => [
+                "after %s",
+                "after",
+                'date',
+            ],
+            'filterdesc:<' => [
+                "before %s",
+                "before",
+                'date',
+            ],
             'filterdesc:b' => [
                 "between %s and %s",
                 "between (absolute dates)",
@@ -1040,20 +1106,29 @@ INIT {
             'filterdesc:-<'    => "not before %s",
             'filterdesc:-b'    => "not between %s and %s",
             'filterdesc:-bago' => "not between %s ago and %s ago",
-            'filterdesc:h' =>
-              ["the %s most recent", "the most recent", 'number']
-            ,    #"the %s latest" "the latest" ?
-            'filterdesc:t' =>
-              ["the %s least recent", "the least recent", 'number']
-            ,    #"the %s earliest" "the earliest" ?
+            'filterdesc:h' => [
+                "the %s most recent",
+                "the most recent",
+                'number'
+               #"the %s latest" "the latest" ?
+            ],
+            'filterdesc:t' => [
+                "the %s least recent",
+                "the least recent",
+                'number'
+               #"the %s earliest" "the earliest" ?
+            ],
             'filterdesc:-h'  => "not the %s most recent",
             'filterdesc:-t'  => "not the %s least recent",
-            'filterpat:ago'  => [unit => \%::DATEUNITS, default_unit => 'd',],
+            'filterpat:ago'  => [
+                unit => \%::DATEUNITS,
+                default_unit => 'd',
+            ],
             'filterpat:date' => [
                 display => sub {
                     my $var = shift;
                     $var = ::strftime_utf8('%c', localtime $var)
-                      if $var =~ m/^\d+$/;
+                        if $var =~ m/^\d+$/;
                     $var;
                 },
             ],
@@ -1109,25 +1184,24 @@ INIT {
             display => "(#_# ? #yes# : #no#)",
             yes     => '"Yes"',
             no      => 'q()',
-            'editwidget:all' =>
-              sub { my $field = $_[0]; GMB::TagEdit::EntryBoolean->new(@_); },
+            'editwidget:all' => sub {
+                my $field = $_[0];
+                GMB::TagEdit::EntryBoolean->new(@_);
+            },
             'filterdesc:e:0'  => ["is false", "is false", '', noinv => 1],
             'filterdesc:e:1'  => ["is true",  "is true",  '', noinv => 1],
             'filterdesc:-e:0' => "is true",
             'filterdesc:-e:1' => "is false",
-            filter_exclude =>
-              'ALL',    #do not show filters inherited from parents
+            filter_exclude => 'ALL', # do not show filters inherited from parents
             default_filter       => 'e:1',
             'smartfilter:=empty' => 'e:0',
             rightalign           => 0,
         },
         shuffle => {
-            n_sort =>
-              'Songs::update_shuffle($Songs::LastID) ---- vec($Songs::SHUFFLE,#ID#,32)',
+            n_sort => 'Songs::update_shuffle($Songs::LastID) ---- vec($Songs::SHUFFLE,#ID#,32)',
         },
         gidshuffle => {
-            n_sort =>
-              'Songs::update_shuffle(##mainfield#->maxgid#) ----  vec($Songs::SHUFFLE,##mainfield#->get_gid#,32)',
+            n_sort => 'Songs::update_shuffle(##mainfield#->maxgid#) ----  vec($Songs::SHUFFLE,##mainfield#->get_gid#,32)',
         },
         writeonly => {
             diff  => '1',
@@ -7655,5 +7729,5 @@ sub MakeExample {
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim: sw=4 ts=4 sts=4 et cc=72 tw=70
+# End of file.
