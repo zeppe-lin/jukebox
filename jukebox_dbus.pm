@@ -25,8 +25,7 @@ sub new {
             ::Watch($self, CurSong     => \&SongFieldsChanged);
             ::Watch($self, CurSongID   => \&SongChanged);
             ::Watch($self, PlayingSong => \&PlayingSongChanged);
-
-            #::Watch($self,Save => \&GMB::DBus::Quit);
+           #::Watch($self, Save        => \&GMB::DBus::Quit);
             0;
         }
     );
@@ -46,14 +45,17 @@ dbus_method('CurrentSong', [], [['dict', 'string', 'string']]);
 
 sub CurrentSong {
     my $self = $_[0];
+
     return {} unless defined $::SongID;
+
     my %h;
     $h{$_} = Songs::Get($::SongID, $_)
-      for Songs::PropertyFields(), qw/uri album_picture/;
+        for Songs::PropertyFields(), qw/uri album_picture/;
 
     #warn "$_:$h{$_}\n" for sort keys %h;
     return \%h;
 }
+
 dbus_method('CurrentSongFields',
     [['array', 'string']], [['array', 'string']]
 );
@@ -84,12 +86,14 @@ sub Set {
     my ($self, $array) = @_;
     Songs::SetTagValue(@$array); # return false on error, true if ok
 }
+
 dbus_method('Get', [['struct', 'string', 'string']], ['string']);
 
 sub Get {
     my ($self, $array) = @_;
     Songs::GetTagValue(@$array);
 }
+
 dbus_method('GetLibrary', [], [['array', 'uint32']]);
 
 sub GetLibrary {
@@ -104,7 +108,7 @@ sub GetAlbumCover {
     return $file;
 }
 
-#slow, not a good idea
+# slow, not a good idea
 dbus_method('GetAlbumCoverData', ['uint32'], [['array', 'byte']]);
 
 sub GetAlbumCoverData {
@@ -126,14 +130,16 @@ sub GetAlbumCoverData {
 
 dbus_method(CopyFields => [['array', 'string']], ['bool']);
 
-#copy fields from one song to another
-#1st arg : filename of ID of source, 2nd arg filename or ID of dest, both must be in the library,
-#following args are list of fields, example : added, lastplay, playcount, lastskip, skipcount, rating, label
+# CopyFields - Copy fields from one song to another.
+# arg 1: filename of ID of source
+# arg 2: filename or ID of dest, both must be in the library.
+# Following args are list of fields, example:
+#   added, lastplay, playcount, lastskip, skipcount, rating, label
 sub CopyFields {
     my ($self, $array) = @_;
 
-    #my ($file1,$file2,@fields)=@$array;
-    Songs::CopyFields(@$array);    #returns true on error
+    #my ($file1, $file2, @fields) = @$array;
+    Songs::CopyFields(@$array); # returns true on error
 }
 
 dbus_signal(SongFieldsChanged => ['uint32']);
@@ -141,11 +147,13 @@ dbus_signal(SongFieldsChanged => ['uint32']);
 sub SongFieldsChanged {
     $_[0]->emit_signal(SongFieldsChanged => $::SongID || 0);
 }
+
 dbus_signal(SongChanged => ['uint32']);
 
 sub SongChanged {
     $_[0]->emit_signal(SongChanged => $::SongID || 0);
 }
+
 dbus_signal(PlayingSongChanged => ['uint32']);
 
 sub PlayingSongChanged {
@@ -179,14 +187,15 @@ sub init {
 
 use Net::DBus::Annotation qw(:call);
 
-sub simple_call
-{
+sub simple_call {
     # $service_path can be service_and_path separated by space,
     # or the object
     my ($service_path, $method, $args, $reply) = @_;
     my $return = eval {
         my $object;
-        if (ref $service_path) { $object = $service_path }
+        if (ref $service_path) {
+            $object = $service_path;
+        }
         else {
             my ($name, $path) = split / +/, $service_path, 2;
             my $service = $bus->get_service($name);
@@ -216,7 +225,8 @@ sub DBus_mainloop_hack
         for my $fd (keys %{$reactor->{fds}{$type2}}) {
             #warn "$fd $type2";
             Glib::IO->add_watch(
-                $fd, $type1,
+                $fd,
+                $type1,
                 sub {
                     my $cb = $reactor->{fds}{$type2}{$fd}{callback};
                     $cb->invoke if $cb;
@@ -225,19 +235,29 @@ sub DBus_mainloop_hack
                 }
             ) if $reactor->{fds}{$type2}{$fd}{enabled};
 
-            #Glib::IO->add_watch($fd,$type1,sub { Net::DBus::Reactor->main->step;Net::DBus::Reactor->main->step;1; }) if $reactor->{fds}{$type2}{$fd}{enabled};
+            #Glib::IO->add_watch(
+            #   $fd,
+            #   $type1,
+            #   sub {
+            #       Net::DBus::Reactor->main->step;
+            #       Net::DBus::Reactor->main->step;
+            #       1;
+            #   }
+            #) if $reactor->{fds}{$type2}{$fd}{enabled};
         }
     }
 
     # run the dbus mainloop once so that events already pending are
     # processed needed if events already waiting when gmb is starting
-    my $timeout =
-      $reactor->add_timeout(1, Net::DBus::Callback->new(method => sub { }));
+    my $timeout = $reactor->add_timeout(
+        1,
+        Net::DBus::Callback->new(method => sub { })
+    );
     Net::DBus::Reactor->main->step;
     $reactor->remove_timeout($timeout);
 }
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# vim: sw=4 ts=4 sts=4 et cc=72 tw=70
 # End of file.
