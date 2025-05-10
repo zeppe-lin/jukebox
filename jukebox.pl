@@ -8523,7 +8523,10 @@ EOF
 
 sub PrefDialog {
     my $goto = $_[0] || $Options{LastPrefPage} || 'library';
-    if ($OptionsDialog) { $OptionsDialog->force_present; }
+
+    if ($OptionsDialog) {
+        $OptionsDialog->force_present;
+    }
     else {
         $OptionsDialog = my $dialog = Gtk2::Dialog->new("Settings", undef, []);
         my $about_button = $dialog->add_button('gtk-about', 1);
@@ -8564,7 +8567,10 @@ sub PrefDialog {
 
         $dialog->signal_connect(
             response => sub {
-                if ($_[1] eq '1') { AboutDialog(); return }
+                if ($_[1] eq '1') {
+                    AboutDialog();
+                    return
+                }
                 $OptionsDialog = undef;
                 $_[0]->destroy;
             }
@@ -8577,7 +8583,9 @@ sub PrefDialog {
     my $notebook = $OptionsDialog->{notebook};
     if (my $page = $notebook->{pages}{$goto}) {
         $notebook->set_current_page($notebook->page_num($page));
-        if ($arg && $page->{gotofunc}) { $page->{gotofunc}->($arg) }
+        if ($arg && $page->{gotofunc}) {
+            $page->{gotofunc}->($arg);
+        }
     }
 }
 
