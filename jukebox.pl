@@ -8504,16 +8504,21 @@ sub AboutDialog {
     );
     $dialog->set_website('https://github.com/zeppe-lin/jukebox/');
     $dialog->set_authors('Quentin Sculo <squentin@free.fr>');
-    $dialog->set_artists(
-        join "\n",
-        "svg icon: zeltak",
-        "tango icon theme: Jean-Philippe Guillemin",
-        "elementary icon theme: Simon Steinbeiß",
-        "trinity icon theme: Alexandr Savca",
-    );
+    $dialog->set_artists(<<EOF);
+SVG Icon by: zeltak
+Tango Icon Theme by: Jean-Philippe Guillemin
+Elementary Icon Theme by: Simon Steinbeiß
+Trinity Icon Theme by: Alexandr Savca
+EOF
+
+    # used to worked without this, see
+    # http://mail.gnome.org/archives/gtk-perl-list/2006-November/msg00035.html
     $dialog->signal_connect(
-        response => sub { $_[0]->destroy if $_[1] eq 'cancel'; })
-      ; #used to worked without this, see http://mail.gnome.org/archives/gtk-perl-list/2006-November/msg00035.html
+        response => sub {
+            $_[0]->destroy if $_[1] eq 'cancel';
+        }
+    );
+
     $dialog->show_all;
 }
 
