@@ -78,7 +78,13 @@ sub get_with_cb {
 
     if (!defined $pid) {
         warn "simple_http_wget : fork failed : $!\n";
-        Glib::Timeout->add(10, sub { $callback->(); 0 });
+        Glib::Timeout->add(
+            10,
+            sub {
+                $callback->();
+                0
+            }
+        );
         return $self;
     }
     elsif ($pid == 0) {
@@ -94,7 +100,7 @@ sub get_with_cb {
     }
     close $wfh;
     close $ewfh;
-    $content_fh->blocking(0);    #set non-blocking IO
+    $content_fh->blocking(0); # set non-blocking IO
     $error_fh->blocking(0);
 
     $self->{content_fh} = $content_fh;
