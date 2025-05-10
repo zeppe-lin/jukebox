@@ -16,10 +16,10 @@ our @ISA = ('Tag::MP3');
 my @sample_rates;
 
 INIT {
-    @sample_rates = (
-        6000,  8000,  9600,  11025, 12000, 16000, 22050, 24000,
-        32000, 44100, 48000, 64000, 88200, 96000, 192000
-    );
+    @sample_rates = (qw(
+         6000   8000   9600  11025  12000  16000   22050  24000
+        32000  44100  48000  64000  88200  96000  192000
+        ));
 }
 
 sub new {
@@ -51,8 +51,12 @@ sub _ReadHeader {
     my $buf;
     return unless read($fh, $buf, 32) == 32;
     return unless $buf =~ m/^wvpk/;
-    my ($block_size, $ver, $total_samples, $block_index,
-        $block_samples, $flags) = unpack 'x4Vvx2VVVV', $buf;
+    my ($block_size,
+        $ver,
+        $total_samples,
+        $block_index,
+        $block_samples,
+        $flags) = unpack 'x4Vvx2VVVV', $buf;
 
     $total_samples  = 0 if $total_samples == 0xffff; # unknown length
     $ver            = sprintf '4.%x', $ver;
@@ -62,22 +66,20 @@ sub _ReadHeader {
     $info{frames}   = $total_samples;
     $info{rate}     = $sample_rates[($flags >> 23) & 0b1111];
 
-    #my $bytes_per_sample= ($flags & 0b11)+1;
+    #my $bytes_per_sample = ($flags & 0b11) + 1;
     if ($total_samples == 0) {
         $info{seconds} = $info{bitrate} = 0
     }
     else {
         $info{seconds} = ($total_samples / $info{rate});
-        $info{bitrate} =
-            ($self->{endaudio} - $self->{startaudio}) * 8
-                / $info{seconds};
+        $info{bitrate} = ($self->{endaudio} - $self->{startaudio}) * 8 / $info{seconds};
     }
 
-    #warn "$_=$info{$_}\n" for keys %info;
+    #warn "$_ = $info{$_}\n" for keys %info;
     $self->{info} = \%info;
 }
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# vim: sw=4 ts=4 sts=4 et cc=72 tw=70
 # End of file.
