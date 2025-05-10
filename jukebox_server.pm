@@ -14,7 +14,9 @@ use warnings;
 
 my ($ChildPID, $WatchTag, $fh, @pidToKill);
 my $cmd = $::DATADIR . ::SLASH . 'iceserver.pl';
-$::PlayPacks{Play_Server} = 1;    #register the package
+
+# Register the package.
+$::PlayPacks{Play_Server} = 1;
 
 sub init {
     if (-e $cmd) { return bless {}, __PACKAGE__ }
@@ -36,7 +38,9 @@ sub Play {
 }
 
 sub _eos_cb {
-    Glib::Source->remove($WatchTag) or warn "couldn't remove watcher";
+    Glib::Source->remove($WatchTag)
+        or warn "couldn't remove watcher";
+
     undef $WatchTag;
     undef $ChildPID;
     ::end_of_file_faketime();
@@ -45,30 +49,40 @@ sub _eos_cb {
 
 sub Stop {
     if ($WatchTag) {
-        Glib::Source->remove($WatchTag) or warn "couldn't remove watcher";
+        Glib::Source->remove($WatchTag)
+            or warn "couldn't remove watcher";
+
         undef $WatchTag;
     }
     if ($ChildPID) {
-        warn "killing $ChildPID\n" if $::debug;
+        warn "killing $ChildPID\n"
+            if $::debug;
 
-        #kill TERM=>$ChildPID;
-        kill INT => $ChildPID;
-        Glib::Timeout->add(200, \&_Kill_timeout) unless @pidToKill;
+       #kill TERM => $ChildPID;
+        kill INT  => $ChildPID;
+
+        Glib::Timeout->add(200, \&_Kill_timeout)
+            unless @pidToKill;
+
         push @pidToKill, $ChildPID;
         undef $ChildPID;
     }
 }
 
-sub _Kill_timeout    #make sure old children are dead
+sub _Kill_timeout # make sure old children are dead
 {
     @pidToKill = grep kill(0, $_), @pidToKill;
     if (@pidToKill) {
-        warn "killing -9 @pidToKill\n" if $::debug;
+        warn "killing -9 @pidToKill\n"
+            if $::debug;
+
         kill KILL => @pidToKill;
         undef @pidToKill;
     }
 
-    #while (waitpid(-1, WNOHANG)>0) {}	#reap dead children
+    # read dead children
+    #while (waitpid(-1, WNOHANG)>0) {}
+
     return 0;
 }
 
@@ -82,9 +96,10 @@ sub GetVolume {-1}
 sub GetVolumeError {
     "Can't change the volume in non-gstreamer iceserver mode";
 }
+
 sub GetMute {0}
 
 1;
 
-# vim:sw=4:ts=4:sts=4:et:cc=80
-# End of file
+# vim: sw=4 ts=4 sts=4 et cc=72 tw=70
+# End of file.
