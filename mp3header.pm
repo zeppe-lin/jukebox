@@ -1,4 +1,4 @@
-# vim:sw=4:ts=4:sts=4:et:cc=72:tw=70
+# vim: sw=4 ts=4 sts=4 et cc=72 tw=70
 #
 # Copyright (c) Quentin Sculo  <squentin@free.fr>
 # Copyright (c) Alexandr Savca <alexandr.savca89@gmail.com>
@@ -66,10 +66,10 @@ INIT {
                 144, 160
             ],
             # Layer 3
-            # [
+            #[
             #   0, 8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112,
             #   128, 144, 160
-            # ],
+            #],
         ],
     );
 
@@ -77,7 +77,7 @@ INIT {
     $bitrates[1][2] = $bitrates[1][1];
 
     @freq = (
-        [ 11025, 12000, 8000  ], # MPEG version 2.5 (from mp3info)
+        [ 11025, 12000,  8000 ], # MPEG version 2.5 (from mp3info)
         undef,                   # invalid version
         [ 22050, 24000, 16000 ], # MPEG version 2
         [ 44100, 48000, 32000 ], # MPEG version 1
@@ -222,19 +222,19 @@ sub new {
             && !$self->{info}{frames}
             && ($findlength > 1 || !$self->{info}{seconds}))
         {
-            warn
-              "mp3header: No VBR header found, must count all the frames to determine length.\n"
-              if $::debug && !$tries;
+            warn "mp3header: No VBR header found, must count all the frames to determine length.\n"
+                if $::debug && !$tries;
+
             $count_to = 0;
         }
         last if _CountFrames($self, $count_to);
-        warn "mp3header: searching another first frame\n" if $::debug;
+        warn "mp3header: searching another first frame\n"
+            if $::debug;
         $self->{info} = undef;
         $start_at = $self->{firstframe} + 1;
     }
     unless ($self->{info}) {
-        warn
-          "mp3header: Can't find enough valid frames, probably not a valid mp3 file.\n";
+        warn "mp3header: Can't find enough valid frames, probably not a valid mp3 file.\n";
     }
     $self->_close;
     return $self;
@@ -262,7 +262,7 @@ sub _FindTags {
         $tag->{offset} = $self->{startaudio};
         $self->{startaudio} += $tag->{size};
         push @{$self->{tags_before}}, $tag;
-        redo if 1; # look for another tag ?
+        redo if 1; # look for another tag?
     }
 
     # Check end of file for tags.
@@ -270,9 +270,11 @@ sub _FindTags {
     $self->{endaudio} = tell $fh;
     seek $fh, -128, 2;
     read $fh, my ($id3v1), 128;
+
     my $apefooter = substr($id3v1, -32, 8) eq 'APETAGEX'
-      && substr($id3v1, -8) eq ("\x00" x 8);
-    if (!$apefooter && substr($id3v1, 0, 3) eq 'TAG')    #ID3v1 tag
+                 && substr($id3v1, -8)     eq ("\x00" x 8);
+
+    if (!$apefooter && substr($id3v1, 0, 3) eq 'TAG') # ID3v1 tag
     {
         $self->{ID3v1} = Tag::ID3v1->new_from_string($id3v1);
         $self->{endaudio} -= 128;
@@ -316,7 +318,7 @@ sub SyncID3v1 # auto sync with id3v2
     $id3v1->[6] = \@genres;
     if (defined $genre) {
         if   (ref $genre) { push @genres, @$genre }
-        else              { push @genres, $genre }
+        else              { push @genres,  $genre }
     }
     if ($self->{ID3v2}) {
         my $ref = $self->{ID3v2}{frames};
@@ -394,11 +396,12 @@ sub write_file {
     my $copybegin = $self->{startaudio};
     my $copyend   = $self->{endaudio};
     {
-        my $blank = $self->{blank};    #blank before audio
+        my $blank = $self->{blank}; # blank before audio
         my $fh;
         my $hole = 0;
-        for my $tag (reverse @{$self->{tags_before}})
-        {    #warn "$tag : ".(join ' ',keys %$tag)."\n";
+        for my $tag (reverse @{ $self->{tags_before} })
+        {
+            #warn "$tag : " . (join ' ', keys %$tag) . "\n";
             if ($tag->{deleted}) {
                 $hole = 1;
             }
@@ -425,7 +428,7 @@ sub write_file {
             }
         }
         $hole = 0;
-        for my $tag (reverse @{$self->{tags_after}}) {
+        for my $tag (reverse @{ $self->{tags_after} }) {
             if ($tag->{deleted}) {
                 $hole = 1;
             }
@@ -451,15 +454,17 @@ sub write_file {
         if $self->{ID3v1};
 
     warn "startaudio="
-      . $self->{startaudio}
-      . " copybegin=$copybegin length(towritebefore)="
-      . join(' ', map(length $$_, @towritebefore)) . "\n"
-      if $::debug;
+        . $self->{startaudio}
+        . " copybegin=$copybegin length(towritebefore)="
+        . join(' ', map(length $$_, @towritebefore)) . "\n"
+            if $::debug;
+
     warn "endaudio="
-      . $self->{endaudio}
-      . " copyend=$copyend length(towriteafter)="
-      . join(' ', map(length $$_, @towriteafter)) . "\n"
-      if $::debug;
+        . $self->{endaudio}
+        . " copyend=$copyend length(towriteafter)="
+        . join(' ', map(length $$_, @towriteafter)) . "\n"
+            if $::debug;
+
     my $in_place;
     if ($id3v2tag) {
         my $padding = $copybegin;
@@ -470,21 +475,35 @@ sub write_file {
     }
     if ($in_place) { # in place editing
         warn "in place editing.\n"; # DEBUG
-        my $fh = $self->_openw or return undef;
-        return undef unless defined $fh;
-        print $fh $$_ or warn $! for @towritebefore;
+
+        my $fh = $self->_openw
+            or return undef;
+
+        return undef
+            unless defined $fh;
+
+        print $fh $$_
+            or warn $! for @towritebefore;
+
         seek $fh, $copyend, 0;
-        print $fh $$_ or warn $! for @towriteafter;
+
+        print $fh $$_
+            or warn $! for @towriteafter;
+
         truncate $fh, tell($fh);
         $self->_close;
         return 1;
     }
-    my $INfh = $self->_open or return undef;
+
+    my $INfh = $self->_open
+        or return undef;
 
     # create new file
-    my $OUTfh = $self->_openw(1) or return undef;    #open .TEMP file
+    my $OUTfh = $self->_openw(1)
+        or return undef; # open .TEMP file
     my $werr;
-    print $OUTfh $$_ or warn $! and $werr++ for @towritebefore;
+    print $OUTfh $$_
+        or warn $! and $werr++ for @towritebefore;
 
     # copy audio data + unmodified tags next to audio data
     seek $INfh, $copybegin, 0;
@@ -495,11 +514,13 @@ sub write_file {
     while ($tocopy > 0) {
         my $size = ($tocopy > 1048576) ? 1048576 : $tocopy;
         read $INfh, my ($buffer), $size;
-        print $OUTfh $buffer or warn $! and $werr++;
+        print $OUTfh $buffer
+            or warn $! and $werr++;
         $tocopy -= $size;
     }
     $self->_close;
-    print $OUTfh $$_ or warn $! and $werr++ for @towriteafter;
+    print $OUTfh $$_
+        or warn $! and $werr++ for @towriteafter;
     close $OUTfh;
     if ($werr) {
         warn "write errors... aborting.\n";
@@ -507,18 +528,22 @@ sub write_file {
         return 0;
     }
     warn "replacing old file with new file.\n";
-    unlink $self->{filename} && rename $self->{filename} . '.TEMP',
-      $self->{filename};
+    unlink $self->{filename}
+        && rename $self->{filename} . '.TEMP', $self->{filename};
     $MODIFIEDFILE = 1;
-    %$self        = ()
-      ; #destroy the object to make sure it is not reused as many of its data are now invalid
+
+    # destroy the object to make sure it is not reused as many of its
+    # data are now invalid
+    %$self = ();
+
     return 1;
 }
 
 sub _open {
     my $self = $_[0];
     my $file = $self->{filename};
-    open my $fh, '<', $file or warn "can't open $file : $!\n" and return undef;
+    open my $fh, '<', $file
+        or warn "can't open $file : $!\n" and return undef;
     binmode $fh;
     $self->{fileHandle} = $fh;
     return $fh;
@@ -528,17 +553,24 @@ sub _openw {
     my ($self, $tmp) = @_;
     my $file = $self->{filename};
     my $m    = '+<';
-    if ($tmp) { $file .= '.TEMP'; $m = '>'; }
+    if ($tmp) {
+        $file .= '.TEMP';
+        $m = '>';
+    }
     my $fh;
     until (open $fh, $m, $file) {
         my $err = "Error opening '$file' for writing :\n$!";
         warn $err . "\n";
+
         return undef
-          unless $self->{errorsub}
-          && $self->{errorsub}($!, 'openwrite', $file) eq 'retry';
+            unless $self->{errorsub}
+                && $self->{errorsub}($!, 'openwrite', $file) eq 'retry';
     }
     binmode $fh;
-    $self->{fileHandle} = $fh unless $tmp;
+
+    $self->{fileHandle} = $fh
+        unless $tmp;
+
     return $fh;
 }
 
@@ -560,7 +592,8 @@ sub _removeblank    #remove blank before audio
     }
     $self->{blank} = $blank;
     return unless $blank;
-    warn "blank before audio : $blank bytes\n" if $::debug;
+    warn "blank before audio : $blank bytes\n"
+        if $::debug;
     $self->{startaudio} += $blank;
 }
 
@@ -577,75 +610,75 @@ sub _FindFirstFrame {
     while ($pos < 60000)    #only look in the first 60000 bytes (after tag)
     {
         while ($buf =~ m/\xff(...)/sg)
-
           #while ($buf=~m/\xff([\xe0-\xff][\x00-\xef].)/sg)
         {
             my ($byte2, $byte3, $byte4) = unpack 'CCC', $1;
 
-#print "AAABBCCD EEEEFFGH IIJJKLMM\n";	#DEBUG
-#@_=unpack 'B8B8B8B8',$1; print "@_\n";	#DEBUG
-#next if $byte2<0xf0;	#not a synchro signal (0b11110000)
-#	next if $byte2<0xe0;	#not a synchro signal (0b11100000)
-#	next unless $byte3<0xf0;	#invalid bitrate # ($byte3 & 0b11110000)==0b11110000
+            #print "AAABBCCD EEEEFFGH IIJJKLMM\n"; # DEBUG
+            #@_=unpack 'B8B8B8B8', $1; print "@_\n"; # DEBUG
+            #next if $byte2 < 0xf0; # not a synchro signal (0b11110000)
+            #next if $byte2 < 0xe0; # not a synchro signal (0b11100000)
+            #next unless $byte3 < 0xf0; # invalid bitrate # ($byte3 & 0b11110000)==0b11110000
             my $mpgversion = ($byte2 >> 3) & 0b11;
-            next if $mpgversion == 1;    #invalid MPEG version
+            next if $mpgversion == 1; # invalid MPEG version
             my $layer = ($byte2 >> 1) & 0b11;
-            next if $layer == 0;         #invalid layer
+            next if $layer == 0; # invalid layer
             my $freq = ($byte3 >> 2) & 0b11;
-            next
-              if $freq == 3; #invalid frequence #warn "unknown sampling rate\n"
+            next if $freq == 3; # invalid frequence #warn "unknown sampling rate\n"
             my $bitrateindex = $byte3 >> 4;
-            next if $bitrateindex == 15;    #invalid bitrate index
+            next if $bitrateindex == 15; # invalid bitrate index
             $pos += $-[0];
             $self->{firstframe} = $pos + $offset;
             warn "skipped $pos, first frame at $self->{firstframe}\n"
-              if $pos && $::debug;
+                if $pos && $::debug;
             $self->{byte2}   = $byte2;
             $info{version2}  = ($mpgversion & 0b1) ? 0 : 1;
             $info{versionid} = $versions[$mpgversion];
             $info{rate}      = $freq[$mpgversion][$freq];
             $info{layer}     = 4 - $layer;
             $info{crc}       = ($byte2 & 0b1) ? 0 : 1;
-            $info{bitrate}   = 1000
-              * $bitrates[$info{version2}][$info{layer} - 1][$bitrateindex];
+            $info{bitrate}   = 1000 * $bitrates[$info{version2}][$info{layer} - 1][$bitrateindex];
 
-            #if ($info{bitrate}==0) { warn "free bitrate not supported\n"; }
+            #if ($info{bitrate}==0) {
+            #   warn "free bitrate not supported\n";
+            #}
             $info{channels} = ($byte4 >> 6 == 3) ? 1 : 2;
             $info{sampleperframe} =
-                $info{layer} == 1 ? 384
-              : $info{version2}   ? 576
-              :                     1152;
+                  $info{layer} == 1 ? 384
+                : $info{version2}   ? 576
+                :                     1152;
 
-            #compute size of first frame
+            # compute size of first frame
             my $pad = ($info{layer} == 1) ? 4 : 1;
             my $firstframe_size =
-              int($info{bitrate} * $info{sampleperframe} / 8 / $info{rate});
+                int($info{bitrate} * $info{sampleperframe} / 8 / $info{rate});
             $firstframe_size += $pad if $byte3 & 0b10;
 
             #warn "firstframe_size : $firstframe_size\n";
             $self->{audiodatasize} = $self->{endaudio} - $self->{firstframe};
 
-  #check for VBRI header #http://www.thecodeproject.com/audio/MPEGAudioInfo.asp
+            # check for VBRI header
+            # http://www.thecodeproject.com/audio/MPEGAudioInfo.asp
             {
                 seek $fh, $self->{firstframe} + 36, 0;
                 read $fh, $_, 18;
                 my ($id, $vers, $delay, $quality, undef, $frames) =
-                  unpack 'a4nnnNN', $_;
+                    unpack 'a4nnnNN', $_;
 
-                #should I $frames-- to remove this info frame ?
+                # should I $frames-- to remove this info frame ?
                 last unless $id eq 'VBRI';
-                warn
-                  "VBRI header found : version=$vers delay=$delay quality=$quality nbframes=$frames\n"
-                  if $::debug;
+                warn "VBRI header found : version=$vers delay=$delay quality=$quality nbframes=$frames\n"
+                    if $::debug;
+
                 $info{vbr} = 1;
                 $self->{audiodatasize} -= $firstframe_size;
                 _calclength(\%info, $frames, $self->{audiodatasize});
                 last SEARCH1ST
             }
 
-            #check if frame is the Xing/LAME header
-            {    #offset depends on mpegversion and channels :
-
+            # check if frame is the Xing/LAME header
+            {
+                # offset depends on mpegversion and channels:
                 # 13 for mono v2/2.5 , 36 for stereo v1 , 21 for other
                 $_ = (13, 21, 36)[(!$info{version2}) + ($info{channels} != 3)];
                 seek $fh, $self->{firstframe} + $_, 0;
@@ -653,19 +686,22 @@ sub _FindFirstFrame {
                 my ($id, $flags, $frames) = unpack 'a4NN', $_;
                 last unless ($id eq 'Xing' || $id eq 'Info');
                 warn "Xing header found : $id flags=$flags nbframes=$frames\n"
-                  if $::debug;
-                last unless $flags & 1;    # unless number of frames is stored
+                    if $::debug;
+                last unless $flags & 1; # unless number of frames is stored
                 $info{vbr} = ($id eq 'Xing');
                 $self->{audiodatasize} -= $firstframe_size;
                 _calclength(\%info, $frames, $self->{audiodatasize});
                 last SEARCH1ST;
             }
 
-#estimating number of frames assuming: found correct first frame and fixed bitrate
+            # estimating number of frames assuming: found correct
+            # first frame and fixed bitrate
             if ($info{bitrate}) {
                 $info{estimated} = 1;
                 $info{seconds}   = $self->{audiodatasize} * 8 / $info{bitrate};
-                warn "length estimation : $info{seconds} s\n" if $::debug;
+
+                warn "length estimation : $info{seconds} s\n"
+                    if $::debug;
             }
             last SEARCH1ST;
         }
@@ -680,13 +716,13 @@ sub _FindFirstFrame {
     return undef;
 }
 
-sub _CountFrames    #find and count each frames
+sub _CountFrames # find and count each frames
 {
     my ($self, $count_to) = @_;
-    my $time = $::debug && times;    #DEBUG
+    my $time = $::debug && times; # DEBUG
     $MODIFIEDFILE = undef;
     my $info = $self->{info};
-    return 0 if $info->{bitrate} == 0;    #if unknown bitrate
+    return 0 if $info->{bitrate} == 0; # if unknown bitrate
     return 0 unless $info->{rate};
     my $fh = $self->{fileHandle};
     seek $fh, $self->{firstframe}, 0;
@@ -697,17 +733,20 @@ sub _CountFrames    #find and count each frames
     # size of padding when present
     my $pad = ($info->{layer} == 1) ? 4 : 1;
 
-# construct @size array, which will contain the size of the frame in function of the EEEE bits
+    # construct @size array, which will contain the size of the frame
+    # in function of the EEEE bits
     my $m    = 1000 * $info->{sampleperframe} / 8 / $info->{rate};
-    my @size = map int($_ * $m) - 4,
-      @{$bitrates[$info->{version2}][$info->{layer} - 1]};
-
     # -4 to substract 4 bytes header
-    $size[0] = $size[15] = 0
-      ; #for free (0) or reserved (15) bitrate -> skip frame header and look for next
+    my @size = map int($_ * $m) - 4,
+                    @{$bitrates[$info->{version2}][$info->{layer} - 1]};
+
+    # for free (0) or reserved (15) bitrate -> skip frame header and
+    # look for next
+    $size[0] = $size[15] = 0;
+
     my $count = 1000;
 
-    #search for each frame
+    # search for each frame
     while (read $fh, $_, 4) {
         if (substr($_, 0, 2) eq $byte1_2)
         {    #print "AAAAAAAA AAABBCCD EEEEFFGH IIJJKLMM\n";	#DEBUG
@@ -904,11 +943,19 @@ sub new_from_file    #http://www.id3.org/lyrics3200.html
     return undef unless $rawtag =~ s/^LYRICSBEGIN//;
     my %tag;
     $tag{size} = $size + 15;
-    warn "found lyrics3 v2.00 tag (" . $tag{size} . " bytes)\n" if $::debug;
+
+    warn "found lyrics3 v2.00 tag (" . $tag{size} . " bytes)\n"
+        if $::debug;
 
     while ($rawtag =~ s/^([A-Z]{3})([0-9]{5})//) {
-        if ($1 eq 'IND') { $tag{IND} = substr($rawtag, 0, $2, ''); next; }
-        $tag{fields}{$1} = decode('iso-8859-1', substr($rawtag, 0, $2, ''));
+        if ($1 eq 'IND') {
+            $tag{IND} = substr($rawtag, 0, $2, '');
+            next;
+        }
+        $tag{fields}{$1} = decode(
+            'iso-8859-1',
+            substr($rawtag, 0, $2, '')
+        );
         push @{$tag{fields_order}}, $1;
         warn "Lyrics3 $1 : $tag{fields}{$1}\n" if $::debug;
     }
@@ -984,7 +1031,7 @@ sub new_from_file {
     my ($class, $file, $isfooter) = @_;
     my $fh = $file->{fileHandle};
     if ($isfooter) { seek $fh, $file->{endaudio} - 32, 0; }
-    else           { seek $fh, $file->{startaudio}, 0; }
+    else           { seek $fh, $file->{startaudio},    0; }
     read $fh, my ($headorfoot), 32;
     my ($v, $size, $Icount, $flags) = unpack 'x8VVVV', $headorfoot;
     my $rawtag;
@@ -1334,7 +1381,11 @@ INIT {
 
 sub new {
     my ($class, $file) = @_;
-    my $self = {frames => {}, framesorder => [], edited => 1};
+    my $self = {
+        frames => {},
+        framesorder => [],
+        edited => 1
+    };
     unshift @{$file->{tags_before}}, $self;
     $self->{version} = $::Options{'TAG_write_id3v2.4'} ? 4 : 3;
     $file->{ID3v2}   = $self;
