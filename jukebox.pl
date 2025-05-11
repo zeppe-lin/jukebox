@@ -9406,7 +9406,11 @@ EOT
 
     my $checkT3 = NewPrefCheckButton(
         ShowTipOnSongChange => "Show tray tip on song change",
-        widget              => $traytiplength
+        widget              => $traytiplength,
+        tip => (<<EOT) =~ s/[\r\n]/ /gr,
+If checked, a brief notification (tray tip) will appear near the
+system tray icon every time the currently playing song changes.
+EOT
     );
     my $checkT4 = NewPrefSpinButton(
         'TrayTipDelay', 0, 10000,
