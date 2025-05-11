@@ -9378,14 +9378,30 @@ sub PrefLayouts {
         step => 100,
         text => "Display tray tip for %d ms"
     );
-    my $checkT5 = NewPrefCheckButton(StartInTray => "Start in tray");
-    my $checkT2 = NewPrefCheckButton(CloseToTray => "Close to tray");
+    my $checkT5 = NewPrefCheckButton(
+        StartInTray => 'Start hidden in tray',
+        tip => (<<EOT) =~ s/[\r\n]/ /gr,
+If checked, the application will start with its main window hidden in
+the system tray instead of being shown normally.
+EOT
+    );
+    my $checkT2 = NewPrefCheckButton(
+        CloseToTray => 'Close button sends window to tray',
+        tip => (<<EOT) =~ s/[\r\n]/ /gr,
+If checked, clicking the main window's close button will send the
+window to the system tray (hiding it) instead of exiting the
+application.
+EOT
+    );
     my $checkT6 = NewPrefCheckButton(
-        IconifyHide => "Iconify (minimize) main window instead of hide",
-        tip => "Iconify (minimize) the main window when clicked to"   .
-               " tray icon, instead of executing the Hide() command." .
-               "This behaviour is particularly useful for WindowMaker".
-               " and similar window managers."
+        IconifyHide => 'Tray icon minimizes window instead of hiding',
+        tip => (<<EOT) =~ s/[\r\n]/ /gr,
+If checked, clicking the tray icon (when the main window is visible)
+will minimize the window to the taskbar/dock.  If unchecked, clicking
+the tray icon will hide the window, removing it from the
+taskbar/dock/alt-tab list.  This option can be useful with certain
+window managers (e.g., WindowMaker).
+EOT
     );
 
     my $checkT3 = NewPrefCheckButton(
