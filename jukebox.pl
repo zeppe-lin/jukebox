@@ -1954,7 +1954,7 @@ our %Options = (
     Icecast_port               => '8000',
     UseTray                    => 1,
     CloseToTray                => 0,
-    IconifyHide                => 0,
+    TrayIconMinimize           => 0,
     ShowTipOnSongChange        => 0,
     TrayTipTimeLength          => 3000,           #in ms
     TAG_use_latin1_if_possible => 1,
@@ -9394,7 +9394,7 @@ application.
 EOT
     );
     my $checkT6 = NewPrefCheckButton(
-        IconifyHide => 'Tray icon minimizes window instead of hiding',
+        TrayIconMinimize => 'Tray icon minimizes window instead of hiding',
         tip => (<<EOT) =~ s/[\r\n]/ /gr,
 If checked, clicking the tray icon (when the main window is visible)
 will minimize the window to the taskbar/dock.  If unchecked, clicking
@@ -10925,7 +10925,7 @@ sub ShowHide {
             $win->{saved_position}    = join 'x', $win->get_position;
             $win->{skip_taskbar_hint} = $win->get_skip_taskbar_hint;
             $win->set_skip_taskbar_hint(TRUE);
-            if ($::Options{IconifyHide}) {
+            if ($::Options{TrayIconMinimize}) {
                 $win->iconify unless $win->{iconified};
             } else {
                 $win->hide;
