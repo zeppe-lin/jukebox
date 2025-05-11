@@ -9430,9 +9430,7 @@ EOT
     my $sg2 = Gtk2::SizeGroup->new('horizontal');
     my @layouts_combos;
     for my $layout (
-        [   'Layout',                 'G',
-            "Player window layout :", sub { CreateMainWindow(); },
-        ],
+        ['Layout',  'G', "Player window layout :", sub { CreateMainWindow(); },],
         ['LayoutB', 'B', "Browser window layout :",],
         ['LayoutT', 'T', "Tray tip window layout :",],
         ['LayoutF', 'F', "Full screen layout :",],
@@ -9445,15 +9443,20 @@ EOT
     }
     my $reloadlayouts = Gtk2::Alignment->new(0, .5, 0, 0);
     $reloadlayouts->add(
-        NewIconButton('gtk-refresh', "Re-load layouts", \&Layout::InitLayouts)
+        NewIconButton(
+            'gtk-refresh',
+            "Re-load layouts",
+            \&Layout::InitLayouts
+        )
     );
 
     #fullscreen button
     my $fullbutton = NewPrefCheckButton(
         AddFullscreenButton => "Add a fullscreen button",
-        cb => sub { Layout::WidgetChangedAutoAdd('Fullscreen'); },
-        tip =>
-          "Add a fullscreen button to layouts that can accept extra buttons"
+        cb => sub {
+            Layout::WidgetChangedAutoAdd('Fullscreen');
+        },
+        tip => "Add a fullscreen button to layouts that can accept extra buttons."
     );
 
 
